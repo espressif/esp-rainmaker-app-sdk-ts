@@ -1,0 +1,11 @@
+# Node modules
+/node_modules/
+
+# Build artifacts
+/dist/
+
+# Documentation artifacts
+/docs/
+
+# License
+LICENSE
