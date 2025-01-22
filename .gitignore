@@ -1,0 +1,25 @@
+# Node modules
+/node_modules/
+
+# env file need to run test
+.env.test
+
+# Build artifacts
+/dist/
+
+# Documentation artifacts
+/docs/
+
+# rollup
+.rollup.cache
+buildMeta
+
+# Miscellaneous
+*.cache
+*.tgz
+.DS_Store
+.vscode
+.idea
+.npm/
+*.log
+**/.DS_Store

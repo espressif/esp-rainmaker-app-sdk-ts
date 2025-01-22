@@ -1,0 +1,58 @@
+{
+  "name": "@espressif/rainmaker-base-sdk",
+  "description": "Espressif's Rainmaker Base SDK enables seamless integration of applications with the ESP Rainmaker ecosystem.",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.cjs",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "author": "Espressif Systems (Shanghai) CO LTD",
+  "scripts": {
+    "build": "rm -rf ./dist && rollup -c ./rollup.config.mjs",
+    "test": "jest --config ./jest.config.js",
+    "format": "prettier --write .",
+    "genDocs": "rm -rf ./docs && typedoc"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "keywords": [
+    "esp",
+    "esp-rainmaker",
+    "esp-rainmaker-ts-base-sdk",
+    "esp-rainmaker-app-sdk",
+    "esp-device-provisioning",
+    "esp-device-control",
+    "esp-cloud-communication",
+    "esp-local-communication",
+    "esp-user-management",
+    "esp-group-management",
+    "esp-device-management"
+  ],
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@types/google-protobuf": "^3.15.12",
+    "@types/jest": "^29.5.12",
+    "dotenv": "^16.4.7",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.3",
+    "rollup": "^4.21.0",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "ts-jest": "^29.2.4",
+    "typedoc": "^0.27.6",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "google-protobuf": "^3.21.4"
+  }
+}

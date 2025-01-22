@@ -1,0 +1,12 @@
+{
+  "entryPoints": [
+    "src/**/*.ts" // Include all files in the `src` directory and subdirectories
+  ],
+  "exclude": [
+    "src/index.ts", // Exclude the index.ts file
+    "src/utils/error/Error.ts" // Exclude the Error.ts file
+  ],
+  "out": "docs",
+  "excludePrivate": true,
+  "excludeNotDocumented": false
+}

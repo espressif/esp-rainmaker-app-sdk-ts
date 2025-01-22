@@ -1,93 +1,166 @@
-# esp-rainmaker-ts-base-sdk
+# ESP Rainmaker Typescript Base SDK
 
+The `@espressif/rainmaker-base-sdk` package provides a foundational SDK to help mobile app developers quickly integrate with the ESP Rainmaker ecosystem. It enables seamless provisioning, control, and management of devices.
 
+## Table of Contents
 
-## Getting started
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+  - [Package Manager](#package-manager)
+  - [Local Installation](#local-installation)
+- [Usage](#usage)
+- [License](#license)
+- [API Documentation](https://espressif.github.io/esp-rainmaker-ts-base-sdk/)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Overview
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+The `@espressif/rainmaker-base-sdk` package is designed to accelerate app development by providing a unified API for interacting with the ESP Rainmaker platform. With support for different communication transports, developers can seamlessly integrate features such as provisioning, device control, and discovery into their apps.
 
-## Add your files
+The SDK provides:
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- Native module support with adapter interfaces for iOS and Android.
+- Support for various transport modes (currently local and cloud).
+- A modular design with separate modules for user management, device management, and group management.
 
-```
-cd existing_repo
-git remote add origin https://gitlab.espressif.cn:6688/app-frameworks/esp-rainmaker-ts-base-sdk.git
-git branch -M main
-git push -uf origin main
-```
+## Key Features
 
-## Integrate with your tools
+- [x] **Provisioning and Discovery:** Support for device provisioning and discovery via native modules with customizable adapter interfaces.
+- [x] **Local and Cloud Communication:** Control devices locally, with automatic fallback to cloud communication for updates and retrieval of the latest parameters.
+- [x] **Cross-Platform Compatibility:** Works with React Native and other cross-platform frameworks.
+- [x] **Extensible Modules:** Provides modular APIs for user, device, and group management.
+- [ ] **Matter Protocol Support:** Future-proof your app with Matter protocol support (planned).
 
-- [ ] [Set up project integrations](https://gitlab.espressif.cn:6688/app-frameworks/esp-rainmaker-ts-base-sdk/-/settings/integrations)
+## Requirements
 
-## Collaborate with your team
+Before installing the `@espressif/rainmaker-base-sdk` package, ensure you meet the following prerequisites:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- **Node.js**: Version 20.17.0 or higher is recommended.
+- **Package Manager**: Any one from npm, yarn, or pnpm installed.
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+### Package Manager
+
+To install the latest version of the `@espressif/rainmaker-base-sdk` package from the npm registry, you can use your preferred package manager:
+
+#### Using npm:
+
+```bash
+npm install @espressif/rainmaker-base-sdk
+```
+
+#### Using Yarn:
+
+```bash
+yarn add @espressif/rainmaker-base-sdk
+```
+
+#### Using pnpm:
+
+```bash
+pnpm add @espressif/rainmaker-base-sdk
+```
+
+### Local Installation
+
+To build and install the package locally for development and testing:
+
+1. Clone the repository
+
+2. Check out the appropriate branch:
+
+   ```bash
+   git checkout main
+   ```
+
+3. Ensure you are using Node.js v20.17.0 or higher. If you have `nvm` installed, you can run:
+
+   ```bash
+   nvm use
+   ```
+
+   If you don’t have `nvm`, please install Node.js v20.17.0 or a higher version manually.
+
+4. Install the required dependencies using Yarn:
+
+   ```bash
+   yarn install
+   ```
+
+5. Build the package:
+
+   ```bash
+   yarn run build
+   ```
+
+6. Create a tarball for testing locally:
+
+   ```bash
+   yarn pack
+   ```
+
+7. Add the tarball to your project:
+
+   ```bash
+   yarn add <PATH_TO_PACK_TARBALL_FILE>
+   ```
+
+After installation, you can import and configure the SDK in your project as shown in the usage examples below.
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### User Login Usage Example
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Below is a step-by-step guide to logging in a user using the `@espressif/rainmaker-base-sdk` SDK:
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+1. **Import the SDK**
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+   Begin by importing the `ESPRMBase` class from the `@espressif/rainmaker-base-sdk` package.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+   ```javascript
+   import { ESPRMBase } from "@espressif/rainmaker-base-sdk";
+   ```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+2. **Configure the SDK**
+
+   Use the `configure` method to initialize the SDK with the required base URL and API version.
+
+   ```javascript
+   ESPRMBase.configure({
+     baseUrl: "https://api.rainmaker.espressif.com",
+     version: "v1",
+   });
+   ```
+
+3. **Get an Instance of the Authentication Module**
+
+   Obtain an instance of the authentication module by calling `getAuthInstance()` on the `ESPRMBase` class.
+
+   ```javascript
+   const authInstance = ESPRMBase.getAuthInstance();
+   ```
+
+4. **Attempt User Login**
+
+   Call the `login` method on the authentication instance, passing the username and password as arguments.
+   Handle the response or any potential errors using a try-catch block.
+
+   ```javascript
+   try {
+     const resp = await authInstance.login("<USERNAME>", "<PASSWORD>");
+     console.log(resp); // Log the response on successful login
+   } catch (error) {
+     console.log(error); // Handle and log any errors during login
+   }
+   ```
+
+5. **Review the Login Response**
+
+   The `login` method returns a promise. On successful resolution, it provides the user's instance.
+   Ensure you properly log or handle the response in your application.
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is licensed under the Apache 2.0 license - see the [LICENSE](LICENSE) file for details.
