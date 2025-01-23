@@ -15,6 +15,17 @@
     }
   },
   "author": "Espressif Systems (Shanghai) CO LTD",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/espressif/esp-rainmaker-app-sdk-ts.git"
+  },
+  "homepage": "https://github.com/espressif/esp-rainmaker-app-sdk-ts#readme",
+  "bugs": {
+    "url": "https://github.com/espressif/esp-rainmaker-app-sdk-ts/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rm -rf ./dist && rollup -c ./rollup.config.mjs",
     "test": "jest --config ./jest.config.js",
