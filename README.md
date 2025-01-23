@@ -12,7 +12,7 @@ The `@espressif/rainmaker-base-sdk` package provides a foundational SDK to help 
   - [Local Installation](#local-installation)
 - [Usage](#usage)
 - [License](#license)
-- [API Documentation](https://espressif.github.io/esp-rainmaker-ts-base-sdk/)
+- [API Documentation](https://espressif.github.io/esp-rainmaker-app-sdk-ts/)
 
 ## Overview
 
