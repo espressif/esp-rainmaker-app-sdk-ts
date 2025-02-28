@@ -5,7 +5,6 @@
  */
 
 // Re-export all interfaces and enums of the SDK
-
 export * from "./adapter";
 export * from "./discovery";
 export * from "./ESPModules";
@@ -18,3 +17,6 @@ export * from "./subscription";
 export * from "./transport";
 export * from "../services/ESPTransport/ESPLocalControlAdapterInterface";
 export * from "../services/ESPTransport/ESPLocalDiscoveryAdapterInterface";
+
+// Re-export SDK classes with augmented methods
+export * from "./mainTypes";

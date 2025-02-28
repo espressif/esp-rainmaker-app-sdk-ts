@@ -5,12 +5,12 @@
     "declaration": true,
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "noEmit": false, // Rollup handles transpilation, so set to false
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "dist/types"
   },
