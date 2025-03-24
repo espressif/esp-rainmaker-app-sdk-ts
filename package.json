@@ -44,11 +44,6 @@
       "require": "./dist/cjs/ESPPlatformEndpoint.cjs",
       "types": "./dist/types/ESPPlatformEndpoint.d.ts"
     },
-    "./ESPProvisionManager": {
-      "import": "./dist/esm/ESPProvisionManager.js",
-      "require": "./dist/cjs/ESPProvisionManager.cjs",
-      "types": "./dist/types/ESPProvisionManager.d.ts"
-    },
     "./ESPRMAttribute": {
       "import": "./dist/esm/ESPRMAttribute.js",
       "require": "./dist/cjs/ESPRMAttribute.cjs",

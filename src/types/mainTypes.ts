@@ -12,7 +12,6 @@ import { ESPGroupSharingRequest } from "../ESPGroupSharingRequest";
 import { ESPGroupSharingUserInfo } from "../ESPGroupSharingUserInfo";
 import { ESPNodeSharingRequest } from "../ESPNodeSharingRequest";
 import { ESPPlatformEndpoint } from "../ESPPlatformEndpoint";
-import { ESPProvisionManager } from "../ESPProvisionManager";
 import { ESPRMAttribute } from "../ESPRMAttribute";
 import { ESPRMConnectivityStatus } from "../ESPRMConnectivityStatus";
 import { ESPRMDevice } from "../ESPRMDevice";
@@ -34,7 +33,6 @@ export {
   ESPGroupSharingUserInfo,
   ESPNodeSharingRequest,
   ESPPlatformEndpoint,
-  ESPProvisionManager,
   ESPRMAttribute,
   ESPRMConnectivityStatus,
   ESPRMDevice,
