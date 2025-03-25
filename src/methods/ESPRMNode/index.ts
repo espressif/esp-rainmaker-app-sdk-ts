@@ -17,3 +17,4 @@ import "./RemoveSharingFor";
 import "./GetServices";
 import "./SetMultipleParams";
 import "./Delete";
+import "./SetTimeZone";

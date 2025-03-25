@@ -31,6 +31,7 @@ import {
 import { ESPProvError } from "./utils/error/Error";
 import { NodeMappingHelper } from "./services/ESPRMHelpers/NodeMappingHelper";
 import { ESPRMUser } from "./ESPRMUser";
+import { NodeTimeZoneSetupService } from "./services/ESPRMHelpers/NodeTimeZoneSetupService";
 
 class ESPDevice {
   ESPProvisionAdapter: ESPProvisionAdapterInterface =
@@ -175,25 +176,104 @@ class ESPDevice {
           }
 
           // Check user node mapping request till the timeout
-          let intervalId = setInterval(async () => {
-            let nodeMappingStatus = undefined;
-            nodeMappingStatus =
-              await NodeMappingHelper.getNodeMappingStatus(
-                nodeMappingRequestId
-              );
-            if (nodeMappingStatus === StatusMessage.TIMEDOUT) {
-              throw new ESPProvError(
-                ProvErrorCodes.FAILED_USER_NODE_MAPPING_CLOUD_TIMEOUT
-              );
-            }
-            if (nodeMappingStatus === StatusMessage.CONFIRMED) {
-              onProgress({
-                status: ESPProvResponseStatus.succeed,
-                description: ESPProvProgressMessages.USER_NODE_MAPPING_SUCCEED,
-              });
+          const checkNodeMappingStatus = async () => {
+            try {
+              // Check the status of the node mapping request
+              const nodeMappingStatus =
+                await NodeMappingHelper.getNodeMappingStatus(
+                  nodeMappingRequestId
+                );
+
+              // If the status is timed out, clear the interval and throw an error
+              if (nodeMappingStatus === StatusMessage.TIMEDOUT) {
+                clearInterval(intervalId);
+                throw new ESPProvError(
+                  ProvErrorCodes.FAILED_USER_NODE_MAPPING_CLOUD_TIMEOUT
+                );
+              }
+
+              // If the status is confirmed, proceed with further steps
+              if (nodeMappingStatus === StatusMessage.CONFIRMED) {
+                clearInterval(intervalId);
+                onProgress({
+                  status: ESPProvResponseStatus.succeed,
+                  description:
+                    ESPProvProgressMessages.USER_NODE_MAPPING_SUCCEED,
+                });
+
+                // Fetch the user's time zone
+                const userTimeZone =
+                  await NodeTimeZoneSetupService.getUserTimeZone();
+                if (!userTimeZone) return;
+
+                // Fetch the node configuration
+                const nodeConfig =
+                  await NodeTimeZoneSetupService.getNodeConfig(nodeID);
+
+                // Extract time service parameters from the node configuration
+                const timeServiceParams =
+                  await NodeTimeZoneSetupService.extractTimeServiceFromNodeConfig(
+                    nodeConfig
+                  );
+                if (!timeServiceParams) return;
+
+                // Construct the payload for setting the node's time zone
+                const timeZonePayload =
+                  NodeTimeZoneSetupService.constructTimeZonePayload(
+                    nodeID,
+                    timeServiceParams,
+                    userTimeZone
+                  );
+
+                // Callback to report progress when initiating node time zone setup
+                const onInitiatingNodeTimeZoneSetup = () => {
+                  onProgress({
+                    status: ESPProvResponseStatus.onProgress,
+                    description:
+                      ESPProvProgressMessages.INITIATING_NODE_TIMEZONE_SETUP,
+                  });
+                };
+
+                // Wait for the node to be connected before proceeding
+                const isConnected =
+                  await NodeTimeZoneSetupService.waitForNodeConnectivity(
+                    nodeID,
+                    onInitiatingNodeTimeZoneSetup
+                  );
+
+                if (!isConnected) return;
+
+                // Callback to report progress when setting the node's time zone
+                const onSettingNodeTimeZone = () => {
+                  onProgress({
+                    status: ESPProvResponseStatus.onProgress,
+                    description: ESPProvProgressMessages.SETTING_NODE_TIMEZONE,
+                  });
+                };
+
+                // Send the time zone payload to the node and set the time zone
+                const response = await NodeTimeZoneSetupService.setNodeTimeZone(
+                  timeZonePayload,
+                  onSettingNodeTimeZone
+                );
+
+                // If the time zone setup is successful, report success
+                if (response.status === StatusMessage.SUCCESS) {
+                  onProgress({
+                    status: ESPProvResponseStatus.succeed,
+                    description:
+                      ESPProvProgressMessages.NODE_TIMEZONE_SETUP_SUCCEED,
+                  });
+                }
+              }
+            } catch (error) {
+              // Clear the interval and rethrow the error in case of failure
               clearInterval(intervalId);
+              throw error;
             }
-          }, 5000);
+          };
+
+          const intervalId = setInterval(checkNodeMappingStatus, 5000);
         } else {
           throw new ESPProvError(ProvErrorCodes.FAILED_PROV);
         }

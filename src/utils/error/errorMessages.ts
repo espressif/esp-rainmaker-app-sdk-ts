@@ -62,7 +62,7 @@ const validationErrorMessages = {
 const storageAdapterErrorMessages = {
   /** Error message indicating that the default storage adapter API is unsupported. */
   UNSUPPORTED_DEFAULT_STORAGE_ADAPTER_API:
-    "ESPStorageAdapterError: It seems like your environment doesn't support window.localstorage, you can define your own storage adapter while configuring the ESPRMAuth instance. Please refer docs for more information.",
+    "ESPStorageAdapterError: It seems like your environment doesn't support window.localstorage, you can define your own storage adapter while configuring the ESPRMBase instance. Please refer docs for more information.",
 };
 
 /**
@@ -99,6 +99,15 @@ const apiCallValidationErrorMessages = {
     "ESPAPICallValidationError: Invalid event type. Please provide a valid event type.",
   /** Error message indicating that the base URL is missing. */
   MISSING_BASE_URL: "ESPAPICallValidationError: Base URL is required.",
+  /** Error message indicating that the timezone string format is invalid. */
+  INVALID_TIMEZONE_FORMAT:
+    "ESPAPICallValidationError: Invalid timezone format. Please provide a valid timezone string like 'Asia/Kolkata'",
+  /** Error message indicating that the time service is not available. */
+  TIME_SERVICE_NOT_AVAILABLE:
+    "ESPAPICallValidationError: Time service is not available for the node.",
+  /** Error message indicating that the timezone parameter is not available. */
+  TIMEZONE_PARAM_NOT_AVAILABLE:
+    "ESPAPICallValidationError: Timezone parameter is not available for the node.",
 };
 
 /**
