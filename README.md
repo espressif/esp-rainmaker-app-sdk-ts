@@ -11,6 +11,7 @@ The `@espressif/rainmaker-base-sdk` package provides a foundational SDK to help 
   - [Package Manager](#package-manager)
   - [Local Installation](#local-installation)
 - [Usage](#usage)
+- [Resources](#resources)
 - [License](#license)
 - [API Documentation](https://espressif.github.io/esp-rainmaker-app-sdk-ts/)
 
@@ -160,6 +161,11 @@ Below is a step-by-step guide to logging in a user using the `@espressif/rainmak
 
    The `login` method returns a promise. On successful resolution, it provides the user's instance.
    Ensure you properly log or handle the response in your application.
+
+## Resources
+
+- [Changelog](CHANGELOG.md)
+
 
 ## License
 
