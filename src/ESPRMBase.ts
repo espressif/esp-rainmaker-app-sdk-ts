@@ -12,14 +12,9 @@ import { ConfigValidator } from "./utils/validator/ConfigValidator";
 import { ESPRMBaseConfig } from "./types/input";
 
 import packageInfo from "../package.json";
-import {
-  ConfigErrorCodes,
-  DEFAULT_REST_API_VERSION,
-  ProvErrorCodes,
-} from "./utils/constants";
-import { ESPConfigError, ESPProvError } from "./utils/error/Error";
+import { ConfigErrorCodes, DEFAULT_REST_API_VERSION } from "./utils/constants";
+import { ESPConfigError } from "./utils/error/Error";
 import { ESPProvisionAdapterInterface } from "./types/provision";
-import { ESPProvisionManager } from "./ESPProvisionManager";
 import { ESPTransportMode } from "./types/transport";
 import { ESPLocalDiscoveryAdapterInterface } from "./services/ESPTransport/ESPLocalDiscoveryAdapterInterface";
 import { ESPLocalControlAdapterInterface } from "./services/ESPTransport/ESPLocalControlAdapterInterface";
@@ -215,19 +210,6 @@ export class ESPRMBase {
     adapter: ESPNotificationAdapterInterface
   ): void {
     this.ESPNotificationAdapter = adapter;
-  }
-
-  /**
-   * Retrieves an instance of the ESPProvisionManager.
-   *
-   * @returns {ESPProvisionManager} An instance of the ESPProvisionManager.
-   * @throws {Error} If the provisioning adapter is not set.
-   */
-  public static getProvisioningManager(): ESPProvisionManager {
-    if (!this.ESPProvisionAdapter) {
-      throw new ESPProvError(ProvErrorCodes.MISSING_PROV_ADAPTER);
-    }
-    return new ESPProvisionManager();
   }
 
   /**
