@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ESPRMBase } from "../ESPRMBase";
 import { parseAPIErrorResponse } from "../utils/error/parser";
 import { ESPRMUser } from "../ESPRMUser";
-
+import { AdditionalInfo, HTTPStatusCodes } from "../utils/constants";
+import { hasProperty } from "./ESPRMHelpers/HasProperty";
+import { ESPRMAPIManagerConfig, PropertyCheckMode } from "../types/input";
+import { ESPAPIError } from "../types/output";
 /**
  * Manages API requests and handles configuration, authentication, and error parsing.
  */
@@ -20,17 +22,19 @@ export class ESPRMAPIManager {
 
   /**
    * Private constructor to initialize the base URL.
+   * @param config - Configuration object for the ESPRMAPIManager.
    */
-  private constructor() {
-    const { baseUrl, version } = ESPRMBase.getConfig();
+  private constructor(config: ESPRMAPIManagerConfig) {
+    const { baseUrl, version } = config;
     this.#baseUrl = `${baseUrl}/${version}`;
   }
 
   /**
    * Initializes the singleton instance of ESPRMAPIManager.
+   * @param config - Configuration object for the ESPRMAPIManager.
    */
-  public static initialize() {
-    ESPRMAPIManager.#instance = new ESPRMAPIManager();
+  public static initialize(config: ESPRMAPIManagerConfig) {
+    ESPRMAPIManager.#instance = new ESPRMAPIManager(config);
   }
 
   /**
@@ -58,8 +62,22 @@ export class ESPRMAPIManager {
           Authorization: `${accessToken}`,
         },
       };
-      return this.request(requestConfigWithAuthToken);
+      return await this.request(requestConfigWithAuthToken);
     } catch (error) {
+      if (
+        hasProperty(
+          error as ESPAPIError,
+          "statusCode",
+          PropertyCheckMode.OwnPropertyOnly
+        )
+      ) {
+        const _error = error as ESPAPIError;
+        if (_error.statusCode === HTTPStatusCodes.UNAUTHORIZED) {
+          _error.additionalInfo = AdditionalInfo.AUTHENTICATION_REQUIRED;
+          ESPRMUser.clearAllTokens();
+          throw _error;
+        }
+      }
       throw error;
     }
   }

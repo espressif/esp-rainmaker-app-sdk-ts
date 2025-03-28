@@ -29,6 +29,14 @@ interface ESPRMBaseConfig {
 }
 
 /**
+ * Configuration options for ESPRMAPIManager.
+ */
+interface ESPRMAPIManagerConfig {
+  baseUrl: string;
+  version: string;
+}
+
+/**
  * Request payload for user sign-up.
  */
 interface SignUpRequest {
@@ -323,8 +331,43 @@ interface MultipleNodePayload {
   payload: NodePayload;
 }
 
+/**
+ * Enum for property check mode of hasProperty helper method.
+ */
+enum PropertyCheckMode {
+  OwnPropertyOnly,
+  PrototypeChain,
+}
+
+/**
+ * Represents the permission type for custom data.
+ */
+interface PermissionType {
+  read?: string[];
+  write?: string[];
+}
+
+/**
+ * Represents the data entry for custom data.
+ */
+interface DataEntry<T = unknown> {
+  value?: T;
+  perms?: PermissionType[] | null;
+}
+
+/**
+ * Represents the request payload for user custom data.
+ */
+type UserCustomDataRequest = Record<string, DataEntry | null>;
+
+/**
+ * Represents the response payload for user custom data.
+ */
+type UserCustomDataResponse = Record<string, DataEntry>;
+
 export {
   ESPRMBaseConfig,
+  ESPRMAPIManagerConfig,
   SignUpRequest,
   ConfirmUserRequest,
   LoginWithPasswordRequest,
@@ -359,4 +402,9 @@ export {
   DeviceParams,
   NodePayload,
   MultipleNodePayload,
+  PropertyCheckMode,
+  PermissionType,
+  DataEntry,
+  UserCustomDataRequest,
+  UserCustomDataResponse,
 };

@@ -39,8 +39,31 @@ const isValidObject = (obj: unknown): boolean => {
   return typeof obj === "object" && obj !== null && !Array.isArray(obj);
 };
 
+/**
+ * Checks if the provided object is empty.
+ *
+ * @param obj - The object to validate.
+ * @returns `true` if the object is empty, otherwise `false`.
+ */
 const isObjectEmpty = (obj: Object) => {
   return Object.keys(obj).length === 0;
 };
 
-export { isValidUrl, isNonEmptyString, isValidObject, isObjectEmpty };
+/**
+ * Validates a string against a given pattern.
+ *
+ * @param input - The string to validate.
+ * @param pattern - The pattern to validate against.
+ * @returns `true` if the string matches the pattern, otherwise `false`.
+ */
+const validateString = (input: string, pattern: RegExp): boolean => {
+  return pattern.test(input);
+};
+
+export {
+  isValidUrl,
+  isNonEmptyString,
+  isValidObject,
+  isObjectEmpty,
+  validateString,
+};

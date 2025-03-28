@@ -18,7 +18,7 @@ const HTTPMethods = {
   POST: "POST",
   /** Represents the DELETE HTTP method. */
   DELETE: "DELETE",
-};
+} as const;
 
 /**
  * An object containing the API endpoint paths used in the application.
@@ -63,7 +63,9 @@ const APIEndpoints = {
   /** The endpoint for user push notifications mobile platform endpoint. */
   USER_PUSH_NOTIFICATION_MOBILE_PLATFORM_ENDPOINT:
     "user/push_notification/mobile_platform_endpoint",
-};
+  /** The endpoint for user custom data. */
+  USER_CUSTOM_DATA: "user/custom_data",
+} as const;
 
 /**
  * An object containing keys used for accessing stored fields in client storage.
@@ -157,6 +159,12 @@ const APICallValidationErrorCodes = {
   INVALID_EVENT_TYPE: "INVALID_EVENT_TYPE",
   /** Error code indicating the base URL is missing. */
   MISSING_BASE_URL: "MISSING_BASE_URL",
+  /** Error code indicating the timezone string format is invalid. */
+  INVALID_TIMEZONE_FORMAT: "INVALID_TIMEZONE_FORMAT",
+  /** Error code indicating the time service is not available. */
+  TIME_SERVICE_NOT_AVAILABLE: "TIME_SERVICE_NOT_AVAILABLE",
+  /** Error code indicating the timezone parameter is not available. */
+  TIMEZONE_PARAM_NOT_AVAILABLE: "TIMEZONE_PARAM_NOT_AVAILABLE",
 } as const;
 
 /**
@@ -193,7 +201,7 @@ const Endpoint = {
   LOCAL_CTRL: "esp_local_ctrl/control",
   /** The endpoint for cloud user association. */
   CLOUD_USER_ASSOCIATION: "cloud_user_assoc",
-};
+} as const;
 
 /**
  * An object containing error codes related to provisioning issues.
@@ -227,7 +235,7 @@ const ProvErrorCodes = {
 const ServiceType = {
   /** Represents the ESP local control TCP service type. */
   ESP_LOCAL_CTRL_TCP: "_esp_local_ctrl._tcp.",
-};
+} as const;
 
 /**
  * An object containing protocol types.
@@ -237,7 +245,7 @@ const ServiceType = {
 const ProtocolType = {
   /** Represents the DNS-SD protocol type. */
   PROTOCOL_DNS_SD: "PROTOCOL_DNS_SD",
-};
+} as const;
 
 /**
  * An object containing status messages.
@@ -251,7 +259,7 @@ const StatusMessage = {
   CONFIRMED: "confirmed",
   /** Represents a timed out status. */
   TIMEDOUT: "timedout",
-};
+} as const;
 
 /** The default REST API version. */
 const DEFAULT_REST_API_VERSION = "v1";
@@ -264,7 +272,9 @@ const DEFAULT_REST_API_VERSION = "v1";
 const ESPServiceType = {
   /** Represents the local control service type. */
   LOCAL_CONTROL: "esp.service.local_control",
-};
+  /** Represents the time service type. */
+  TIME: "esp.service.time",
+} as const;
 
 /**
  * An object containing ESP service parameter types.
@@ -277,7 +287,12 @@ const ESPServiceParamType = {
     /** Represents the POP parameter. */
     POP: "esp.param.local_control_pop",
   },
-};
+  /** Represents the time service parameter type. */
+  TIME: {
+    /** Represents the timezone parameter. */
+    TIMEZONE: "esp.param.tz",
+  },
+} as const;
 
 /**
  * An object containing ESP provisioning progress messages.
@@ -301,8 +316,15 @@ const ESPProvProgressMessages = {
   DECODING_RESPONSE_DATA: "Decoding response data",
   /** Message indicating the successful decoding of NodeId from response data. */
   DECODED_NODE_ID: "Decoded NodeId from response data successfully",
-};
+  /** Message indicating the node timeZone setup process initiation. */
+  INITIATING_NODE_TIMEZONE_SETUP: "Initiating node timezone setup",
+  /** Message indicating the setting of node timeZone. */
+  SETTING_NODE_TIMEZONE: "Setting node timezone",
+  /** Message indicating the successful node timeZone setup. */
+  NODE_TIMEZONE_SETUP_SUCCEED: "Node timezone setup succeed",
+} as const;
 
+/** Represents the labels for the custom errors. */
 const ErrorLabels = {
   ESPAPICallValidationError: "ESPAPICallValidationError",
   ESPConfigError: "ESPConfigError",
@@ -310,7 +332,36 @@ const ErrorLabels = {
   ESPTokenError: "ESPTokenError",
   ESPStorageAdapterError: "ESPStorageAdapterError",
   ESPValidationError: "ESPValidationError",
-};
+} as const;
+
+/** Represents the HTTP status codes */
+const HTTPStatusCodes = {
+  UNAUTHORIZED: 401,
+} as const;
+
+/**
+ * Constant object storing additional info descriptions.
+ */
+const AdditionalInfo = {
+  /** Additional info for the user to login again on unauthorized calls */
+  AUTHENTICATION_REQUIRED: "Please login again or re-authenticate",
+} as const;
+
+/**
+ * An object containing regular expression patterns used for string validation.
+ */
+const ValidationPatterns = {
+  /** Represents the timezone pattern. */
+  TIMEZONE: /^[^\s\/]+\/[^\s\/]+$/,
+} as const;
+
+/**
+ * An object containing keys used as dynamic fields.
+ */
+const Keys = {
+  /** Key for timezone. */
+  TIMEZONE: "timeZone",
+} as const;
 
 export {
   HTTPMethods,
@@ -332,4 +383,8 @@ export {
   ESPServiceParamType,
   ESPProvProgressMessages,
   ErrorLabels,
+  HTTPStatusCodes,
+  AdditionalInfo,
+  ValidationPatterns,
+  Keys,
 };

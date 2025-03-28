@@ -9,7 +9,7 @@ import { ESPRMAuth } from "./ESPRMAuth";
 import { ESPRMAPIManager } from "./services/ESPRMAPIManager";
 import { ESPRMStorage } from "./services/ESPRMStorage/ESPRMStorage";
 import { ConfigValidator } from "./utils/validator/ConfigValidator";
-import { ESPRMBaseConfig } from "./types/input";
+import { ESPRMBaseConfig, ESPRMAPIManagerConfig } from "./types/input";
 
 import packageInfo from "../package.json";
 import { ConfigErrorCodes, DEFAULT_REST_API_VERSION } from "./utils/constants";
@@ -27,14 +27,9 @@ import { isValidEnumValue } from "./services/ESPRMHelpers/IsValidEnumValue";
  */
 export class ESPRMBase {
   /**
-   * Configuration object for the ESPRMBase instance.
+   * Configuration object for the ESPRMBase class.
    */
-  #config: ESPRMBaseConfig;
-
-  /**
-   * Singleton instance of the ESPRMBase class.
-   */
-  static #instance: ESPRMBase | null = null;
+  static #config: ESPRMBaseConfig | null = null;
 
   /**
    * Indicates whether logging is enabled.
@@ -72,18 +67,6 @@ export class ESPRMBase {
   static transportOrder: ESPTransportMode[] = [ESPTransportMode.cloud];
 
   /**
-   * Private constructor for initializing the ESPRMBase with the provided configuration.
-   *
-   * @param config - The configuration object for the ESPRMBase instance.
-   */
-  private constructor(config: ESPRMBaseConfig) {
-    this.#config = {
-      ...config,
-      version: config.version || DEFAULT_REST_API_VERSION, // Default version value
-    };
-  }
-
-  /**
    * Configures the ESPRMBase instance with the specified configuration.
    * Validates the configuration and initializes necessary services.
    *
@@ -92,26 +75,32 @@ export class ESPRMBase {
    */
   public static configure(config: ESPRMBaseConfig): void {
     ConfigValidator.validateConfig(config);
-    ESPRMBase.#instance = new ESPRMBase(config);
+    ESPRMBase.#config = {
+      ...config,
+      version: config.version || DEFAULT_REST_API_VERSION, // Default version value
+    };
 
     if (config.customStorageAdapter) {
-      this.ESPStorageAdapter = config.customStorageAdapter;
+      ESPRMBase.ESPStorageAdapter = config.customStorageAdapter;
     }
     if (config.provisionAdapter) {
-      this.ESPProvisionAdapter = config.provisionAdapter;
+      ESPRMBase.ESPProvisionAdapter = config.provisionAdapter;
     }
     if (config.localDiscoveryAdapter) {
-      this.ESPLocalDiscoveryAdapter = config.localDiscoveryAdapter;
+      ESPRMBase.ESPLocalDiscoveryAdapter = config.localDiscoveryAdapter;
     }
     if (config.localControlAdapter) {
-      this.ESPLocalControlAdapter = config.localControlAdapter;
+      ESPRMBase.ESPLocalControlAdapter = config.localControlAdapter;
     }
     if (config.notificationAdapter) {
-      this.ESPNotificationAdapter = config.notificationAdapter;
+      ESPRMBase.ESPNotificationAdapter = config.notificationAdapter;
     }
-
-    ESPRMAPIManager.initialize();
-    ESPRMStorage.initialize();
+    const apiManagerConfig: ESPRMAPIManagerConfig = {
+      baseUrl: config.baseUrl,
+      version: config.version || DEFAULT_REST_API_VERSION,
+    };
+    ESPRMAPIManager.initialize(apiManagerConfig);
+    ESPRMStorage.initialize(ESPRMBase.ESPStorageAdapter);
   }
 
   /**
@@ -120,10 +109,10 @@ export class ESPRMBase {
    * @returns {Readonly<ESPRMBaseConfig>} The current ESPRMBase configuration object.
    */
   public static getConfig(): Readonly<ESPRMBaseConfig> {
-    if (!ESPRMBase.#instance) {
+    if (!ESPRMBase.#config) {
       throw new ESPConfigError(ConfigErrorCodes.SDK_NOT_CONFIGURED);
     }
-    return ESPRMBase.#instance.#config;
+    return ESPRMBase.#config;
   }
 
   /**
@@ -141,7 +130,7 @@ export class ESPRMBase {
    * @param status - A boolean indicating whether to enable (true) or disable (false) logging.
    */
   public static enableLogs(status: boolean): void {
-    this.isLoggingEnabled = status;
+    ESPRMBase.isLoggingEnabled = status;
   }
 
   /**
@@ -151,7 +140,7 @@ export class ESPRMBase {
    * @throws {ESPConfigError} If the SDK is not configured.
    */
   public static getAuthInstance(): ESPRMAuth {
-    if (!ESPRMBase.#instance) {
+    if (!ESPRMBase.#config) {
       throw new ESPConfigError(ConfigErrorCodes.SDK_NOT_CONFIGURED);
     }
     return new ESPRMAuth();
@@ -165,7 +154,7 @@ export class ESPRMBase {
   public static setCustomStorageAdapter(
     adapter: ESPRMStorageAdapterInterface
   ): void {
-    this.ESPStorageAdapter = adapter;
+    ESPRMBase.ESPStorageAdapter = adapter;
   }
 
   /**
@@ -176,7 +165,7 @@ export class ESPRMBase {
   public static setProvisioningAdapter(
     adapter: ESPProvisionAdapterInterface
   ): void {
-    this.ESPProvisionAdapter = adapter;
+    ESPRMBase.ESPProvisionAdapter = adapter;
   }
 
   /**
@@ -187,7 +176,7 @@ export class ESPRMBase {
   public static setLocalDiscoveryAdapter(
     adapter: ESPLocalDiscoveryAdapterInterface
   ): void {
-    this.ESPLocalDiscoveryAdapter = adapter;
+    ESPRMBase.ESPLocalDiscoveryAdapter = adapter;
   }
 
   /**
@@ -198,7 +187,7 @@ export class ESPRMBase {
   public static setLocalControlAdapter(
     adapter: ESPLocalControlAdapterInterface
   ): void {
-    this.ESPLocalControlAdapter = adapter;
+    ESPRMBase.ESPLocalControlAdapter = adapter;
   }
 
   /**
@@ -209,7 +198,7 @@ export class ESPRMBase {
   public static setNotificationAdapter(
     adapter: ESPNotificationAdapterInterface
   ): void {
-    this.ESPNotificationAdapter = adapter;
+    ESPRMBase.ESPNotificationAdapter = adapter;
   }
 
   /**
@@ -229,10 +218,10 @@ export class ESPRMBase {
    */
   public static setTransportOrder(transportOrder: ESPTransportMode[]): void {
     for (const transport of transportOrder) {
-      if (isValidEnumValue(transport, ESPTransportMode)) {
+      if (!isValidEnumValue(transport, ESPTransportMode)) {
         throw new ESPConfigError(ConfigErrorCodes.INVALID_TRANSPORT_MODE);
       }
     }
-    this.transportOrder = transportOrder;
+    ESPRMBase.transportOrder = transportOrder;
   }
 }

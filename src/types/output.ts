@@ -15,14 +15,16 @@ import { ESPRMNode } from "../ESPRMNode";
 interface ESPAPIResponse {
   status: string;
   description: string;
-  statusCode?: number; // Optional, only applicable for failure
-  errorCode?: string; // Optional, only applicable for failure
 }
 
 /**
  * Represents a error response from the API.
  */
-interface ESPAPIError extends ESPAPIResponse {}
+interface ESPAPIError extends ESPAPIResponse {
+  statusCode: number;
+  errorCode: string;
+  additionalInfo?: string | string[];
+}
 
 /**
  * Represents the response from a login attempt with a password.
