@@ -46,6 +46,7 @@ const cjsConfig = defineConfig({
     preserveModules: true,
     preserveModulesRoot: "src",
     entryFileNames: "[name].cjs", // Define how the files will be named
+    exports: "named", // Disable default export warning
   },
   external: ["google-protobuf"], // Exclude external dependencies from the bundle
   plugins: [

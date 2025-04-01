@@ -1,20 +1,115 @@
 {
   "name": "@espressif/rainmaker-base-sdk",
+  "version": "1.0.1",
   "description": "Espressif's Rainmaker Base SDK enables seamless integration of applications with the ESP Rainmaker ecosystem.",
-  "version": "1.0.0",
   "license": "Apache-2.0",
+  "author": "Espressif Systems (Shanghai) CO LTD",
+  "type": "module",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
-  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.cjs",
       "types": "./dist/types/index.d.ts"
+    },
+    "./ESPDevice": {
+      "import": "./dist/esm/ESPDevice.js",
+      "require": "./dist/cjs/ESPDevice.cjs",
+      "types": "./dist/types/ESPDevice.d.ts"
+    },
+    "./ESPGroupSharingInfo": {
+      "import": "./dist/esm/ESPGroupSharingInfo.js",
+      "require": "./dist/cjs/ESPGroupSharingInfo.cjs",
+      "types": "./dist/types/ESPGroupSharingInfo.d.ts"
+    },
+    "./ESPGroupSharingRequest": {
+      "import": "./dist/esm/ESPGroupSharingRequest.js",
+      "require": "./dist/cjs/ESPGroupSharingRequest.cjs",
+      "types": "./dist/types/ESPGroupSharingRequest.d.ts"
+    },
+    "./ESPGroupSharingUserInfo": {
+      "import": "./dist/esm/ESPGroupSharingUserInfo.js",
+      "require": "./dist/cjs/ESPGroupSharingUserInfo.cjs",
+      "types": "./dist/types/ESPGroupSharingUserInfo.d.ts"
+    },
+    "./ESPNodeSharingRequest": {
+      "import": "./dist/esm/ESPNodeSharingRequest.js",
+      "require": "./dist/cjs/ESPNodeSharingRequest.cjs",
+      "types": "./dist/types/ESPNodeSharingRequest.d.ts"
+    },
+    "./ESPPlatformEndpoint": {
+      "import": "./dist/esm/ESPPlatformEndpoint.js",
+      "require": "./dist/cjs/ESPPlatformEndpoint.cjs",
+      "types": "./dist/types/ESPPlatformEndpoint.d.ts"
+    },
+    "./ESPRMAttribute": {
+      "import": "./dist/esm/ESPRMAttribute.js",
+      "require": "./dist/cjs/ESPRMAttribute.cjs",
+      "types": "./dist/types/ESPRMAttribute.d.ts"
+    },
+    "./ESPRMAuth": {
+      "import": "./dist/esm/ESPRMAuth.js",
+      "require": "./dist/cjs/ESPRMAuth.cjs",
+      "types": "./dist/types/ESPRMAuth.d.ts"
+    },
+    "./ESPRMBase": {
+      "import": "./dist/esm/ESPRMBase.js",
+      "require": "./dist/cjs/ESPRMBase.cjs",
+      "types": "./dist/types/ESPRMBase.d.ts"
+    },
+    "./ESPRMConnectivityStatus": {
+      "import": "./dist/esm/ESPRMConnectivityStatus.js",
+      "require": "./dist/cjs/ESPRMConnectivityStatus.cjs",
+      "types": "./dist/types/ESPRMConnectivityStatus.d.ts"
+    },
+    "./ESPRMDevice": {
+      "import": "./dist/esm/ESPRMDevice.js",
+      "require": "./dist/cjs/ESPRMDevice.cjs",
+      "types": "./dist/types/ESPRMDevice.d.ts"
+    },
+    "./ESPRMDeviceParam": {
+      "import": "./dist/esm/ESPRMDeviceParam.js",
+      "require": "./dist/cjs/ESPRMDeviceParam.cjs",
+      "types": "./dist/types/ESPRMDeviceParam.d.ts"
+    },
+    "./ESPRMGroup": {
+      "import": "./dist/esm/ESPRMGroup.js",
+      "require": "./dist/cjs/ESPRMGroup.cjs",
+      "types": "./dist/types/ESPRMGroup.d.ts"
+    },
+    "./ESPRMNode": {
+      "import": "./dist/esm/ESPRMNode.js",
+      "require": "./dist/cjs/ESPRMNode.cjs",
+      "types": "./dist/types/ESPRMNode.d.ts"
+    },
+    "./ESPRMNodeConfig": {
+      "import": "./dist/esm/ESPRMNodeConfig.js",
+      "require": "./dist/cjs/ESPRMNodeConfig.cjs",
+      "types": "./dist/types/ESPRMNodeConfig.d.ts"
+    },
+    "./ESPRMNodeInfo": {
+      "import": "./dist/esm/ESPRMNodeInfo.js",
+      "require": "./dist/cjs/ESPRMNodeInfo.cjs",
+      "types": "./dist/types/ESPRMNodeInfo.d.ts"
+    },
+    "./ESPRMService": {
+      "import": "./dist/esm/ESPRMService.js",
+      "require": "./dist/cjs/ESPRMService.cjs",
+      "types": "./dist/types/ESPRMService.d.ts"
+    },
+    "./ESPRMServiceParam": {
+      "import": "./dist/esm/ESPRMServiceParam.js",
+      "require": "./dist/cjs/ESPRMServiceParam.cjs",
+      "types": "./dist/types/ESPRMServiceParam.d.ts"
+    },
+    "./ESPRMUser": {
+      "import": "./dist/esm/ESPRMUser.js",
+      "require": "./dist/cjs/ESPRMUser.cjs",
+      "types": "./dist/types/ESPRMUser.d.ts"
     }
   },
-  "author": "Espressif Systems (Shanghai) CO LTD",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/espressif/esp-rainmaker-app-sdk-ts.git"
@@ -27,10 +122,11 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rm -rf ./dist && rollup -c ./rollup.config.mjs",
+    "build": "rm -rf ./dist && rollup -c ./rollup.config.mjs && yarn run genExports",
     "test": "jest --config ./jest.config.js",
     "format": "prettier --write .",
-    "genDocs": "rm -rf ./docs && typedoc"
+    "genDocs": "rm -rf ./docs && typedoc",
+    "genExports": "node ./generate-exports.js"
   },
   "files": [
     "dist/*"

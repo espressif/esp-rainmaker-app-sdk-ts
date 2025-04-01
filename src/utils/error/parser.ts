@@ -10,7 +10,7 @@ import { ESPAPIError } from "../../types/output";
  * Parses an error response from an API and formats it into a standard structure.
  *
  * This function takes an error object and extracts relevant information
- * to return an `ESPAPIResponse` object.
+ * to return an `ESPAPIError` object.
  *
  * @param error - The error object to parse.
  * @returns An object representing the error response with the following properties:

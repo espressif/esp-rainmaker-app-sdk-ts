@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ESPRMBase } from "../../ESPRMBase";
 import { ESPRMStorageAdapterInterface } from "../../types/storage";
 import { StorageAdapterErrorCodes } from "../../utils/constants";
 import { ESPStorageAdapterError } from "../../utils/error/Error";
@@ -22,10 +21,9 @@ export class ESPRMStorage {
 
   /**
    * Private constructor to initialize the storage adapter based on configuration.
+   * @param customStorageAdapter - Custom storage adapter to use for storage operations.
    */
-  constructor() {
-    const customStorageAdapter = ESPRMBase.ESPStorageAdapter;
-
+  private constructor(customStorageAdapter?: ESPRMStorageAdapterInterface) {
     if (customStorageAdapter) {
       this.#storageAdapter = customStorageAdapter;
       return;
@@ -43,9 +41,10 @@ export class ESPRMStorage {
 
   /**
    * Initializes the singleton instance of ESPRMStorage.
+   * @param customStorageAdapter - Custom storage adapter to use for storage operations.
    */
-  static initialize() {
-    ESPRMStorage.#instance = new ESPRMStorage();
+  static initialize(customStorageAdapter?: ESPRMStorageAdapterInterface) {
+    ESPRMStorage.#instance = new ESPRMStorage(customStorageAdapter);
   }
 
   /**
