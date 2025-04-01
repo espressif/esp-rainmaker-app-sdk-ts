@@ -1,0 +1,109 @@
+name: Bug Report
+
+description: Report runtime bugs in the SDK.
+
+labels: ['Type: Bug']
+
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Answers checklist.
+      description: Before submitting a new issue, please follow the checklist.
+      options:
+        - label: I have read the documentation and the issue is not addressed there.
+          required: true
+        - label: I have updated to the latest version and checked that the issue is present there.
+          required: true
+        - label: I have searched the issue tracker for a similar issue and not found one.
+          required: true
+  - type: input
+    id: sdk_version
+    attributes:
+      label: SDK version.
+      description: On which SDK version does this issue occur?
+      placeholder: ex. v1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform used.
+      multiple: false
+      options:
+        - Web
+        - React Native
+    validations:
+      required: true
+  - type: dropdown
+    id: operating_system
+    attributes:
+      label: Operating System used.
+      multiple: false
+      options:
+        - Windows
+        - Linux
+        - macOS
+        - Android
+        - iOS
+    validations:
+      required: true
+  - type: input
+    id: node_version
+    attributes:
+      label: Node.js version.
+      description: Which Node.js version are you using?
+      placeholder: ex. 18.x
+    validations:
+      required: true
+  - type: input
+    id: typescript_version
+    attributes:
+      label: TypeScript version.
+      description: Which TypeScript version are you using?
+      placeholder: ex. 5.x
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What is the expected behavior?
+      description: Please provide a clear and concise description of the expected behavior.
+      placeholder: I expected it to...
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What is the actual behavior?
+      description: Please describe actual behavior.
+      placeholder: Instead it...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce.
+      description: 'How do you trigger this issue? Please walk us through it step by step.'
+      value: |
+        1. Step
+        2. Step
+        3. Step
+    validations:
+      required: true
+  - type: textarea
+    id: debug_logs
+    attributes:
+      label: Debug Logs.
+      description: Paste relevant logs, stack traces, or code snippets here.
+      render: plain
+    validations:
+      required: false
+  - type: textarea
+    id: more-info
+    attributes:
+      label: More Information.
+      description: Do you have any other relevant details?
+      placeholder: ex. This issue does not occur on v1.0.0.
+    validations:
+      required: false
