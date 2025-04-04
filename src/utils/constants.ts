@@ -65,6 +65,10 @@ const APIEndpoints = {
     "user/push_notification/mobile_platform_endpoint",
   /** The endpoint for user custom data. */
   USER_CUSTOM_DATA: "user/custom_data",
+  /** The endpoint for user nodes OTA update. */
+  USER_NODES_OTA_UPDATE: "user/nodes/ota_update",
+  /** The endpoint for user nodes OTA status. */
+  USER_NODES_OTA_STATUS: "user/nodes/ota_status",
 } as const;
 
 /**
@@ -165,6 +169,8 @@ const APICallValidationErrorCodes = {
   TIME_SERVICE_NOT_AVAILABLE: "TIME_SERVICE_NOT_AVAILABLE",
   /** Error code indicating the timezone parameter is not available. */
   TIMEZONE_PARAM_NOT_AVAILABLE: "TIMEZONE_PARAM_NOT_AVAILABLE",
+  /** Error code indicating the OTA job ID is missing. */
+  MISSING_OTA_JOB_ID: "MISSING_OTA_JOB_ID",
 } as const;
 
 /**
