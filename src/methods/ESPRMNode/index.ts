@@ -21,3 +21,5 @@ import "./SetTimeZone";
 import "./CheckOTAUpdate";
 import "./PushOTAUpdate";
 import "./GetOTAUpdateStatus";
+import "./AddAutomation";
+import "./GetAutomations";

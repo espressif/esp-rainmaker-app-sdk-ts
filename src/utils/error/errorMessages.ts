@@ -162,6 +162,31 @@ const apiCallValidationErrorMessages = {
   /** Error message for missing aggregation interval in time series request when aggregate is provided. */
   MISSING_TS_AGGREGATION_INTERVAL:
     "ESPAPICallValidationError: Aggregation interval is required when aggregate is provided",
+  /** Error message indicating that the automation name is missing. */
+  MISSING_AUTOMATION_NAME:
+    "ESPAPICallValidationError: Automation name is required.",
+  /** Error message indicating that automation events are missing. */
+  MISSING_AUTOMATION_EVENTS:
+    "ESPAPICallValidationError: At least one event is required for automation.",
+  /** Error message indicating that automation actions are missing. */
+  MISSING_AUTOMATION_ACTIONS:
+    "ESPAPICallValidationError: At least one action is required for automation.",
+  /** Error message indicating that the latitude is missing. */
+  MISSING_LATITUDE: "ESPAPICallValidationError: Latitude is required.",
+  /** Error message indicating that the longitude is missing. */
+  MISSING_LONGITUDE: "ESPAPICallValidationError: Longitude is required.",
+  /** Error message indicating that geographical coordinates are missing. */
+  MISSING_GEO_COORDINATES:
+    "ESPAPICallValidationError: Location is required for daylight-based automation. Please either provide location in the automation details or set it using setGeoCoordinates API.",
+  /** Error message indicating that geographical coordinates are invalid. */
+  INVALID_GEO_COORDINATES:
+    "ESPAPICallValidationError: Invalid geographical coordinates format in user's custom data.",
+  /** Error message indicating that the automation ID is missing. */
+  MISSING_AUTOMATION_ID:
+    "ESPAPICallValidationError: Automation ID is required.",
+  /** Error message indicating that automation update details are missing. */
+  MISSING_AUTOMATION_UPDATE_DETAILS:
+    "Automation update details are required. Please provide at least one field to update.",
 };
 
 /**

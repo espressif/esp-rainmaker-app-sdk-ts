@@ -19,5 +19,7 @@ export * from "../services/ESPTransport/ESPLocalControlAdapterInterface";
 export * from "../services/ESPTransport/ESPLocalDiscoveryAdapterInterface";
 export * from "./ota";
 export * from "./tsData";
+export * from "./automation";
+
 // Re-export SDK classes with augmented methods
 export * from "./mainTypes";

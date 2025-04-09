@@ -73,6 +73,8 @@ const APIEndpoints = {
   USER_NODE_SIMPLE_TS_DATA: "user/nodes/simple_tsdata",
   /** The endpoint for user node time series data. */
   USER_NODE_TS_DATA: "user/nodes/tsdata",
+  /** The endpoint for user node automation. */
+  USER_NODE_AUTOMATION: "user/node_automation",
 } as const;
 
 /**
@@ -209,6 +211,24 @@ const APICallValidationErrorCodes = {
   INVALID_TS_TIMEZONE: "INVALID_TS_TIMEZONE",
   /** Error code indicating missing aggregation interval in time series request when aggregate is provided. */
   MISSING_TS_AGGREGATION_INTERVAL: "MISSING_TS_AGGREGATION_INTERVAL",
+  /** Error code indicating the automation name is missing. */
+  MISSING_AUTOMATION_NAME: "MISSING_AUTOMATION_NAME",
+  /** Error code indicating the automation events are missing. */
+  MISSING_AUTOMATION_EVENTS: "MISSING_AUTOMATION_EVENTS",
+  /** Error code indicating the automation actions are missing. */
+  MISSING_AUTOMATION_ACTIONS: "MISSING_AUTOMATION_ACTIONS",
+  /** Error code indicating the latitude is missing. */
+  MISSING_LATITUDE: "MISSING_LATITUDE",
+  /** Error code indicating the longitude is missing. */
+  MISSING_LONGITUDE: "MISSING_LONGITUDE",
+  /** Error code indicating the geo coordinates are missing. */
+  MISSING_GEO_COORDINATES: "MISSING_GEO_COORDINATES",
+  /** Error code indicating the geo coordinates are invalid. */
+  INVALID_GEO_COORDINATES: "INVALID_GEO_COORDINATES",
+  /** Error code indicating the automation ID is missing. */
+  MISSING_AUTOMATION_ID: "MISSING_AUTOMATION_ID",
+  /** Error code indicating the automation update details are missing. */
+  MISSING_AUTOMATION_UPDATE_DETAILS: "MISSING_AUTOMATION_UPDATE_DETAILS",
 } as const;
 
 /**
@@ -405,6 +425,8 @@ const ValidationPatterns = {
 const Keys = {
   /** Key for timezone. */
   TIMEZONE: "timeZone",
+  /** Key for geo coordinates. */
+  GEO_COORDINATES: "geoCoordinates",
 } as const;
 
 /**
