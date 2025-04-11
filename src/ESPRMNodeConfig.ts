@@ -38,6 +38,7 @@ export class ESPRMNodeConfig implements ESPRMNodeConfigInterface {
    * Creates an instance of `ESPRMNodeConfig`.
    *
    * @param data - An object containing the node configuration details.
+   * @param nodeRef - Reference to the node this config belongs to
    */
   constructor(data: ESPRMNodeConfigInterface, nodeRef: ESPRMNode) {
     this.nodeRef = new WeakRef(nodeRef);
