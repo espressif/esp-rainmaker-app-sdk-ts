@@ -12,7 +12,13 @@ import { ConfigValidator } from "./utils/validator/ConfigValidator";
 import { ESPRMBaseConfig, ESPRMAPIManagerConfig } from "./types/input";
 
 import packageInfo from "../package.json";
-import { ConfigErrorCodes, DEFAULT_REST_API_VERSION } from "./utils/constants";
+import {
+  ConfigErrorCodes,
+  DEFAULT_REST_API_VERSION,
+  APIEndpoints,
+  HTTPMethods,
+  APIResponseFields,
+} from "./utils/constants";
 import { ESPConfigError } from "./utils/error/Error";
 import { ESPProvisionAdapterInterface } from "./types/provision";
 import { ESPTransportMode } from "./types/transport";
@@ -223,5 +229,26 @@ export class ESPRMBase {
       }
     }
     ESPRMBase.transportOrder = transportOrder;
+  }
+
+  /**
+   * Retrieves the MQTT host.
+   *
+   * @returns A promise that resolves to the MQTT host.
+   * @throws {ESPConfigError} If the SDK is not configured.
+   */
+  public static async getMQTTHost(): Promise<string> {
+    // Get base URL from ESPRMBase configuration (without version)
+    const config = ESPRMBase.getConfig();
+    const baseURL = config.baseUrl;
+
+    const requestConfig = {
+      baseURL: baseURL,
+      method: HTTPMethods.GET,
+      url: APIEndpoints.MQTT_HOST,
+    };
+
+    const response = await ESPRMAPIManager.request(requestConfig);
+    return response[APIResponseFields.MQTT_HOST];
   }
 }

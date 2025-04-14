@@ -75,6 +75,12 @@ const APIEndpoints = {
   USER_NODE_TS_DATA: "user/nodes/tsdata",
   /** The endpoint for user node automation. */
   USER_NODE_AUTOMATION: "user/node_automation",
+  /** The endpoint for user node mapping initiation. */
+  USER_NODE_MAPPING_INITIATE: "user/nodes/mapping/initiate",
+  /** The endpoint for user node mapping verification. */
+  USER_NODE_MAPPING_VERIFY: "user/nodes/mapping/verify",
+  /** The endpoint for retriving mqtt host. */
+  MQTT_HOST: "mqtt_host",
 } as const;
 
 /**
@@ -469,6 +475,14 @@ const TSDataConstants = {
   MIN_INTERVALS: 1,
 } as const;
 
+/**
+ * An object containing field names used in API responses.
+ */
+const APIResponseFields = {
+  /** Key for the MQTT host field. */
+  MQTT_HOST: "mqtt_host",
+} as const;
+
 export {
   HTTPMethods,
   APIEndpoints,
@@ -498,4 +512,5 @@ export {
   ParamProperties,
   Locale,
   TSDataConstants,
+  APIResponseFields,
 };

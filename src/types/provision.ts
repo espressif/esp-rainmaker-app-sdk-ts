@@ -82,6 +82,7 @@ interface ESPProvisionAdapterInterface {
   ): Promise<ESPDeviceInterface>;
   connect(deviceName: string): Promise<ESPProvResponse>;
   getDeviceCapabilities(deviceName: string): Promise<string[]>;
+  getDeviceVersionInfo(deviceName: string): Promise<{ [key: string]: any }>;
   setProofOfPossession(
     deviceName: string,
     proofOfPossession: string
