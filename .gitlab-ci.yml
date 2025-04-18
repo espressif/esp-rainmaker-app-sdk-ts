@@ -1,0 +1,148 @@
+# Define stages
+stages:
+  - test
+  - notify
+  - merge
+
+# Define variables
+variables:
+  NODE_VERSION: "20"
+  YARN_VERSION: "1.22.22"
+  YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/.yarn-cache"
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
+  SMTP_HOST: "smtp.office365.com"
+  SMTP_PORT: "587"
+  SMTP_SECURE: "false"
+
+# Cache configuration
+cache:
+  # The cache key is generated based on the yarn.lock file
+  # When yarn.lock changes, a new cache is created
+  key:
+    files:
+      - yarn.lock
+  # Cache the node_modules directory to speed up builds
+  # This prevents downloading dependencies on every pipeline run
+  paths:
+    - .yarn-cache/
+    - node_modules/
+  # pull-push policy:
+  # - 'pull': tries to download cache before job execution
+  # - 'push': uploads new cache after job completion
+  # This ensures cache is both retrieved and updated
+  policy: pull-push
+
+# Default image
+default:
+  image: node:${NODE_VERSION}
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+# Unit tests job
+unit_tests:
+  stage: test
+  before_script:
+    # Install specific Yarn version
+    - npm install -g yarn@${YARN_VERSION}
+    - yarn --version
+    # Set a higher network timeout (5 minutes) to prevent timeouts during package installation
+    # This is especially important in CI environments where network conditions may be less reliable
+    - yarn config set network-timeout 300000
+    # Configure Yarn
+    - yarn config set cache-folder ${YARN_CACHE_FOLDER}
+    # Install dependencies with frozen-lockfile to prevent unexpected changes
+    - yarn install --frozen-lockfile --prefer-offline
+    # Create .env.test file for tests using GitLab CI/CD variables
+    - |
+      cat > .env.test << EOF
+      API_BASE_URL=${API_BASE_URL}
+      API_VERSION=${API_VERSION}
+      USERNAME=${TEST_USERNAME}
+      PASSWORD=${TEST_PASSWORD}
+      EOF
+  script:
+    - echo "Running unit tests..."
+    - yarn test
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  artifacts:
+    when: always
+    reports:
+      junit: junit.xml
+    paths:
+      - coverage/
+      - .env.test
+      - junit.xml
+    expire_in: 1 week
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "test/unit-test-workflow"'
+      changes:
+        - '**/*'
+    - when: manual
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - script_failure
+  after_script:
+    - rm -f .env.test
+
+# Notification job
+notify_test_results:
+  stage: notify
+  needs:
+    - unit_tests
+  script:
+    - |
+      node -e "
+      const nodemailer = require('nodemailer');
+      const fs = require('fs');
+      const report = fs.readFileSync('junit.xml', 'utf8');
+      const transporter = nodemailer.createTransport({
+        host: '$SMTP_HOST',
+        port: $SMTP_PORT,
+        secure: $SMTP_SECURE,
+        auth: {
+          user: '$EMAIL_USER',
+          pass: '$EMAIL_PASSWORD'
+        }
+      });
+      const mailOptions = {
+        from: '$EMAIL_USER',
+        to: '$TO_EMAILS',
+        subject: 'Test Report for ' + new Date().toISOString().split('T')[0],
+        text: report
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+          process.exit(1);
+        } else {
+          console.log('Email sent:', info.response);
+          process.exit(0);
+        }
+      });"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "test/unit-test-workflow"'
+      when: on_success
+    - when: manual
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+# Merge to master job
+merge_to_master:
+  stage: merge
+  needs:
+    - unit_tests
+  script:
+    - echo "All tests passed, ready for merge to master"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+  allow_failure: false 
