@@ -115,6 +115,8 @@ notify_test_results:
     - rmsdktest
   needs:
     - unit_tests
+  before_script:
+    - yarn add nodemailer
   script:
     - |
       node -e "
