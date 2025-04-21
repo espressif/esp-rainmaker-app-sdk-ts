@@ -47,7 +47,13 @@ unit_tests:
   tags:
     - rmsdktest
   before_script:
-    # Check if yarn is installed and install specific version if needed
+    - |
+      echo "=== Environment Variables Debug ==="
+      echo "API_BASE_URL: ${API_BASE_URL}"
+      echo "API_VERSION: ${API_VERSION}"
+      echo "TEST_USERNAME: ${TEST_USERNAME}"
+      echo "TEST_PASSWORD: ${TEST_PASSWORD}"
+      echo "=== End Environment Variables Debug ==="
     - |
       if ! command -v yarn &> /dev/null; then
         npm install -g yarn@${YARN_VERSION}
@@ -70,6 +76,10 @@ unit_tests:
       USERNAME=${TEST_USERNAME}
       PASSWORD=${TEST_PASSWORD}
       EOF
+    # Debug: Print the contents of .env.test (excluding sensitive data)
+    - echo "=== .env.test Contents ==="
+    - cat .env.test | sed 's/PASSWORD=.*/PASSWORD=[MASKED]/'
+    - echo "=== End .env.test Contents ==="
   script:
     - echo "Running unit tests..."
     - yarn test
@@ -95,7 +105,8 @@ unit_tests:
       - stuck_or_timeout_failure
       - script_failure
   after_script:
-    - rm -f .env.test
+    # Temporarily commented out for debugging
+    # - rm -f .env.test
 
 # Notification job
 notify_test_results:
