@@ -44,6 +44,8 @@ default:
 # Unit tests job
 unit_tests:
   stage: test
+  tags:
+    - rmsdktest
   before_script:
     # Install specific Yarn version
     - npm install -g yarn@${YARN_VERSION}
@@ -79,7 +81,7 @@ unit_tests:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "test/unit-test-workflow"'
       changes:
-        - '**/*'
+        - "**/*"
     - when: manual
   retry:
     max: 2
@@ -93,6 +95,8 @@ unit_tests:
 # Notification job
 notify_test_results:
   stage: notify
+  tags:
+    - rmsdktest
   needs:
     - unit_tests
   script:
@@ -138,6 +142,8 @@ notify_test_results:
 # Merge to master job
 merge_to_master:
   stage: merge
+  tags:
+    - rmsdktest
   needs:
     - unit_tests
   script:
@@ -145,4 +151,4 @@ merge_to_master:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: manual
-  allow_failure: false 
+  allow_failure: false
