@@ -124,17 +124,17 @@ notify_test_results:
       const fs = require('fs');
       const report = fs.readFileSync('junit.xml', 'utf8');
       const transporter = nodemailer.createTransport({
-        host: '$SMTP_HOST',
+        host: $SMTP_HOST,
         port: $SMTP_PORT,
         secure: $SMTP_SECURE,
         auth: {
-          user: '$EMAIL_USER',
-          pass: '$EMAIL_PASSWORD'
+          user: $EMAIL_USER,
+          pass: $EMAIL_PASSWORD
         }
       });
       const mailOptions = {
-        from: '$EMAIL_USER',
-        to: '$TO_EMAILS',
+        from: $EMAIL_USER,
+        to: $TO_EMAILS,
         subject: 'Test Report for ' + new Date().toISOString().split('T')[0],
         text: report
       };
