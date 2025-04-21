@@ -122,19 +122,41 @@ notify_test_results:
       node -e "
       const nodemailer = require('nodemailer');
       const fs = require('fs');
+
+      // Debug logs
+      console.log('=== Email Configuration Debug ===');
+      console.log('SMTP Host:', '$SMTP_HOST');
+      console.log('SMTP Port:', '$SMTP_PORT');
+      console.log('SMTP Secure:', $SMTP_SECURE === 'true');
+      console.log('Email User:', '$EMAIL_USER'); // Mask email domain
+      console.log('To Emails:', '$TO_EMAILS');
+      console.log('=== End Configuration Debug ===');
+
       const report = fs.readFileSync('junit.xml', 'utf8');
       const transporter = nodemailer.createTransport({
-        host: $SMTP_HOST,
-        port: $SMTP_PORT,
-        secure: $SMTP_SECURE,
+        host: '$SMTP_HOST',
+        port: '$SMTP_PORT',
+        secure: $SMTP_SECURE === 'true',
         auth: {
-          user: $EMAIL_USER,
-          pass: $EMAIL_PASSWORD
+          user: '$EMAIL_USER',
+          pass: '$EMAIL_PASSWORD'
         }
       });
+
+      // Test SMTP connection
+      console.log('Testing SMTP connection...');
+      transporter.verify(function(error, success) {
+        if (error) {
+          console.error('SMTP Connection Error:', error);
+          process.exit(1);
+        } else {
+          console.log('SMTP Connection Successful!');
+        }
+      });
+
       const mailOptions = {
-        from: $EMAIL_USER,
-        to: $TO_EMAILS,
+        from: '$EMAIL_USER',
+        to: '$TO_EMAILS',
         subject: 'Test Report for ' + new Date().toISOString().split('T')[0],
         text: report
       };
