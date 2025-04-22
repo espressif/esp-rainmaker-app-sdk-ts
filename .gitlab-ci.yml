@@ -116,58 +116,11 @@ notify_test_results:
   needs:
     - unit_tests
   before_script:
-    - yarn add nodemailer xml2js handlebars
+    - yarn add nodemailer
   script:
     - |
       node -e "
       const nodemailer = require('nodemailer');
-      const fs = require('fs');
-      const xml2js = require('xml2js');
-      const Handlebars = require('handlebars');
-
-      // Parse junit.xml and calculate statistics
-      const xml = fs.readFileSync('junit.xml', 'utf8');
-      let parser = new xml2js.Parser();
-      let testSuites = [];
-      let totalTests = 0;
-      let passedTests = 0;
-      let failedTests = 0;
-      let skippedTests = 0;
-
-      parser.parseString(xml, (err, result) => {
-        if (err) {
-          console.error('Error parsing XML:', err);
-          process.exit(1);
-        }
-        
-        const suites = result.testsuites.testsuite || [];
-        suites.forEach(suite => {
-          const total = parseInt(suite.$.tests) || 0;
-          const failed = parseInt(suite.$.failures) || 0;
-          const skipped = parseInt(suite.$.skipped) || 0;
-          const passed = total - failed - skipped;
-          
-          const testCases = (suite.testcase || []).map(testCase => ({
-            name: testCase.$.name,
-            time: parseFloat(testCase.$.time).toFixed(3)
-          }));
-          
-          testSuites.push({
-            name: suite.$.name,
-            total: total,
-            passed: passed,
-            failed: failed,
-            skipped: skipped,
-            duration: parseFloat(suite.$.time).toFixed(3),
-            testCases: testCases
-          });
-          
-          totalTests += total;
-          passedTests += passed;
-          failedTests += failed;
-          skippedTests += skipped;
-        });
-      });
 
       // Debug logs
       console.log('=== Email Configuration Debug ===');
@@ -199,27 +152,27 @@ notify_test_results:
         }
       });
 
-      // Read and compile template
-      const template = Handlebars.compile(fs.readFileSync('test-report-template.html', 'utf8'));
-      const html = template({
-        totalTests,
-        passedTests,
-        failedTests,
-        skippedTests,
-        testSuites
-      });
+      const pipelineUrl = '$CI_PIPELINE_URL';
+      const projectUrl = '$CI_PROJECT_URL';
+      const branchName = '$CI_COMMIT_REF_NAME';
+      const commitMessage = '$CI_COMMIT_MESSAGE';
+      const testReportUrl = \`\${pipelineUrl}/test_report?job_name=unit_tests\`;
 
       const mailOptions = {
         from: '$EMAIL_USER',
         to: '$TO_EMAILS',
         subject: '[Rainmaker-Base-SDK] Test Report - ' + new Date().toISOString().split('T')[0],
-        html: html,
-        attachments: [
-          {
-            filename: 'junit.xml',
-            path: 'junit.xml'
-          }
-        ]
+        html: \`
+          <h2>Test Report Available</h2>
+          <p>Test execution has completed. You can view the detailed test report in GitLab:</p>
+          <ul>
+            <li><strong>Pipeline:</strong> <a href="\${pipelineUrl}">View Pipeline</a></li>
+            <li><strong>Test Report:</strong> <a href="\${testReportUrl}">View Test Report</a></li>
+          </ul>
+          <p><strong>Branch:</strong> \${branchName}</p>
+          <p><strong>Commit Message:</strong> \${commitMessage}</p>
+          <p><strong>Project:</strong> <a href="\${projectUrl}">\${projectUrl}</a></p>
+        \`
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
