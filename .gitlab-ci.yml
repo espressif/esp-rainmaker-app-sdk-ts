@@ -132,7 +132,6 @@ notify_test_results:
       console.log('To Emails:', '$TO_EMAILS');
       console.log('=== End Configuration Debug ===');
 
-      const report = fs.readFileSync('junit.xml', 'utf8');
       const transporter = nodemailer.createTransport({
         host: '$SMTP_HOST',
         port: '$SMTP_PORT',
@@ -157,8 +156,14 @@ notify_test_results:
       const mailOptions = {
         from: '$EMAIL_USER',
         to: '$TO_EMAILS',
-        subject: 'Test Report for ' + new Date().toISOString().split('T')[0],
-        text: report
+        subject: '[Rainmaker-Base-SDK] Test Report - ' + new Date().toISOString().split('T')[0],
+        text: 'Please find the test report attached.',
+        attachments: [
+          {
+            filename: 'junit.xml',
+            path: 'junit.xml'
+          }
+        ]
       };
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
