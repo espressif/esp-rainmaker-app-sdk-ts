@@ -121,6 +121,7 @@ notify_test_results:
     - |
       node -e "
       const nodemailer = require('nodemailer');
+      const fs = require('fs');
 
       // Debug logs
       console.log('=== Email Configuration Debug ===');
@@ -152,27 +153,34 @@ notify_test_results:
         }
       });
 
+      // Read and process the HTML template
+      const template = fs.readFileSync('ci/email-template.html', 'utf8');
       const pipelineUrl = '$CI_PIPELINE_URL';
       const projectUrl = '$CI_PROJECT_URL';
+      const projectName = '$CI_PROJECT_NAME';
       const branchName = '$CI_COMMIT_REF_NAME';
-      const commitMessage = '$CI_COMMIT_MESSAGE';
+      const commitMessage = '$CI_COMMIT_MESSAGE'
+        .replace(/\\/g, '\\\\')  // Escape backslashes first
+        .replace(/'/g, "\\'")    // Escape single quotes
+        .replace(/\n/g, '<br>')  // Replace newlines with <br>
+        .replace(/\r/g, '')      // Remove carriage returns
+        .replace(/\t/g, '    '); // Replace tabs with spaces
       const testReportUrl = \`\${pipelineUrl}/test_report?job_name=unit_tests\`;
+
+      // Replace placeholders in the template
+      const html = template
+        .replace('{{pipelineUrl}}', pipelineUrl)
+        .replace('{{testReportUrl}}', testReportUrl)
+        .replace('{{branchName}}', branchName)
+        .replace('{{projectUrl}}', projectUrl)
+        .replace('{{commitMessage}}', commitMessage)
+        .replace(/{{projectName}}/g, projectName);
 
       const mailOptions = {
         from: '$EMAIL_USER',
         to: '$TO_EMAILS',
-        subject: '[Rainmaker-Base-SDK] Test Report - ' + new Date().toISOString().split('T')[0],
-        html: \`
-          <h2>Test Report Available</h2>
-          <p>Test execution has completed. You can view the detailed test report in GitLab:</p>
-          <ul>
-            <li><strong>Pipeline:</strong> <a href="\${pipelineUrl}">View Pipeline</a></li>
-            <li><strong>Test Report:</strong> <a href="\${testReportUrl}">View Test Report</a></li>
-          </ul>
-          <p><strong>Branch:</strong> \${branchName}</p>
-          <p><strong>Commit Message:</strong> \${commitMessage}</p>
-          <p><strong>Project:</strong> <a href="\${projectUrl}">\${projectUrl}</a></p>
-        \`
+        subject: '[' + projectName + '] Test Report - ' + new Date().toISOString().split('T')[0],
+        html: html
       };
 
       transporter.sendMail(mailOptions, (error, info) => {

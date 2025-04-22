@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{projectName}} Test Report</title>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #f8f9fa">
+    <div
+      style="
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 15px;
+      "
+    >
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <h2 style="color: #2c3e50; margin-bottom: 10px; margin-top: 0">
+          ✅ {{projectName}} – CI Test Summary
+        </h2>
+        <p style="color: #34495e; margin-bottom: 20px; line-height: 1.5">
+          The latest unit tests for <strong>{{projectName}}</strong> have been
+          successfully executed. Below you'll find quick access to the pipeline
+          and detailed results.
+        </p>
+
+        <!-- Quick Links Section -->
+        <div
+          style="
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+          "
+        >
+          <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 15px">
+            🔗 Quick Access
+          </h3>
+          <ul style="list-style: none; padding: 0; margin: 0">
+            <li style="margin: 10px 0">
+              <a
+                href="{{pipelineUrl}}"
+                style="
+                  color: #3498db;
+                  text-decoration: none;
+                  display: inline-block;
+                "
+              >
+                <span
+                  style="
+                    background-color: #e8f4f8;
+                    padding: 8px 15px;
+                    border-radius: 4px;
+                    display: inline-block;
+                  "
+                >
+                  📊 CI Pipeline Overview
+                </span>
+              </a>
+            </li>
+            <li style="margin: 10px 0">
+              <a
+                href="{{testReportUrl}}"
+                style="
+                  color: #3498db;
+                  text-decoration: none;
+                  display: inline-block;
+                "
+              >
+                <span
+                  style="
+                    background-color: #e8f4f8;
+                    padding: 8px 15px;
+                    border-radius: 4px;
+                    display: inline-block;
+                  "
+                >
+                  🧪 Detailed Test Report
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Test Metadata Section -->
+        <div
+          style="background-color: #f8f9fa; padding: 15px; border-radius: 5px"
+        >
+          <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 15px">
+            📄 Test Metadata
+          </h3>
+          <p style="margin: 8px 0; line-height: 1.5">
+            <strong style="color: #2c3e50">Branch:</strong>
+            <span style="color: #7f8c8d; margin-left: 5px">{{branchName}}</span>
+          </p>
+          <p style="margin: 8px 0; line-height: 1.5">
+            <strong style="color: #2c3e50">Project:</strong>
+            <a
+              href="{{projectUrl}}"
+              style="color: #3498db; text-decoration: none; margin-left: 5px"
+            >
+              Rainmaker-Base-SDK
+            </a>
+          </p>
+
+          <!-- Commit Message -->
+          <div style="margin-top: 15px">
+            <p style="margin: 8px 0; line-height: 1.5">
+              <strong style="color: #2c3e50">Commit Summary:</strong>
+            </p>
+            <div
+              style="
+                background-color: #ffffff;
+                padding: 12px;
+                border-radius: 5px;
+                margin-top: 5px;
+                border: 1px solid #e9ecef;
+              "
+            >
+              <p
+                style="
+                  margin: 0;
+                  line-height: 1.5;
+                  color: #2c3e50;
+                  white-space: pre-wrap;
+                  font-family: Arial, sans-serif;
+                "
+              >
+                {{commitMessage}}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div
+          style="
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+          "
+        >
+          <p
+            style="
+              font-size: 12px;
+              color: #7f8c8d;
+              text-align: center;
+              margin: 0;
+              line-height: 1.5;
+            "
+          >
+            This is an automated report generated by the {{projectName}} CI/CD
+            pipeline.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
