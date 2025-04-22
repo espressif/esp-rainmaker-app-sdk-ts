@@ -116,12 +116,13 @@ notify_test_results:
   needs:
     - unit_tests
   before_script:
-    - yarn add nodemailer
+    - yarn add nodemailer handlebars
   script:
     - |
       node -e "
       const nodemailer = require('nodemailer');
       const fs = require('fs');
+      const Handlebars = require('handlebars');
 
       // Debug logs
       console.log('=== Email Configuration Debug ===');
@@ -153,33 +154,27 @@ notify_test_results:
         }
       });
 
-      // Read and process the HTML template
+      // Read and compile the Handlebars template
       const template = fs.readFileSync('ci/email-template.html', 'utf8');
-      const pipelineUrl = '$CI_PIPELINE_URL';
-      const projectUrl = '$CI_PROJECT_URL';
-      const projectName = '$CI_PROJECT_NAME';
-      const branchName = '$CI_COMMIT_REF_NAME';
-      const commitMessage = '$CI_COMMIT_MESSAGE'
-        .replace(/\\/g, '\\\\')  // Escape backslashes first
-        .replace(/'/g, "\\'")    // Escape single quotes
-        .replace(/\n/g, '<br>')  // Replace newlines with <br>
-        .replace(/\r/g, '')      // Remove carriage returns
-        .replace(/\t/g, '    '); // Replace tabs with spaces
-      const testReportUrl = \`\${pipelineUrl}/test_report?job_name=unit_tests\`;
+      const compiledTemplate = Handlebars.compile(template);
 
-      // Replace placeholders in the template
-      const html = template
-        .replace('{{pipelineUrl}}', pipelineUrl)
-        .replace('{{testReportUrl}}', testReportUrl)
-        .replace('{{branchName}}', branchName)
-        .replace('{{projectUrl}}', projectUrl)
-        .replace('{{commitMessage}}', commitMessage)
-        .replace(/{{projectName}}/g, projectName);
+      // Prepare the data for the template
+      const data = {
+        pipelineUrl: '$CI_PIPELINE_URL',
+        testReportUrl: '$CI_PIPELINE_URL/test_report?job_name=unit_tests',
+        branchName: '$CI_COMMIT_REF_NAME',
+        projectUrl: '$CI_PROJECT_URL',
+        projectName: '$CI_PROJECT_NAME',
+        // commitMessage: '$CI_COMMIT_MESSAGE'.replace(/\n/g, '<br>')
+      };
+
+      // Render the template with the data
+      const html = compiledTemplate(data);
 
       const mailOptions = {
         from: '$EMAIL_USER',
         to: '$TO_EMAILS',
-        subject: '[' + projectName + '] Test Report - ' + new Date().toISOString().split('T')[0],
+        subject: '[' + data.projectName + '] Test Report - ' + new Date().toISOString().split('T')[0],
         html: html
       };
 
