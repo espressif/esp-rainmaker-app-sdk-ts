@@ -165,7 +165,6 @@ notify_test_results:
         branchName: '$CI_COMMIT_REF_NAME',
         projectUrl: '$CI_PROJECT_URL',
         projectName: '$CI_PROJECT_NAME',
-        // commitMessage: '$CI_COMMIT_MESSAGE'.replace(/\n/g, '<br>')
       };
 
       // Render the template with the data
