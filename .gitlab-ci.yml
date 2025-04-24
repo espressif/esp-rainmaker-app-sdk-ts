@@ -235,8 +235,6 @@ publish-package:
   stage: publish
   tags:
     - rmsdktest
-  only:
-    - tags
   before_script:
     - |
       if ! command -v yarn &> /dev/null; then
