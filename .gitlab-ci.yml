@@ -2,9 +2,15 @@
 stages:
   - test
   - notify
-  - merge_to_pre_release
-  - merge_to_main
   - publish
+
+# Define global workflow rules
+workflow:
+  rules:
+    # Run pipeline for MRs targeting the test workflow branch
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
+    # Run pipeline for tags on the test main branch
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_BRANCH == "${TEST_MAIN_BRANCH}"'
 
 # Define variables
 variables:
@@ -91,7 +97,7 @@ unit_tests:
   script:
     - echo "Running unit tests..."
     - yarn test
-  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  coverage: '/All files[^|]*\\|[^|]*\\s+([\\d\\.]+)/'
   artifacts:
     when: always
     reports:
@@ -102,10 +108,10 @@ unit_tests:
       - junit.xml
     expire_in: 1 week
   rules:
+    # This job should run automatically ONLY within MR pipelines targeting the test workflow branch
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
-      changes:
-        - "**/*"
-    - when: manual
+      when: on_success # Explicitly run on success within the pipeline
+    # No other rules needed, workflow:rules controls pipeline creation
   retry:
     max: 2
     when:
@@ -195,40 +201,16 @@ notify_test_results:
         }
       });"
   rules:
+    # Rule for MRs targeting the test workflow branch
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
       when: on_success
-    - when: manual
+    - when: manual # Keep manual option for this job
   retry:
     max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
-
-# Merge to test workflow job
-merge_to_pre_release:
-  stage: merge_to_pre_release
-  tags:
-    - rmsdktest
-  needs:
-    - unit_tests
-  script:
-    - echo "Unit tests passed. Ready for merge to ${TEST_WORKFLOW_BRANCH}."
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
-      when: manual
-  allow_failure: false
-
-# Merge to main job
-merge_to_main:
-  stage: merge_to_main
-  tags:
-    - rmsdktest
-  script:
-    - echo "Ready for merge to ${TEST_MAIN_BRANCH}."
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_MAIN_BRANCH}" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
-      when: manual
-  allow_failure: false
+  allow_failure: true # Allow this job to fail without failing the pipeline for MWPS
 
 # Publish package job
 publish-package:
@@ -256,6 +238,10 @@ publish-package:
     - yarn run build
     - yarn publish --new-version ${CI_COMMIT_TAG#v}
   rules:
+    # Rule for tags on the test main branch
     - if: $CI_COMMIT_TAG && $CI_COMMIT_BRANCH == "${TEST_MAIN_BRANCH}" && $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
       when: on_success
-    - when: never
+    - when: never # Prevent running in other cases
+  retry:
+    max: 2
+  allow_failure: false
