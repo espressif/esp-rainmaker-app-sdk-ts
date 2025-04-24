@@ -109,7 +109,7 @@ unit_tests:
     expire_in: 1 week
   rules:
     # This job should run automatically ONLY within MR pipelines targeting the test workflow branch
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "unit-test-workflow"'
       when: on_success # Explicitly run on success within the pipeline
     # No other rules needed, workflow:rules controls pipeline creation
   retry:
@@ -202,7 +202,7 @@ notify_test_results:
       });"
   rules:
     # Rule for MRs targeting the test workflow branch
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "unit-test-workflow"'
       when: on_success
     - when: manual # Keep manual option for this job
   retry:
