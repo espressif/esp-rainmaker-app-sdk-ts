@@ -21,8 +21,8 @@ variables:
   SMTP_HOST: "smtp.office365.com"
   SMTP_PORT: "587"
   SMTP_SECURE: "false"
-  # For testing, use local registry
-  NPM_REGISTRY: "http://localhost:4873"
+  # For testing, use local registry accessible from Docker container
+  NPM_REGISTRY: "http://host.docker.internal:4873"
   NPM_AUTH_TOKEN: "MThkOWY3MTkwMzJiZGQ3NGUyNDY5ZjIwYWUyNzdjMzQ6ZGVlNjRkOGUyMWJiODdhZGIxOTVkZGYwZGFlMGQ1ZWNlYjZm"
 
 # Cache configuration
@@ -223,10 +223,10 @@ publish-package:
     - yarn --version
     - yarn config set network-timeout 300000
     - yarn config set cache-folder ${YARN_CACHE_FOLDER}
-    # For testing, use local registry
+    # For testing, use local registry accessible via host.docker.internal
     - echo "registry=${NPM_REGISTRY}" > .npmrc
-    # Login to Verdaccio
-    - echo "//localhost:4873/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
+    # Login to Verdaccio via host.docker.internal
+    - echo "//host.docker.internal:4873/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
     # For testing, use a test package name
     - node -e "const pkg = require('./package.json'); pkg.name = '@rushi/base-sdk-test'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
   script:
