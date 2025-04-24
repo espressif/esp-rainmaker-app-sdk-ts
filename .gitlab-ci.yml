@@ -2,7 +2,9 @@
 stages:
   - test
   - notify
-  - merge
+  - merge_to_pre_release
+  - merge_to_main
+  - publish
 
 # Define variables
 variables:
@@ -13,6 +15,12 @@ variables:
   SMTP_HOST: "smtp.office365.com"
   SMTP_PORT: "587"
   SMTP_SECURE: "false"
+  # For testing, use local registry
+  NPM_REGISTRY: "http://localhost:4873"
+  NPM_AUTH_TOKEN: "MThkOWY3MTkwMzJiZGQ3NGUyNDY5ZjIwYWUyNzdjMzQ6ZGVlNjRkOGUyMWJiODdhZGIxOTVkZGYwZGFlMGQ1ZWNlYjZm"
+  # Dummy branches for testing
+  TEST_MAIN_BRANCH: "test-main"
+  TEST_WORKFLOW_BRANCH: "test/unit-test-workflow"
 
 # Cache configuration
 cache:
@@ -94,7 +102,7 @@ unit_tests:
       - junit.xml
     expire_in: 1 week
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "test/unit-test-workflow"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
       changes:
         - "**/*"
     - when: manual
@@ -187,7 +195,7 @@ notify_test_results:
         }
       });"
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "test/unit-test-workflow"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
       when: on_success
     - when: manual
   retry:
@@ -196,16 +204,60 @@ notify_test_results:
       - runner_system_failure
       - stuck_or_timeout_failure
 
-# Merge to master job
-merge_to_master:
-  stage: merge
+# Merge to test workflow job
+merge_to_pre_release:
+  stage: merge_to_pre_release
   tags:
     - rmsdktest
   needs:
     - unit_tests
   script:
-    - echo "All tests passed, ready for merge to master"
+    - echo "Unit tests passed. Ready for merge to ${TEST_WORKFLOW_BRANCH}."
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
       when: manual
   allow_failure: false
+
+# Merge to main job
+merge_to_main:
+  stage: merge_to_main
+  tags:
+    - rmsdktest
+  script:
+    - echo "Ready for merge to ${TEST_MAIN_BRANCH}."
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "${TEST_MAIN_BRANCH}" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "${TEST_WORKFLOW_BRANCH}"'
+      when: manual
+  allow_failure: false
+
+# Publish package job
+publish-package:
+  stage: publish
+  tags:
+    - rmsdktest
+  only:
+    - tags
+  before_script:
+    - |
+      if ! command -v yarn &> /dev/null; then
+        npm install -g yarn@${YARN_VERSION}
+      else
+        echo "Yarn is already installed"
+      fi
+    - yarn --version
+    - yarn config set network-timeout 300000
+    - yarn config set cache-folder ${YARN_CACHE_FOLDER}
+    # For testing, use local registry
+    - echo "registry=${NPM_REGISTRY}" > .npmrc
+    # Login to Verdaccio
+    - echo "//localhost:4873/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
+    # For testing, use a test package name
+    - node -e "const pkg = require('./package.json'); pkg.name = '@test/rainmaker-base-sdk-test'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+  script:
+    - yarn install --frozen-lockfile --prefer-offline
+    - yarn run build
+    - yarn publish --new-version ${CI_COMMIT_TAG#v}
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_BRANCH == "${TEST_MAIN_BRANCH}" && $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+      when: on_success
+    - when: never
