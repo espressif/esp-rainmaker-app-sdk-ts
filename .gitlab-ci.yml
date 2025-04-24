@@ -26,7 +26,7 @@ variables:
   NPM_AUTH_TOKEN: "MThkOWY3MTkwMzJiZGQ3NGUyNDY5ZjIwYWUyNzdjMzQ6ZGVlNjRkOGUyMWJiODdhZGIxOTVkZGYwZGFlMGQ1ZWNlYjZm"
   # Dummy branches for testing
   TEST_MAIN_BRANCH: "test-main"
-  TEST_WORKFLOW_BRANCH: "test/unit-test-workflow"
+  TEST_WORKFLOW_BRANCH: "unit-test-workflow"
 
 # Cache configuration
 cache:
