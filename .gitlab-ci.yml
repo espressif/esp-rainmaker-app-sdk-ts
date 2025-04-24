@@ -201,7 +201,6 @@ notify_test_results:
     # Rule for MRs targeting the test workflow branch
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "unit-test-workflow"'
       when: on_success
-    - when: manual # Keep manual option for this job
   retry:
     max: 2
     when:
