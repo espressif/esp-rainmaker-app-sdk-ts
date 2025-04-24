@@ -217,6 +217,8 @@ publish-package:
     # Configure Git user identity for yarn publish commit
     - git config --global user.email "ci-runner@${CI_SERVER_HOST}"
     - git config --global user.name "GitLab CI Runner"
+    # Delete the tag locally so yarn publish can recreate it
+    - git tag -d ${CI_COMMIT_TAG} || true # Delete tag if exists, ignore error if it doesn't
     - |
       if ! command -v yarn &> /dev/null; then
         npm install -g yarn@${YARN_VERSION}
