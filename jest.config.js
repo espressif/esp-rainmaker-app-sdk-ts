@@ -21,4 +21,18 @@ export default {
       },
     ],
   ],
+  collectCoverage: true,
+  coverageDirectory: "coverage",
+  coverageReporters: [
+    "text",
+    "lcov",
+    ["cobertura", { file: "cobertura-coverage.xml" }],
+  ],
+  collectCoverageFrom: [
+    "src/**/*.{js,jsx,ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/*.stories.{js,jsx,ts,tsx}",
+    "!src/**/*.test.{js,jsx,ts,tsx}",
+    "!src/**/index.{js,jsx,ts,tsx}",
+  ],
 };

@@ -2,6 +2,7 @@
 stages:
   - test
   - notify
+  - pages
   - publish
 
 # Define global workflow rules
@@ -99,10 +100,13 @@ unit_tests:
     when: always
     reports:
       junit: junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
     paths:
       - coverage/
-      - .env.test
       - junit.xml
+      - .env.test
     expire_in: 1 week
   rules:
     # This job should run automatically ONLY within MR pipelines targeting the test workflow branch
@@ -246,3 +250,21 @@ publish-package:
   retry:
     max: 2
   allow_failure: false
+
+# Publish coverage to GitLab Pages
+pages:
+  stage: pages
+  tags:
+    - rmsdktest
+  needs:
+    - unit_tests
+  script:
+    - mkdir -p public/coverage
+    - cp -r coverage/lcov-report/* public/coverage/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "unit-test-workflow"'
+      when: on_success
