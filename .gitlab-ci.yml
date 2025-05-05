@@ -93,9 +93,9 @@ unit_tests:
     - cat .env.test | sed 's/PASSWORD=.*/PASSWORD=[MASKED]/'
     - echo "=== End .env.test Contents ==="
   script:
-    - echo "Running unit tests..."
+    - echo "Running unit tests with coverage..."
     - yarn test
-  coverage: '/All files[^|]*\\|[^|]*\\s+([\\d\\.]+)/'
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
     when: always
     reports:
@@ -252,15 +252,15 @@ publish-package:
   allow_failure: false
 
 # Publish coverage to GitLab Pages
-pages:
+publish-coverage:
   stage: pages
   tags:
     - rmsdktest
   needs:
     - unit_tests
   script:
-    - mkdir -p public/coverage
-    - cp -r coverage/lcov-report/* public/coverage/
+    - mkdir -p public
+    - cp -r coverage/lcov-report/* public/
   artifacts:
     paths:
       - public
