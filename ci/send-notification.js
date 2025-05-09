@@ -1,7 +1,12 @@
-const nodemailer = require("nodemailer");
-const fs = require("fs");
-const Handlebars = require("handlebars");
-const path = require("path");
+import nodemailer from "nodemailer";
+import fs from "fs";
+import Handlebars from "handlebars";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Required environment variables
 const requiredVars = [
