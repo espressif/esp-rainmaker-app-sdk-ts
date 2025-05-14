@@ -105,7 +105,6 @@ unit_tests:
       - coverage/
       - junit.xml
       - .env.test
-    expire_in: 1 week
   rules:
     # This job should run automatically ONLY within MR pipelines targeting the test workflow branch
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "unit-test-workflow"'
@@ -186,10 +185,10 @@ publish-coverage:
   script:
     - mkdir -p public
     - cp -r coverage/lcov-report/* public/
+  pages: true # specifies that this is a Pages job and publishes the default public directory
   artifacts:
     paths:
       - public
-    expire_in: 30 days
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "unit-test-workflow"'
       when: on_success
