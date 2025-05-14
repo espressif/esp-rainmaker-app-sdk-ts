@@ -56,8 +56,6 @@ default:
 # Unit tests job
 unit_tests:
   stage: test
-  tags:
-    - rmsdktest
   before_script:
     - |
       echo "=== Environment Variables Debug ==="
@@ -126,8 +124,6 @@ unit_tests:
 # Notification job
 notify_test_results:
   stage: notify
-  tags:
-    - rmsdktest
   needs:
     - unit_tests
   before_script:
@@ -148,8 +144,6 @@ notify_test_results:
 # Publish package job
 publish-package:
   stage: publish
-  tags:
-    - rmsdktest
   before_script:
     # Configure Git user identity for yarn publish commit
     - git config --global user.email "ci-runner@${CI_SERVER_HOST}"
@@ -187,8 +181,6 @@ publish-package:
 # Publish coverage to GitLab Pages
 publish-coverage:
   stage: pages
-  tags:
-    - rmsdktest
   needs:
     - unit_tests
   script:
