@@ -21,6 +21,9 @@ const requiredVars = [
   "CI_PROJECT_URL",
   "CI_PROJECT_NAME",
   "CI_PAGES_URL",
+  "CI_COMMIT_SHA",
+  "CI_COMMIT_SHORT_SHA",
+  "CI_COMMIT_MESSAGE",
 ];
 
 // Validate required environment variables
@@ -64,21 +67,33 @@ transporter.verify(function (error, success) {
 });
 
 // Read and compile the Handlebars template
-const templatePath = path.join(__dirname, "email-template.html");
+const templatePath = path.join(__dirname, "test-results-email-template.html");
 console.log("Loading template from:", templatePath);
 
 try {
   const template = fs.readFileSync(templatePath, "utf8");
   const compiledTemplate = Handlebars.compile(template);
 
+  // Format commit message: Split into title and body
+  const formatCommitMessage = (message) => {
+    const [title, ...body] = message.split("\n").map((line) => line.trim());
+    return {
+      title: title || "",
+      body: body.filter((line) => line.length > 0).join("\n") || "",
+    };
+  };
+
   // Prepare the data for the template
   const data = {
-    pipelineUrl: process.env.CI_PIPELINE_URL,
-    testReportUrl: `${process.env.CI_PIPELINE_URL}/test_report?job_name=unit_tests`,
-    testCoverageReportUrl: `${process.env.CI_PAGES_URL}`,
+    pipelineURL: process.env.CI_PIPELINE_URL,
+    testReportURL: `${process.env.CI_PIPELINE_URL}/test_report?job_name=unit_tests`,
+    testCoverageReportURL: `${process.env.CI_PAGES_URL}`,
     branchName: process.env.CI_COMMIT_REF_NAME,
-    projectUrl: process.env.CI_PROJECT_URL,
+    projectURL: process.env.CI_PROJECT_URL,
     projectName: process.env.CI_PROJECT_NAME,
+    commitShortSHA: process.env.CI_COMMIT_SHORT_SHA,
+    commitMessage: formatCommitMessage(process.env.CI_COMMIT_MESSAGE),
+    commitURL: `${process.env.CI_PROJECT_URL}/-/commit/${process.env.CI_COMMIT_SHA}`,
   };
 
   // Render the template with the data

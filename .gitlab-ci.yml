@@ -132,7 +132,7 @@ notify_test_results:
   before_script:
     - yarn add nodemailer handlebars
   script:
-    - node ci/send-notification.js
+    - node ci-helpers/notify/send-test-results.js
   rules:
     # Rule for MRs targeting the test workflow branch
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "unit-test-workflow"'

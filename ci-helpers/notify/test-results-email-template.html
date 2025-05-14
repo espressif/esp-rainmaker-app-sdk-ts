@@ -47,7 +47,7 @@
           <ul style="list-style: none; padding: 0; margin: 0">
             <li style="margin: 10px 0">
               <a
-                href="{{pipelineUrl}}"
+                href="{{pipelineURL}}"
                 style="
                   color: #3498db;
                   text-decoration: none;
@@ -67,7 +67,7 @@
             </li>
             <li style="margin: 10px 0">
               <a
-                href="{{testReportUrl}}"
+                href="{{testReportURL}}"
                 style="
                   color: #3498db;
                   text-decoration: none;
@@ -87,7 +87,7 @@
             </li>
             <li style="margin: 10px 0">
               <a
-                href="{{testCoverageReportUrl}}"
+                href="{{testCoverageReportURL}}"
                 style="
                   color: #3498db;
                   text-decoration: none;
@@ -101,7 +101,7 @@
                     border-radius: 4px;
                     display: inline-block;
                   "
-                  >📈 Coverage Report</span
+                  >📈 Detailed Coverage Report</span
                 >
               </a>
             </li>
@@ -119,10 +119,47 @@
             <strong style="color: #2c3e50">Branch:</strong>
             <span style="color: #7f8c8d; margin-left: 5px">{{branchName}}</span>
           </p>
+          <div style="margin: 8px 0; line-height: 1.5">
+            <strong style="color: #2c3e50">Latest Commit:</strong>
+            <a
+              href="{{commitURL}}"
+              style="color: #3498db; text-decoration: none; margin-left: 5px"
+              title="Click to view commit details"
+              >{{commitShortSHA}}</a
+            >
+          </div>
+          <div
+            style="
+              margin: 8px 0 8px 20px;
+              padding: 10px;
+              background-color: #f8f9fa;
+              border-left: 3px solid #3498db;
+              border-radius: 0 4px 4px 0;
+            "
+          >
+            <div style="color: #2c3e50; font-weight: 600; margin-bottom: 5px">
+              {{commitMessage.title}}
+            </div>
+            {{#if commitMessage.body}}
+            <div
+              style="
+                color: #7f8c8d;
+                white-space: pre-wrap;
+                font-family: monospace;
+                font-size: 13px;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-top: 1px solid #e9ecef;
+              "
+            >
+              {{commitMessage.body}}
+            </div>
+            {{/if}}
+          </div>
           <p style="margin: 8px 0; line-height: 1.5">
             <strong style="color: #2c3e50">Project:</strong>
             <a
-              href="{{projectUrl}}"
+              href="{{projectURL}}"
               style="color: #3498db; text-decoration: none; margin-left: 5px"
               >{{projectName}}</a
             >
