@@ -20,8 +20,10 @@ const requiredVars = [
   "CI_COMMIT_REF_NAME",
   "CI_PROJECT_URL",
   "CI_PROJECT_NAME",
+  "CI_PAGES_URL",
 ];
 
+console.log("CI_PAGES_URL:", process.env.CI_PAGES_URL);
 // Validate required environment variables
 const missingVars = requiredVars.filter((varName) => !process.env[varName]);
 if (missingVars.length > 0) {
@@ -74,6 +76,7 @@ try {
   const data = {
     pipelineUrl: process.env.CI_PIPELINE_URL,
     testReportUrl: `${process.env.CI_PIPELINE_URL}/test_report?job_name=unit_tests`,
+    testCoverageReportUrl: `${process.env.CI_PAGES_URL}`,
     branchName: process.env.CI_COMMIT_REF_NAME,
     projectUrl: process.env.CI_PROJECT_URL,
     projectName: process.env.CI_PROJECT_NAME,

@@ -128,6 +128,7 @@ notify_test_results:
   before_script:
     - yarn add nodemailer handlebars
   script:
+    - echo "Coverage report is being published to GitLab Pages at ${CI_PAGES_URL}"
     - node ci/send-notification.js
   rules:
     # Rule for MRs targeting the test workflow branch
@@ -184,6 +185,7 @@ publish-coverage:
     - unit_tests
   script:
     - mkdir -p public
+    - echo "Coverage report is being published to GitLab Pages at ${CI_PAGES_URL}"
     - cp -r coverage/lcov-report/* public/
   pages: true # specifies that this is a Pages job and publishes the default public directory
   artifacts:
