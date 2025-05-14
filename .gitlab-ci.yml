@@ -25,6 +25,10 @@ variables:
   # For testing, use local registry accessible from Docker container
   NPM_REGISTRY: "http://host.docker.internal:4873"
   NPM_AUTH_TOKEN: "MThkOWY3MTkwMzJiZGQ3NGUyNDY5ZjIwYWUyNzdjMzQ6ZGVlNjRkOGUyMWJiODdhZGIxOTVkZGYwZGFlMGQ1ZWNlYjZm"
+  # ANSI Style codes for terminal output
+  ANSI_BOLD_ITALIC_CODE: "\e[1;3m"
+  ANSI_BOLD_BLUE_COLOR_CODE: "\e[1;34m"
+  ANSI_RESET_CODE: "\e[0m"
 
 # Cache configuration
 cache:
@@ -128,7 +132,6 @@ notify_test_results:
   before_script:
     - yarn add nodemailer handlebars
   script:
-    - echo "Coverage report is being published to GitLab Pages at ${CI_PAGES_URL}"
     - node ci/send-notification.js
   rules:
     # Rule for MRs targeting the test workflow branch
@@ -185,7 +188,7 @@ publish-coverage:
     - unit_tests
   script:
     - mkdir -p public
-    - echo "Coverage report is being published to GitLab Pages at ${CI_PAGES_URL}"
+    - echo -e "${ANSI_BOLD_ITALIC_CODE}Coverage report is being published to GitLab Pages at ${ANSI_BOLD_BLUE_COLOR_CODE}${CI_PAGES_URL}${ANSI_RESET_CODE}"
     - cp -r coverage/lcov-report/* public/
   pages: true # specifies that this is a Pages job and publishes the default public directory
   artifacts:

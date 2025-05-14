@@ -23,7 +23,6 @@ const requiredVars = [
   "CI_PAGES_URL",
 ];
 
-console.log("CI_PAGES_URL:", process.env.CI_PAGES_URL);
 // Validate required environment variables
 const missingVars = requiredVars.filter((varName) => !process.env[varName]);
 if (missingVars.length > 0) {
