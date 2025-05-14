@@ -24,6 +24,8 @@ const requiredVars = [
   "CI_COMMIT_SHA",
   "CI_COMMIT_SHORT_SHA",
   "CI_COMMIT_MESSAGE",
+  "ANSI_BOLD_ITALIC_CODE",
+  "ANSI_RESET_CODE",
 ];
 
 // Validate required environment variables
@@ -36,14 +38,19 @@ if (missingVars.length > 0) {
   process.exit(1);
 }
 
-// Debug logs
-console.log("=== Email Configuration Debug ===");
-console.log("SMTP Host:", process.env.SMTP_HOST);
-console.log("SMTP Port:", process.env.SMTP_PORT);
-console.log("SMTP Secure:", process.env.SMTP_SECURE === "true");
-console.log("Email User:", process.env.EMAIL_USER);
-console.log("To Emails:", process.env.TO_EMAILS);
-console.log("=== End Configuration Debug ===");
+// Format commit message: Split into title and body
+const formatCommitMessage = (message) => {
+  const [title, ...body] = message.split("\n").map((line) => line.trim());
+  return {
+    title: title || "",
+    body: body.filter((line) => line.length > 0).join("\n") || "",
+  };
+};
+
+// Format log message with ANSI codes to make it bold and italic
+const formatLogMessage = (message) => {
+  return `${process.env.ANSI_BOLD_ITALIC_CODE}${message}${process.env.ANSI_RESET_CODE}`;
+};
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -56,32 +63,22 @@ const transporter = nodemailer.createTransport({
 });
 
 // Test SMTP connection
-console.log("Testing SMTP connection...");
-transporter.verify(function (error, success) {
+console.log(formatLogMessage("Testing SMTP connection..."));
+transporter.verify(function (error) {
   if (error) {
-    console.error("SMTP Connection Error:", error);
+    console.error(formatLogMessage(`SMTP Connection Error: ${error}`));
     process.exit(1);
   } else {
-    console.log("SMTP Connection Successful!");
+    console.log(formatLogMessage("SMTP Connection Successful!"));
   }
 });
 
 // Read and compile the Handlebars template
 const templatePath = path.join(__dirname, "test-results-email-template.html");
-console.log("Loading template from:", templatePath);
 
 try {
   const template = fs.readFileSync(templatePath, "utf8");
   const compiledTemplate = Handlebars.compile(template);
-
-  // Format commit message: Split into title and body
-  const formatCommitMessage = (message) => {
-    const [title, ...body] = message.split("\n").map((line) => line.trim());
-    return {
-      title: title || "",
-      body: body.filter((line) => line.length > 0).join("\n") || "",
-    };
-  };
 
   // Prepare the data for the template
   const data = {
@@ -108,14 +105,14 @@ try {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error("Error sending email:", error);
+      console.error(formatLogMessage(`Error sending email: ${error}`));
       process.exit(1);
     } else {
-      console.log("Email sent:", info.response);
+      console.log(formatLogMessage(`Email sent: ${info.response}`));
       process.exit(0);
     }
   });
 } catch (error) {
-  console.error("Error reading template file:", error);
+  console.error(formatLogMessage(`Error reading template file: ${error}`));
   process.exit(1);
 }

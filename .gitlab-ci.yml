@@ -19,16 +19,15 @@ variables:
   YARN_VERSION: "1.22.22"
   YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/.yarn-cache"
   NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
-  SMTP_HOST: "smtp.office365.com"
   SMTP_PORT: "587"
   SMTP_SECURE: "false"
   # For testing, use local registry accessible from Docker container
   NPM_REGISTRY: "http://host.docker.internal:4873"
   NPM_AUTH_TOKEN: "MThkOWY3MTkwMzJiZGQ3NGUyNDY5ZjIwYWUyNzdjMzQ6ZGVlNjRkOGUyMWJiODdhZGIxOTVkZGYwZGFlMGQ1ZWNlYjZm"
   # ANSI Style codes for terminal output
-  ANSI_BOLD_ITALIC_CODE: "\e[1;3m"
-  ANSI_BOLD_BLUE_COLOR_CODE: "\e[1;34m"
-  ANSI_RESET_CODE: "\e[0m"
+  ANSI_BOLD_ITALIC_CODE: "\x1b[1;3m"
+  ANSI_BOLD_BLUE_COLOR_CODE: "\x1b[1;34m"
+  ANSI_RESET_CODE: "\x1b[0m"
 
 # Cache configuration
 cache:
@@ -62,17 +61,10 @@ unit_tests:
   stage: test
   before_script:
     - |
-      echo "=== Environment Variables Debug ==="
-      echo "API_BASE_URL: ${API_BASE_URL}"
-      echo "API_VERSION: ${API_VERSION}"
-      echo "TEST_USERNAME: ${TEST_USERNAME}"
-      echo "TEST_PASSWORD: ${TEST_PASSWORD}"
-      echo "=== End Environment Variables Debug ==="
-    - |
       if ! command -v yarn &> /dev/null; then
         npm install -g yarn@${YARN_VERSION}
       else
-        echo "Yarn is already installed"
+        echo -e "${ANSI_BOLD_ITALIC_CODE}Yarn is already installed${ANSI_RESET_CODE}"
       fi
     - yarn --version
     # Set a higher network timeout (5 minutes) to prevent timeouts during package installation
@@ -90,12 +82,8 @@ unit_tests:
       USERNAME=${TEST_USERNAME}
       PASSWORD=${TEST_PASSWORD}
       EOF
-    # Debug: Print the contents of .env.test (excluding sensitive data)
-    - echo "=== .env.test Contents ==="
-    - cat .env.test | sed 's/PASSWORD=.*/PASSWORD=[MASKED]/'
-    - echo "=== End .env.test Contents ==="
   script:
-    - echo "Running unit tests with coverage..."
+    - echo -e "${ANSI_BOLD_ITALIC_CODE}Running unit tests with coverage...${ANSI_RESET_CODE}"
     - yarn test
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
@@ -121,8 +109,7 @@ unit_tests:
       - stuck_or_timeout_failure
       - script_failure
   after_script:
-    # Temporarily commented out for debugging
-    # - rm -f .env.test
+    - rm -f .env.test
 
 # Notification job
 notify_test_results:
@@ -157,7 +144,7 @@ publish-package:
       if ! command -v yarn &> /dev/null; then
         npm install -g yarn@${YARN_VERSION}
       else
-        echo "Yarn is already installed"
+        echo -e "${ANSI_BOLD_ITALIC_CODE}Yarn is already installed${ANSI_RESET_CODE}"
       fi
     - yarn --version
     - yarn config set network-timeout 300000
