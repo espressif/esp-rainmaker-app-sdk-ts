@@ -156,6 +156,8 @@ publish-package:
     # For testing, use a test package name
     - node -e "const pkg = require('./package.json'); pkg.name = '@rushi/base-sdk-test'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
   script:
+    # Check package version against tag version
+    - node ci-helpers/publish/verify-package-version.js
     - yarn install --frozen-lockfile --prefer-offline
     - yarn run build
     - yarn publish --new-version ${CI_COMMIT_TAG#v}

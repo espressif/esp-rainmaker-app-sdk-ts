@@ -3,6 +3,12 @@ import fs from "fs";
 import Handlebars from "handlebars";
 import path from "path";
 import { fileURLToPath } from "url";
+import {
+  formatMessage,
+  formatCommitMessage,
+  validateEnvVars,
+  ANSI_CODES,
+} from "../utils.js";
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -28,55 +34,39 @@ const requiredVars = [
   "ANSI_RESET_CODE",
 ];
 
-// Validate required environment variables
-const missingVars = requiredVars.filter((varName) => !process.env[varName]);
-if (missingVars.length > 0) {
-  console.error(
-    "Missing required environment variables:",
-    missingVars.join(", ")
-  );
-  process.exit(1);
-}
-
-// Format commit message: Split into title and body
-const formatCommitMessage = (message) => {
-  const [title, ...body] = message.split("\n").map((line) => line.trim());
-  return {
-    title: title || "",
-    body: body.filter((line) => line.length > 0).join("\n") || "",
-  };
-};
-
-// Format log message with ANSI codes to make it bold and italic
-const formatLogMessage = (message) => {
-  return `${process.env.ANSI_BOLD_ITALIC_CODE}${message}${process.env.ANSI_RESET_CODE}`;
-};
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE === "true",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
-
-// Test SMTP connection
-console.log(formatLogMessage("Testing SMTP connection..."));
-transporter.verify(function (error) {
-  if (error) {
-    console.error(formatLogMessage(`SMTP Connection Error: ${error}`));
-    process.exit(1);
-  } else {
-    console.log(formatLogMessage("SMTP Connection Successful!"));
-  }
-});
-
-// Read and compile the Handlebars template
-const templatePath = path.join(__dirname, "test-results-email-template.html");
-
 try {
+  // Validate required environment variables
+  validateEnvVars(requiredVars);
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: process.env.SMTP_SECURE === "true",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  // Test SMTP connection
+  console.log(
+    formatMessage("Testing SMTP connection...", ANSI_CODES.BOLD_ITALIC)
+  );
+  transporter.verify(function (error) {
+    if (error) {
+      console.error(
+        formatMessage(`SMTP Connection Error: ${error}`, ANSI_CODES.BOLD_ITALIC)
+      );
+      process.exit(1);
+    } else {
+      console.log(
+        formatMessage("SMTP Connection Successful!", ANSI_CODES.BOLD_ITALIC)
+      );
+    }
+  });
+
+  // Read and compile the Handlebars template
+  const templatePath = path.join(__dirname, "test-results-email-template.html");
   const template = fs.readFileSync(templatePath, "utf8");
   const compiledTemplate = Handlebars.compile(template);
 
@@ -105,14 +95,20 @@ try {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error(formatLogMessage(`Error sending email: ${error}`));
+      console.error(
+        formatMessage(`Error sending email: ${error}`, ANSI_CODES.BOLD_ITALIC)
+      );
       process.exit(1);
     } else {
-      console.log(formatLogMessage(`Email sent: ${info.response}`));
+      console.log(
+        formatMessage(`Email sent: ${info.response}`, ANSI_CODES.BOLD_ITALIC)
+      );
       process.exit(0);
     }
   });
 } catch (error) {
-  console.error(formatLogMessage(`Error reading template file: ${error}`));
+  console.error(
+    formatMessage(`Error: ${error.message}`, ANSI_CODES.BOLD_ITALIC)
+  );
   process.exit(1);
 }
