@@ -145,7 +145,7 @@ publish-package:
     # Set registry explicitly to npm
     - yarn config set registry https://registry.npmjs.org/
     # For testing, use a test package name
-    - node -e "const pkg = require('./package.json'); pkg.name = '@espressif/test-package-generated-by-ci'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+    - node -e "const pkg = require('./package.json'); pkg.name = '@rushipatange/test-package-generated-by-ci'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
     # Configure NPM authentication
     - echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > .npmrc
   script:
