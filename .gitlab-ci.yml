@@ -21,9 +21,7 @@ variables:
   NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
   SMTP_PORT: "587"
   SMTP_SECURE: "false"
-  # For testing, use local registry accessible from Docker container
-  NPM_REGISTRY: "http://host.docker.internal:4873"
-  NPM_AUTH_TOKEN: "MThkOWY3MTkwMzJiZGQ3NGUyNDY5ZjIwYWUyNzdjMzQ6ZGVlNjRkOGUyMWJiODdhZGIxOTVkZGYwZGFlMGQ1ZWNlYjZm"
+  NPM_AUTH_TOKEN: "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"
   # ANSI Style codes for terminal output
   ANSI_BOLD_ITALIC_CODE: "\x1b[1;3m"
   ANSI_BOLD_BLUE_COLOR_CODE: "\x1b[1;34m"
@@ -144,12 +142,10 @@ publish-package:
     - yarn --version
     - yarn config set network-timeout 300000
     - yarn config set cache-folder ${YARN_CACHE_FOLDER}
-    # For testing, use local registry accessible via host.docker.internal
-    - echo "registry=${NPM_REGISTRY}" > .npmrc
-    # Login to Verdaccio via host.docker.internal
-    - echo "//host.docker.internal:4873/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
     # For testing, use a test package name
-    - node -e "const pkg = require('./package.json'); pkg.name = '@rushi/base-sdk-test'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+    - node -e "const pkg = require('./package.json'); pkg.name = '@espressif/test-package-generated-by-ci'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+    # Configure NPM registry and authentication
+    - echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > .npmrc
   script:
     # Check package version against tag version
     # - node ci-helpers/publish/verify-package-version.js // TODO: Uncomment this to verify package version against tag version
