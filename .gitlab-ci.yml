@@ -142,9 +142,11 @@ publish-package:
     - yarn --version
     - yarn config set network-timeout 300000
     - yarn config set cache-folder ${YARN_CACHE_FOLDER}
+    # Set registry explicitly to npm
+    - yarn config set registry https://registry.npmjs.org/
     # For testing, use a test package name
     - node -e "const pkg = require('./package.json'); pkg.name = '@espressif/test-package-generated-by-ci'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
-    # Configure NPM registry and authentication
+    # Configure NPM authentication
     - echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > .npmrc
   script:
     # Check package version against tag version
