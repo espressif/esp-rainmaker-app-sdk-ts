@@ -1,0 +1,183 @@
+# Define stages
+stages:
+  - test
+  - notify
+  - pages
+  - publish
+
+# Define global workflow rules
+workflow:
+  rules:
+    # Run pipeline for MRs targeting the pre-release branch
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "pre-release"'
+    # Run pipeline for tags
+    - if: "$CI_COMMIT_TAG"
+
+# Define variables
+variables:
+  # required node and yarn versions
+  NODE_VERSION: "20"
+  YARN_VERSION: "1.22.22"
+  # cache for yarn and npm
+  YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/.yarn-cache"
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
+  # used by send-test-results.js
+  SMTP_PORT: "587"
+  SMTP_SECURE: "false"
+  # ANSI Style codes for terminal output
+  ANSI_BOLD_ITALIC_CODE: "\x1b[1;3m"
+  ANSI_BOLD_BLUE_COLOR_CODE: "\x1b[1;34m"
+  ANSI_RESET_CODE: "\x1b[0m"
+
+# Cache configuration
+cache:
+  # The cache key is generated based on the yarn.lock file
+  # When yarn.lock changes, a new cache is created
+  key:
+    files:
+      - yarn.lock
+  # Cache the node_modules directory to speed up builds
+  # This prevents downloading dependencies on every pipeline run
+  paths:
+    - .yarn-cache/
+    - node_modules/
+  # pull-push policy:
+  # - 'pull': tries to download cache before job execution
+  # - 'push': uploads new cache after job completion
+  # This ensures cache is both retrieved and updated
+  policy: pull-push
+
+# Default image
+default:
+  image: node:${NODE_VERSION}
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+# Run unit tests with generation of code coverage report
+unit_tests:
+  stage: test
+  before_script:
+    - |
+      if ! command -v yarn &> /dev/null; then
+        npm install -g yarn@${YARN_VERSION}
+      else
+        echo -e "${ANSI_BOLD_ITALIC_CODE}Yarn is already installed${ANSI_RESET_CODE}"
+      fi
+    - yarn --version
+    # Set a higher network timeout (5 minutes) to prevent timeouts during package installation
+    # This is especially important in CI environments where network conditions may be less reliable
+    - yarn config set network-timeout 300000
+    # Configure Yarn
+    - yarn config set cache-folder ${YARN_CACHE_FOLDER}
+    # Install dependencies with frozen-lockfile to prevent unexpected changes
+    - yarn install --frozen-lockfile --prefer-offline
+    # Create .env.test file for tests using GitLab CI/CD variables
+    - |
+      cat > .env.test << EOF
+      API_BASE_URL=${API_BASE_URL}
+      API_VERSION=${API_VERSION}
+      USERNAME=${TEST_USERNAME}
+      PASSWORD=${TEST_PASSWORD}
+      EOF
+  script:
+    - echo -e "${ANSI_BOLD_ITALIC_CODE}Running unit tests with coverage...${ANSI_RESET_CODE}"
+    - yarn test
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  artifacts:
+    when: always
+    reports:
+      junit: junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    paths:
+      - coverage/
+      - junit.xml
+  rules:
+    # This job should run automatically ONLY within MR pipelines targeting the pre-release branch
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "pre-release"'
+      when: on_success # Explicitly run on success within the pipeline
+    # No other rules needed, workflow:rules controls pipeline creation
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - script_failure
+  after_script:
+    - rm -f .env.test
+
+# Notify test results of unit_ tests job along with CI metadata and code coverage report
+notify_test_results:
+  stage: notify
+  needs:
+    - unit_tests
+  before_script:
+    - yarn add nodemailer handlebars
+  script:
+    - node ci-helpers/notify/send-test-results.js
+  rules:
+    # Rule for MRs targeting the pre-release branch
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "pre-release"'
+      when: on_success
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+  allow_failure: true # Allow this job to fail without failing the pipeline for MWPS
+
+# Publish package to npm registry
+publish_package:
+  stage: publish
+  before_script:
+    - |
+      if ! command -v yarn &> /dev/null; then
+        npm install -g yarn@${YARN_VERSION}
+      else
+        echo -e "${ANSI_BOLD_ITALIC_CODE}Yarn is already installed${ANSI_RESET_CODE}"
+      fi
+    - yarn --version
+    - yarn config set network-timeout 300000
+    - yarn config set cache-folder ${YARN_CACHE_FOLDER}
+    # Set registry explicitly to npm
+    - yarn config set registry https://registry.npmjs.org/
+    # Configure NPM authentication
+    - echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > .npmrc
+  script:
+    # Check package version against tag version
+    - node ci-helpers/publish/verify-package-version.js
+    - yarn install --frozen-lockfile --prefer-offline
+    - yarn run build
+    # Publish without creating git tag since we're in CI
+    - yarn publish --no-git-tag-version --non-interactive
+  rules:
+    # Rule for tags matching semantic version format
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+      when: on_success
+      # Prevent running in other cases
+    - when: never
+  retry:
+    max: 2
+  allow_failure: false
+
+# Publish code coverage report to GitLab Pages
+publish_coverage:
+  stage: pages
+  needs:
+    - unit_tests
+  script:
+    - mkdir -p public
+    - echo -e "${ANSI_BOLD_ITALIC_CODE}Coverage report is being published to GitLab Pages at ${ANSI_BOLD_BLUE_COLOR_CODE}${CI_PAGES_URL}${ANSI_RESET_CODE}"
+    - cp -r coverage/lcov-report/* public/
+  # specifies that this is a Pages job and publishes the default public directory
+  pages: true
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "pre-release"'
+      when: on_success
