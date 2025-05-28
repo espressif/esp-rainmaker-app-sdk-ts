@@ -108,6 +108,9 @@ const apiCallValidationErrorMessages = {
   /** Error message indicating that the timezone parameter is not available. */
   TIMEZONE_PARAM_NOT_AVAILABLE:
     "ESPAPICallValidationError: Timezone parameter is not available for the node.",
+  /** Error message indicating that the OTA job ID is missing. */
+  MISSING_OTA_JOB_ID:
+    "ESPAPICallValidationError: OTA job ID is required and cannot be empty.",
 };
 
 /**
