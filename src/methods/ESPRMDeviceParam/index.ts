@@ -6,3 +6,6 @@
 
 // ESPRMDeviceParam Methods
 import "./SetValue";
+import "./GetRawTSData";
+import "./GetSimpleTSData";
+import "./GetTSData";

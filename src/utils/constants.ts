@@ -69,6 +69,10 @@ const APIEndpoints = {
   USER_NODES_OTA_UPDATE: "user/nodes/ota_update",
   /** The endpoint for user nodes OTA status. */
   USER_NODES_OTA_STATUS: "user/nodes/ota_status",
+  /** The endpoint for user node time series simple data. */
+  USER_NODE_SIMPLE_TS_DATA: "user/nodes/simple_tsdata",
+  /** The endpoint for user node time series data. */
+  USER_NODE_TS_DATA: "user/nodes/tsdata",
 } as const;
 
 /**
@@ -171,6 +175,40 @@ const APICallValidationErrorCodes = {
   TIMEZONE_PARAM_NOT_AVAILABLE: "TIMEZONE_PARAM_NOT_AVAILABLE",
   /** Error code indicating the OTA job ID is missing. */
   MISSING_OTA_JOB_ID: "MISSING_OTA_JOB_ID",
+  /** Error code indicating the parameter does not support time series data. */
+  INVALID_TS_PARAMETER: "INVALID_TS_PARAMETER",
+  /** Error code indicating the parameter does not support simple time series data. */
+  INVALID_SIMPLE_TS_PARAMETER: "INVALID_SIMPLE_TS_PARAMETER",
+  /** Error code indicating invalid data type for time series data. */
+  INVALID_TS_DATA_TYPE: "INVALID_TS_DATA_TYPE",
+  /** Error code indicating both numIntervals and startTime/endTime are provided. */
+  INVALID_TS_PARAMETER_MIXED: "INVALID_TS_PARAMETER_MIXED",
+  /** Error code indicating missing timestamp in time series request. */
+  MISSING_TS_TIMESTAMP: "MISSING_TS_TIMESTAMP",
+  /** Error code indicating invalid time range in time series request. */
+  INVALID_TS_TIME_RANGE: "INVALID_TS_TIME_RANGE",
+  /** Error code indicating invalid result count in time series request. */
+  INVALID_TS_RESULT_COUNT: "INVALID_TS_RESULT_COUNT",
+  /** Error code indicating invalid timestamp in time series request. */
+  INVALID_TS_TIMESTAMP: "INVALID_TS_TIMESTAMP",
+  /** Error code indicating the node reference is no longer valid. */
+  INVALID_NODE_REFERENCE: "INVALID_NODE_REFERENCE",
+  /** Error code indicating invalid time interval in time series request. */
+  INVALID_TS_INTERVAL: "INVALID_TS_INTERVAL",
+  /** Error code indicating invalid aggregation interval in time series request. */
+  INVALID_TS_AGGREGATION_INTERVAL: "INVALID_TS_AGGREGATION_INTERVAL",
+  /** Error code indicating invalid aggregation method in time series request. */
+  INVALID_TS_AGGREGATION: "INVALID_TS_AGGREGATION",
+  /** Error code indicating invalid week start in time series request. */
+  INVALID_TS_WEEK_START: "INVALID_TS_WEEK_START",
+  /** Error code indicating invalid differential configuration in time series request. */
+  INVALID_TS_DIFFERENTIAL: "INVALID_TS_DIFFERENTIAL",
+  /** Error code indicating invalid reset on negative configuration in time series request. */
+  INVALID_TS_RESET_ON_NEGATIVE: "INVALID_TS_RESET_ON_NEGATIVE",
+  /** Error code indicating invalid timezone in time series request. */
+  INVALID_TS_TIMEZONE: "INVALID_TS_TIMEZONE",
+  /** Error code indicating missing aggregation interval in time series request when aggregate is provided. */
+  MISSING_TS_AGGREGATION_INTERVAL: "MISSING_TS_AGGREGATION_INTERVAL",
 } as const;
 
 /**
@@ -369,6 +407,46 @@ const Keys = {
   TIMEZONE: "timeZone",
 } as const;
 
+/**
+ * An array containing the types of parameters that are compatible with [simple] time series data.
+ */
+const TSCompatibleParamTypes = ["float", "int", "bool", "string"];
+
+/**
+ * An array containing the types of parameters that support differential calculations.
+ */
+const TSDifferentialCompatibleParamTypes = ["float", "int"];
+
+/**
+ * An object containing parameter property types.
+ */
+const ParamProperties = {
+  /** Property indicating that the parameter supports simple time series data. */
+  SIMPLE_TS: "simple_ts",
+  /** Property indicating that the parameter supports time series data. */
+  TS: "time_series",
+} as const;
+
+/**
+ * An object containing locale settings.
+ */
+const Locale = {
+  /** Default locale for date formatting */
+  DEFAULT: "en-US",
+} as const;
+
+/**
+ * An object containing time series data related constants.
+ */
+const TSDataConstants = {
+  /** Minimum number of records that can be requested */
+  MIN_RESULT_COUNT: 1,
+  /** Maximum number of records that can be requested */
+  MAX_RESULT_COUNT: 200,
+  /** Minimum number of intervals that can be requested */
+  MIN_INTERVALS: 1,
+} as const;
+
 export {
   HTTPMethods,
   APIEndpoints,
@@ -393,4 +471,9 @@ export {
   AdditionalInfo,
   ValidationPatterns,
   Keys,
+  TSCompatibleParamTypes,
+  TSDifferentialCompatibleParamTypes,
+  ParamProperties,
+  Locale,
+  TSDataConstants,
 };
