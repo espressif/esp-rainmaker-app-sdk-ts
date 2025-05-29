@@ -108,6 +108,11 @@
       "import": "./dist/esm/ESPRMUser.js",
       "require": "./dist/cjs/ESPRMUser.cjs",
       "types": "./dist/types/ESPRMUser.d.ts"
+    },
+    "./ESPAutomation": {
+      "import": "./dist/esm/ESPAutomation.js",
+      "require": "./dist/cjs/ESPAutomation.cjs",
+      "types": "./dist/types/ESPAutomation.d.ts"
     }
   },
   "repository": {

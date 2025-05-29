@@ -12,3 +12,4 @@ import "./ESPRMDeviceParam";
 import "./ESPRMGroup";
 import "./ESPRMNode";
 import "./ESPRMUser";
+import "./ESPAutomation";
