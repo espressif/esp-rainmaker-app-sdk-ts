@@ -81,6 +81,70 @@ try {
   const template = fs.readFileSync(templatePath, "utf8");
   const compiledTemplate = Handlebars.compile(template);
 
+  // Read coverage metrics if available
+  let coverageData = null;
+  try {
+    const coverageMetricsPath = path.join(
+      process.cwd(),
+      "coverage-metrics.json"
+    );
+    if (fs.existsSync(coverageMetricsPath)) {
+      console.log(
+        formatMessage("Reading coverage metrics...", ANSI_CODES.BOLD_ITALIC)
+      );
+      const coverageJson = JSON.parse(
+        fs.readFileSync(coverageMetricsPath, "utf8")
+      );
+
+      // Extract coverage metrics from the JSON structure
+      // Jest coverage-summary.json has structure: { "total": { "statements": { "pct": 85, covered: 85, total: 100 }, ... } }
+      if (coverageJson.total) {
+        coverageData = {
+          statements: {
+            pct: coverageJson.total.statements?.pct || 0,
+            covered: coverageJson.total.statements?.covered || 0,
+            total: coverageJson.total.statements?.total || 0,
+          },
+          branches: {
+            pct: coverageJson.total.branches?.pct || 0,
+            covered: coverageJson.total.branches?.covered || 0,
+            total: coverageJson.total.branches?.total || 0,
+          },
+          functions: {
+            pct: coverageJson.total.functions?.pct || 0,
+            covered: coverageJson.total.functions?.covered || 0,
+            total: coverageJson.total.functions?.total || 0,
+          },
+          lines: {
+            pct: coverageJson.total.lines?.pct || 0,
+            covered: coverageJson.total.lines?.covered || 0,
+            total: coverageJson.total.lines?.total || 0,
+          },
+        };
+        console.log(
+          formatMessage(
+            `Coverage metrics loaded: ${JSON.stringify(coverageData)}`,
+            ANSI_CODES.BOLD_ITALIC
+          )
+        );
+      }
+    } else {
+      console.log(
+        formatMessage(
+          "Coverage metrics file not found, skipping coverage section",
+          ANSI_CODES.BOLD_ITALIC
+        )
+      );
+    }
+  } catch (coverageError) {
+    console.warn(
+      formatMessage(
+        `Warning: Could not read coverage metrics: ${coverageError.message}`,
+        ANSI_CODES.BOLD_ITALIC
+      )
+    );
+  }
+
   // Prepare the data for the template
   const data = {
     pipelineURL: process.env.CI_PIPELINE_URL,
@@ -92,6 +156,7 @@ try {
     commitShortSHA: process.env.CI_COMMIT_SHORT_SHA,
     commitMessage: formatCommitMessage(process.env.CI_COMMIT_MESSAGE),
     commitURL: `${process.env.CI_PROJECT_URL}/-/commit/${process.env.CI_COMMIT_SHA}`,
+    coverage: coverageData,
   };
 
   // Render the template with the data
