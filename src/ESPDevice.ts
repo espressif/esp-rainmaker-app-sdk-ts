@@ -10,6 +10,7 @@ import { rainmaker } from "./proto/esp_rmaker_user_mapping";
 import {
   ESPDeviceInterface,
   ESPProvisionAdapterInterface,
+  ESPProvisionStatus,
   ESPProvResponse,
   ESPProvResponseStatus,
   ESPWifiList,
@@ -32,6 +33,7 @@ import { ESPProvError } from "./utils/error/Error";
 import { NodeMappingHelper } from "./services/ESPRMHelpers/NodeMappingHelper";
 import { ESPRMUser } from "./ESPRMUser";
 import { NodeTimeZoneSetupService } from "./services/ESPRMHelpers/NodeTimeZoneSetupService";
+import { ESPAPIResponse } from "./types/output";
 
 class ESPDevice {
   ESPProvisionAdapter: ESPProvisionAdapterInterface =
@@ -68,6 +70,17 @@ class ESPDevice {
    */
   async getDeviceCapabilities(): Promise<string[]> {
     const response = await this.ESPProvisionAdapter.getDeviceCapabilities(
+      this.name
+    );
+    return response;
+  }
+
+  /**
+   * Gets the version info of the device.
+   * @returns A promise that resolves to an object containing version info.
+   */
+  async getDeviceVersionInfo(): Promise<{ [key: string]: any }> {
+    const response = await this.ESPProvisionAdapter.getDeviceVersionInfo(
       this.name
     );
     return response;
@@ -136,7 +149,7 @@ class ESPDevice {
           passphrase
         );
 
-        if (provisionStatus === 0) {
+        if (provisionStatus === ESPProvisionStatus.success) {
           onProgress({
             status: ESPProvResponseStatus.succeed,
             description: ESPProvProgressMessages.DEVICE_PROVISIONED,
@@ -390,6 +403,46 @@ class ESPDevice {
     }
 
     return nodeId; // Now guaranteed to be a valid string
+  }
+
+  /**
+   * Initiates a user node mapping request.
+   * @param requestBody - The request body for the user node mapping.
+   * @returns A promise that resolves to the response from the API.
+   */
+  async initiateUserNodeMapping(
+    requestBody: Record<string, any> = {}
+  ): Promise<any> {
+    return await NodeMappingHelper.initiateUserNodeMapping(requestBody);
+  }
+
+  /**
+   * Verifies the mapping between a user and a node.
+   * @param requestBody - The request body for the user node mapping verification.
+   * @returns A promise that resolves to the response from the API.
+   */
+  async verifyUserNodeMapping(
+    requestBody: Record<string, any> = {}
+  ): Promise<ESPAPIResponse> {
+    return await NodeMappingHelper.verifyUserNodeMapping(requestBody);
+  }
+
+  /**
+   * Sets the network credentials for the device.
+   * @param ssid - The SSID of the Wi-Fi network.
+   * @param passphrase - The passphrase of the Wi-Fi network.
+   */
+  async setNetworkCredentials(
+    ssid: string,
+    passphrase: string
+  ): Promise<ESPProvisionStatus> {
+    // Start user device association
+    const response = await this.ESPProvisionAdapter.provision(
+      this.name,
+      ssid,
+      passphrase
+    );
+    return response;
   }
 }
 
