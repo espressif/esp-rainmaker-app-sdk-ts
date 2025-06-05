@@ -43,6 +43,187 @@
           and detailed results.
         </p>
 
+        {{#if coverage}}
+        <!-- Code Coverage Section -->
+        <div
+          style="
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+          "
+        >
+          <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 15px">
+            📈 Code Coverage Summary
+          </h3>
+          <div style="display: flex; flex-wrap: wrap; gap: 15px">
+            <!-- Statements -->
+            <div
+              style="
+                background-color: #ffffff;
+                padding: 12px;
+                border-radius: 4px;
+                border-left: 4px solid #3498db;
+                flex: 1;
+                min-width: 120px;
+              "
+            >
+              <div
+                style="
+                  color: #7f8c8d;
+                  font-size: 12px;
+                  margin-bottom: 4px;
+                  display: flex;
+                  align-items: center;
+                "
+              >
+                STATEMENTS {{#if coverage.statements.covered}}{{#if
+                coverage.statements.total}}
+                <span
+                  style="
+                    color: #555;
+                    background-color: #e8e8e8;
+                    font-size: 10px;
+                    margin-left: 4px;
+                    padding: 4px 5px;
+                    border-radius: 3px;
+                    display: inline-block;
+                  "
+                >
+                  ({{coverage.statements.covered}}/{{coverage.statements.total}})
+                </span>
+                {{/if}}{{/if}}
+              </div>
+              <div style="color: #2c3e50; font-weight: bold; font-size: 16px">
+                {{coverage.statements.pct}}%
+              </div>
+            </div>
+            <!-- Branches -->
+            <div
+              style="
+                background-color: #ffffff;
+                padding: 12px;
+                border-radius: 4px;
+                border-left: 4px solid #e74c3c;
+                flex: 1;
+                min-width: 120px;
+              "
+            >
+              <div
+                style="
+                  color: #7f8c8d;
+                  font-size: 12px;
+                  margin-bottom: 4px;
+                  display: flex;
+                  align-items: center;
+                "
+              >
+                BRANCHES {{#if coverage.branches.covered}}{{#if
+                coverage.branches.total}}
+                <span
+                  style="
+                    color: #555;
+                    background-color: #e8e8e8;
+                    font-size: 10px;
+                    margin-left: 4px;
+                    padding: 4px 5px;
+                    border-radius: 3px;
+                    display: inline-block;
+                  "
+                >
+                  ({{coverage.branches.covered}}/{{coverage.branches.total}})
+                </span>
+                {{/if}}{{/if}}
+              </div>
+              <div style="color: #2c3e50; font-weight: bold; font-size: 16px">
+                {{coverage.branches.pct}}%
+              </div>
+            </div>
+            <!-- Functions -->
+            <div
+              style="
+                background-color: #ffffff;
+                padding: 12px;
+                border-radius: 4px;
+                border-left: 4px solid #f39c12;
+                flex: 1;
+                min-width: 120px;
+              "
+            >
+              <div
+                style="
+                  color: #7f8c8d;
+                  font-size: 12px;
+                  margin-bottom: 4px;
+                  display: flex;
+                  align-items: center;
+                "
+              >
+                FUNCTIONS {{#if coverage.functions.covered}}{{#if
+                coverage.functions.total}}
+                <span
+                  style="
+                    color: #555;
+                    background-color: #e8e8e8;
+                    font-size: 10px;
+                    margin-left: 4px;
+                    padding: 4px 5px;
+                    border-radius: 3px;
+                    display: inline-block;
+                  "
+                >
+                  ({{coverage.functions.covered}}/{{coverage.functions.total}})
+                </span>
+                {{/if}}{{/if}}
+              </div>
+              <div style="color: #2c3e50; font-weight: bold; font-size: 16px">
+                {{coverage.functions.pct}}%
+              </div>
+            </div>
+            <!-- Lines -->
+            <div
+              style="
+                background-color: #ffffff;
+                padding: 12px;
+                border-radius: 4px;
+                border-left: 4px solid #27ae60;
+                flex: 1;
+                min-width: 120px;
+              "
+            >
+              <div
+                style="
+                  color: #7f8c8d;
+                  font-size: 12px;
+                  margin-bottom: 4px;
+                  display: flex;
+                  align-items: center;
+                "
+              >
+                LINES {{#if coverage.lines.covered}}{{#if coverage.lines.total}}
+                <span
+                  style="
+                    color: #555;
+                    background-color: #e8e8e8;
+                    font-size: 10px;
+                    margin-left: 4px;
+                    padding: 4px 5px;
+                    border-radius: 3px;
+                    display: inline-block;
+                  "
+                >
+                  ({{coverage.lines.covered}}/{{coverage.lines.total}})
+                </span>
+                {{/if}}{{/if}}
+              </div>
+              <div style="color: #2c3e50; font-weight: bold; font-size: 16px">
+                {{coverage.lines.pct}}%
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/if}}
+
         <!-- Quick Links Section -->
         <div
           style="
