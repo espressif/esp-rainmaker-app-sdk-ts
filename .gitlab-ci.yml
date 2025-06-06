@@ -85,6 +85,16 @@ unit_tests:
   script:
     - echo -e "${ANSI_BOLD_ITALIC_CODE}Running unit tests with coverage...${ANSI_RESET_CODE}"
     - yarn test
+    # Extract coverage metrics from test output and save to coverage-summary.json
+    - |
+      echo -e "${ANSI_BOLD_ITALIC_CODE}Extracting coverage metrics...${ANSI_RESET_CODE}"
+      # Create coverage summary from the coverage report
+      if [ -f "coverage/coverage-summary.json" ]; then
+        cp coverage/coverage-summary.json coverage-metrics.json
+        echo -e "${ANSI_BOLD_ITALIC_CODE}Coverage summary found and copied${ANSI_RESET_CODE}"
+      else
+        echo -e "${ANSI_BOLD_ITALIC_CODE}Coverage summary not found, email will not include coverage section${ANSI_RESET_CODE}"
+      fi
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
     when: always
@@ -96,6 +106,7 @@ unit_tests:
     paths:
       - coverage/
       - junit.xml
+      - coverage-metrics.json
   rules:
     # This job should run automatically ONLY within MR pipelines targeting the pre-release branch
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "pre-release"'

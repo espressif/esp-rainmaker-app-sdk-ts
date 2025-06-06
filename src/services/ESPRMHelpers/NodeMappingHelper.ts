@@ -5,6 +5,7 @@
  */
 
 import { ESPRMAPIManager } from "../../services/ESPRMAPIManager";
+import { ESPAPIResponse } from "../../types/output";
 import {
   APIEndpoints,
   HTTPMethods,
@@ -82,5 +83,43 @@ export const NodeMappingHelper = {
 
     const response = await ESPRMAPIManager.authorizeRequest(requestConfig);
     return response.request_id;
+  },
+
+  /**
+   * Initiates a user node mapping request.
+   *
+   * @param requestBody - The request body for the user node mapping.
+   * @returns A promise that resolves to the response from the API.
+   */
+  async initiateUserNodeMapping(
+    requestBody: Record<string, any> = {}
+  ): Promise<any> {
+    const requestConfig = {
+      method: HTTPMethods.POST,
+      url: APIEndpoints.USER_NODE_MAPPING_INITIATE,
+      data: requestBody,
+    };
+
+    const response = await ESPRMAPIManager.authorizeRequest(requestConfig);
+    return response;
+  },
+
+  /**
+   * Verifies the mapping between a user and a node.
+   *
+   * @param requestBody - The request body for the user node mapping verification.
+   * @returns A promise that resolves to the response from the API.
+   */
+  async verifyUserNodeMapping(
+    requestBody: Record<string, any> = {}
+  ): Promise<ESPAPIResponse> {
+    const requestConfig = {
+      method: HTTPMethods.POST,
+      url: APIEndpoints.USER_NODE_MAPPING_VERIFY,
+      data: requestBody,
+    };
+
+    const response = await ESPRMAPIManager.authorizeRequest(requestConfig);
+    return response as ESPAPIResponse;
   },
 };

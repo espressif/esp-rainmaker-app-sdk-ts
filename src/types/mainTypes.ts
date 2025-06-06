@@ -23,6 +23,7 @@ import { ESPRMNodeInfo } from "../ESPRMNodeInfo";
 import { ESPRMService } from "../ESPRMService";
 import { ESPRMServiceParam } from "../ESPRMServiceParam";
 import { ESPRMUser } from "../ESPRMUser";
+import { ESPAutomation } from "../ESPAutomation";
 import "../methods/export";
 
 export {
@@ -44,4 +45,5 @@ export {
   ESPRMService,
   ESPRMServiceParam,
   ESPRMUser,
+  ESPAutomation,
 };

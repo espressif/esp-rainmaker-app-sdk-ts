@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v1.1.0]
+
+### Added
+
+- **Automation Operations**: Comprehensive automation management capabilities with support for daylight-based and weather-based triggers.
+
+- **Time Series Operations**: Advanced time series data retrieval and analysis with configurable aggregation intervals and filtering options.
+
+- **OTA Operations**: Over-the-Air firmware update management for ESP devices with remote update capabilities and status monitoring.
+
+- **Provisioning Hooks**: Enhanced device onboarding process with support for custom provisioning flows, user-node mapping, and network credential configuration.
+
 ## [v1.0.1] - 2025-04-01
 
 ### Added

@@ -65,6 +65,22 @@ const APIEndpoints = {
     "user/push_notification/mobile_platform_endpoint",
   /** The endpoint for user custom data. */
   USER_CUSTOM_DATA: "user/custom_data",
+  /** The endpoint for user nodes OTA update. */
+  USER_NODES_OTA_UPDATE: "user/nodes/ota_update",
+  /** The endpoint for user nodes OTA status. */
+  USER_NODES_OTA_STATUS: "user/nodes/ota_status",
+  /** The endpoint for user node time series simple data. */
+  USER_NODE_SIMPLE_TS_DATA: "user/nodes/simple_tsdata",
+  /** The endpoint for user node time series data. */
+  USER_NODE_TS_DATA: "user/nodes/tsdata",
+  /** The endpoint for user node automation. */
+  USER_NODE_AUTOMATION: "user/node_automation",
+  /** The endpoint for user node mapping initiation. */
+  USER_NODE_MAPPING_INITIATE: "user/nodes/mapping/initiate",
+  /** The endpoint for user node mapping verification. */
+  USER_NODE_MAPPING_VERIFY: "user/nodes/mapping/verify",
+  /** The endpoint for retriving mqtt host. */
+  MQTT_HOST: "mqtt_host",
 } as const;
 
 /**
@@ -165,6 +181,60 @@ const APICallValidationErrorCodes = {
   TIME_SERVICE_NOT_AVAILABLE: "TIME_SERVICE_NOT_AVAILABLE",
   /** Error code indicating the timezone parameter is not available. */
   TIMEZONE_PARAM_NOT_AVAILABLE: "TIMEZONE_PARAM_NOT_AVAILABLE",
+  /** Error code indicating the OTA job ID is missing. */
+  MISSING_OTA_JOB_ID: "MISSING_OTA_JOB_ID",
+  /** Error code indicating the parameter does not support time series data. */
+  INVALID_TS_PARAMETER: "INVALID_TS_PARAMETER",
+  /** Error code indicating the parameter does not support simple time series data. */
+  INVALID_SIMPLE_TS_PARAMETER: "INVALID_SIMPLE_TS_PARAMETER",
+  /** Error code indicating invalid data type for time series data. */
+  INVALID_TS_DATA_TYPE: "INVALID_TS_DATA_TYPE",
+  /** Error code indicating both numIntervals and startTime/endTime are provided. */
+  INVALID_TS_PARAMETER_MIXED: "INVALID_TS_PARAMETER_MIXED",
+  /** Error code indicating missing timestamp in time series request. */
+  MISSING_TS_TIMESTAMP: "MISSING_TS_TIMESTAMP",
+  /** Error code indicating invalid time range in time series request. */
+  INVALID_TS_TIME_RANGE: "INVALID_TS_TIME_RANGE",
+  /** Error code indicating invalid result count in time series request. */
+  INVALID_TS_RESULT_COUNT: "INVALID_TS_RESULT_COUNT",
+  /** Error code indicating invalid timestamp in time series request. */
+  INVALID_TS_TIMESTAMP: "INVALID_TS_TIMESTAMP",
+  /** Error code indicating the node reference is no longer valid. */
+  INVALID_NODE_REFERENCE: "INVALID_NODE_REFERENCE",
+  /** Error code indicating invalid time interval in time series request. */
+  INVALID_TS_INTERVAL: "INVALID_TS_INTERVAL",
+  /** Error code indicating invalid aggregation interval in time series request. */
+  INVALID_TS_AGGREGATION_INTERVAL: "INVALID_TS_AGGREGATION_INTERVAL",
+  /** Error code indicating invalid aggregation method in time series request. */
+  INVALID_TS_AGGREGATION: "INVALID_TS_AGGREGATION",
+  /** Error code indicating invalid week start in time series request. */
+  INVALID_TS_WEEK_START: "INVALID_TS_WEEK_START",
+  /** Error code indicating invalid differential configuration in time series request. */
+  INVALID_TS_DIFFERENTIAL: "INVALID_TS_DIFFERENTIAL",
+  /** Error code indicating invalid reset on negative configuration in time series request. */
+  INVALID_TS_RESET_ON_NEGATIVE: "INVALID_TS_RESET_ON_NEGATIVE",
+  /** Error code indicating invalid timezone in time series request. */
+  INVALID_TS_TIMEZONE: "INVALID_TS_TIMEZONE",
+  /** Error code indicating missing aggregation interval in time series request when aggregate is provided. */
+  MISSING_TS_AGGREGATION_INTERVAL: "MISSING_TS_AGGREGATION_INTERVAL",
+  /** Error code indicating the automation name is missing. */
+  MISSING_AUTOMATION_NAME: "MISSING_AUTOMATION_NAME",
+  /** Error code indicating the automation events are missing. */
+  MISSING_AUTOMATION_EVENTS: "MISSING_AUTOMATION_EVENTS",
+  /** Error code indicating the automation actions are missing. */
+  MISSING_AUTOMATION_ACTIONS: "MISSING_AUTOMATION_ACTIONS",
+  /** Error code indicating the latitude is missing. */
+  MISSING_LATITUDE: "MISSING_LATITUDE",
+  /** Error code indicating the longitude is missing. */
+  MISSING_LONGITUDE: "MISSING_LONGITUDE",
+  /** Error code indicating the geo coordinates are missing. */
+  MISSING_GEO_COORDINATES: "MISSING_GEO_COORDINATES",
+  /** Error code indicating the geo coordinates are invalid. */
+  INVALID_GEO_COORDINATES: "INVALID_GEO_COORDINATES",
+  /** Error code indicating the automation ID is missing. */
+  MISSING_AUTOMATION_ID: "MISSING_AUTOMATION_ID",
+  /** Error code indicating the automation update details are missing. */
+  MISSING_AUTOMATION_UPDATE_DETAILS: "MISSING_AUTOMATION_UPDATE_DETAILS",
 } as const;
 
 /**
@@ -361,6 +431,56 @@ const ValidationPatterns = {
 const Keys = {
   /** Key for timezone. */
   TIMEZONE: "timeZone",
+  /** Key for geo coordinates. */
+  GEO_COORDINATES: "geoCoordinates",
+} as const;
+
+/**
+ * An array containing the types of parameters that are compatible with [simple] time series data.
+ */
+const TSCompatibleParamTypes = ["float", "int", "bool", "string"];
+
+/**
+ * An array containing the types of parameters that support differential calculations.
+ */
+const TSDifferentialCompatibleParamTypes = ["float", "int"];
+
+/**
+ * An object containing parameter property types.
+ */
+const ParamProperties = {
+  /** Property indicating that the parameter supports simple time series data. */
+  SIMPLE_TS: "simple_ts",
+  /** Property indicating that the parameter supports time series data. */
+  TS: "time_series",
+} as const;
+
+/**
+ * An object containing locale settings.
+ */
+const Locale = {
+  /** Default locale for date formatting */
+  DEFAULT: "en-US",
+} as const;
+
+/**
+ * An object containing time series data related constants.
+ */
+const TSDataConstants = {
+  /** Minimum number of records that can be requested */
+  MIN_RESULT_COUNT: 1,
+  /** Maximum number of records that can be requested */
+  MAX_RESULT_COUNT: 200,
+  /** Minimum number of intervals that can be requested */
+  MIN_INTERVALS: 1,
+} as const;
+
+/**
+ * An object containing field names used in API responses.
+ */
+const APIResponseFields = {
+  /** Key for the MQTT host field. */
+  MQTT_HOST: "mqtt_host",
 } as const;
 
 export {
@@ -387,4 +507,10 @@ export {
   AdditionalInfo,
   ValidationPatterns,
   Keys,
+  TSCompatibleParamTypes,
+  TSDifferentialCompatibleParamTypes,
+  ParamProperties,
+  Locale,
+  TSDataConstants,
+  APIResponseFields,
 };

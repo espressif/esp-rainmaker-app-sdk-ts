@@ -26,6 +26,7 @@ export default {
   coverageReporters: [
     "text",
     "lcov",
+    "json-summary",
     ["cobertura", { file: "cobertura-coverage.xml" }],
   ],
   collectCoverageFrom: [
