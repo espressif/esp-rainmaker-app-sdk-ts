@@ -5,8 +5,14 @@
  */
 
 import { ESPRMBase, ESPRMStorage } from "../../src";
-import { ESPProvisionStatus } from "../../src/types/provision";
-import { StatusMessage } from "../../src/utils/constants";
+import {
+  ESPProvisionStatus,
+  ESPProvResponseStatus,
+} from "../../src/types/provision";
+import {
+  StatusMessage,
+  ESPProvProgressMessages,
+} from "../../src/utils/constants";
 import { NodeMappingHelper } from "../../src/services/ESPRMHelpers/NodeMappingHelper";
 import { NodeTimeZoneSetupService } from "../../src/services/ESPRMHelpers/NodeTimeZoneSetupService";
 import { ESPRMUser } from "../../src/ESPRMUser";
@@ -15,6 +21,7 @@ import {
   MOCK_SSID,
   MOCK_PASSPHRASE,
   MOCK_API_RESPONSES,
+  MOCK_NODE_ID,
   mockProgressCallback,
   resetMockProgressCallback,
 } from "../helpers/provision";
@@ -164,6 +171,33 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
       // Verify timezone setup flow
       expect(mockNodeTimeZoneSetupService.getUserTimeZone).toHaveBeenCalled();
       expect(mockNodeTimeZoneSetupService.setNodeTimeZone).toHaveBeenCalled();
+    }, 15000);
+
+    test("should include nodeId data in progress callback when decoding node ID", async () => {
+      const device = createMockESPDevice();
+
+      await device.provision(MOCK_SSID, MOCK_PASSPHRASE, mockProgressCallback);
+
+      // Wait for the interval to execute
+      await new Promise((resolve) => setTimeout(resolve, 6000));
+
+      // Verify progress callback was called
+      expect(mockProgressCallback).toHaveBeenCalled();
+
+      // Find the call that includes DECODED_NODE_ID message
+      const decodedNodeIdCall = mockProgressCallback.mock.calls.find(
+        (call) =>
+          call[0].description === ESPProvProgressMessages.DECODED_NODE_ID
+      );
+
+      expect(decodedNodeIdCall).toBeDefined();
+      if (decodedNodeIdCall) {
+        expect(decodedNodeIdCall[0]).toEqual({
+          status: ESPProvResponseStatus.onProgress,
+          description: ESPProvProgressMessages.DECODED_NODE_ID,
+          data: { nodeId: MOCK_NODE_ID },
+        });
+      }
     }, 15000);
   });
 

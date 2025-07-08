@@ -112,6 +112,7 @@ enum ESPProvResponseStatus {
 interface ESPProvResponse {
   status: ESPProvResponseStatus;
   description?: string;
+  data?: Record<string, any>;
 }
 
 export {

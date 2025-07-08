@@ -394,6 +394,7 @@ class ESPDevice {
         onProgress({
           status: ESPProvResponseStatus.onProgress,
           description: ESPProvProgressMessages.DECODED_NODE_ID,
+          data: { nodeId },
         });
       } else {
         throw new ESPProvError(ProvErrorCodes.FAILED_USER_DEVICE_ASSOCIATION);
