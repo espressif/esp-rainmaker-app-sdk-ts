@@ -97,7 +97,7 @@ ESPRMUser.prototype.subscribe = function (
 
   const notificationCallback = (info: Record<string, any>) => {
     const notificationData = transformNotificationData(info);
-    if (!notificationData) {
+    if (notificationData) {
       this.trigger(event, notificationData);
     }
   };
