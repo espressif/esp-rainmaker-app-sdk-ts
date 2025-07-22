@@ -6,7 +6,10 @@
 
 import { ESPLocalControlAdapterInterface } from "../services/ESPTransport/ESPLocalControlAdapterInterface";
 import { ESPLocalDiscoveryAdapterInterface } from "../services/ESPTransport/ESPLocalDiscoveryAdapterInterface";
-import { ESPNotificationAdapterInterface } from "./adapter";
+import {
+  ESPNotificationAdapterInterface,
+  ESPOauthAdapterInterface,
+} from "./adapter";
 import { ESPRMNodeInterface } from "./node";
 import { ESPProvisionAdapterInterface } from "./provision";
 import { ESPRMStorageAdapterInterface } from "./storage";
@@ -26,6 +29,7 @@ interface ESPRMBaseConfig {
   localDiscoveryAdapter?: ESPLocalDiscoveryAdapterInterface;
   localControlAdapter?: ESPLocalControlAdapterInterface;
   notificationAdapter?: ESPNotificationAdapterInterface;
+  oauthAdapter?: ESPOauthAdapterInterface;
 }
 
 /**
@@ -365,6 +369,15 @@ type UserCustomDataRequest = Record<string, DataEntry | null>;
  */
 type UserCustomDataResponse = Record<string, DataEntry>;
 
+/**
+ * Represents the identity provider for OAuth login.
+ */
+enum ESPIdProvider {
+  GITHUB = "GitHub",
+  GOOGLE = "Google",
+  SIGN_IN_WITH_APPLE = "SignInWithApple",
+}
+
 export {
   ESPRMBaseConfig,
   ESPRMAPIManagerConfig,
@@ -407,4 +420,5 @@ export {
   DataEntry,
   UserCustomDataRequest,
   UserCustomDataResponse,
+  ESPIdProvider,
 };
