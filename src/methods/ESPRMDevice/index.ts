@@ -6,3 +6,4 @@
 
 // ESPRMDevice Methods
 import "./GetParams";
+import "./GetPrimaryParam";

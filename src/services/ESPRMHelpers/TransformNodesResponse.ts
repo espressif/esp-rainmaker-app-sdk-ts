@@ -118,14 +118,25 @@ const transformNodeDevices = (
   nodeDevicesData: Record<string, any>[]
 ): ESPRMDeviceInterface[] => {
   return nodeDevicesData.map((nodeDeviceData) => {
+    const transformedParams = transformNodeDeviceParams(
+      nodeDeviceData.params,
+      nodeDeviceData.name
+    );
+
+    // Find the primary parameter from the transformed params
+    let primaryParam: ESPRMDeviceParamInterface | undefined;
+    if (nodeDeviceData.primary && transformedParams) {
+      primaryParam = transformedParams.find(
+        (param) => param.name === nodeDeviceData.primary
+      );
+    }
+
     return {
       name: nodeDeviceData.name,
       type: nodeDeviceData.type,
       attributes: transformNodeAttributes(nodeDeviceData.attributes),
-      params: transformNodeDeviceParams(
-        nodeDeviceData.params,
-        nodeDeviceData.name
-      ),
+      params: transformedParams,
+      primaryParam: primaryParam,
       displayName:
         _nodeData && dynamicDeviceNameKey
           ? _nodeData.params[nodeDeviceData.name][dynamicDeviceNameKey]
