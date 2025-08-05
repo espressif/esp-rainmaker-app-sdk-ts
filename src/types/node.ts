@@ -52,6 +52,17 @@ interface ESPRMAttributeInterface {
 }
 
 /**
+ * Base interface for parameter properties common to both device and service parameters.
+ */
+interface ESPRMParamInterface extends ESPRMAttributeInterface {
+  type: string;
+  properties: string[];
+  dataType: string;
+  bounds?: Record<string, any>;
+  validStrings?: string[];
+}
+
+/**
  * Represents the device associated with a node.
  */
 interface ESPRMDeviceInterface {
@@ -83,25 +94,19 @@ interface ESPRMServiceInterface {
 }
 
 /**
- * Represents the parameter of a node device, including additional metadata.
+ * Represents the parameter of a node device
  */
-interface ESPRMDeviceParamInterface extends ESPRMAttributeInterface {
+interface ESPRMDeviceParamInterface extends ESPRMParamInterface {
   // nodeId: string;
   deviceName: string;
-  type: string;
-  uiType: string;
-  properties: string[];
-  bounds: Record<string, any>;
-  dataType: string;
+  uiType?: string;
 }
 
 /**
- * Represents the parameter of a node service, including additional metadata.
+ * Represents the parameter of a node service
  */
-interface ESPRMServiceParamInterface extends ESPRMAttributeInterface {
-  type: string;
-  properties: string[];
-  dataType: string;
+interface ESPRMServiceParamInterface extends ESPRMParamInterface {
+  serviceName: string;
 }
 
 export {
@@ -111,6 +116,7 @@ export {
   ESPRMNodeInfoInterface,
   ESPRMDeviceInterface,
   ESPRMAttributeInterface,
+  ESPRMParamInterface,
   ESPRMDeviceParamInterface,
   ESPRMServiceInterface,
   ESPRMServiceParamInterface,

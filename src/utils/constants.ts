@@ -245,6 +245,8 @@ const APICallValidationErrorCodes = {
   MISSING_REDIRECT_URL: "MISSING_REDIRECT_URL",
   /** Error code indicating the client ID is missing. */
   MISSING_CLIENT_ID: "MISSING_CLIENT_ID",
+  /** Error code indicating invalid parameter value. */
+  INVALID_PARAMETER_VALUE: "INVALID_PARAMETER_VALUE",
 } as const;
 
 /**

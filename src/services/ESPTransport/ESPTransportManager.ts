@@ -14,11 +14,11 @@ import { ESPCloudTransport } from "./ESPCloudTransport";
 import { ESPLocalControlTransport } from "./ESPLocalControlTransport";
 
 /**
- * Manages the transport layer for ESP device communication, allowing
+ * Manages the transport layer for ESP node communication, allowing
  * configuration of local or cloud-based transport modes.
  *
  * This class abstracts the underlying transport mechanism and provides methods
- * for setting and retrieving device parameters.
+ * for setting and retrieving node parameters.
  */
 class ESPTransportManager {
   /** Holds the transport configuration for the manager instance. */
@@ -55,25 +55,23 @@ class ESPTransportManager {
   }
 
   /**
-   * Sets a parameter on the device using the configured transport mechanism.
+   * Sets a parameter on the node using the configured transport mechanism.
    *
-   * @param payload - A record containing the parameter data to set on the device.
+   * @param payload - A record containing the parameter data to set on the node.
    * @returns A promise that resolves to the response of the set operation.
    */
-  async setDeviceParam(payload: Record<string, any>): Promise<ESPAPIResponse> {
-    return this.transport.setDeviceParam(payload);
+  async setParam(payload: Record<string, any>): Promise<ESPAPIResponse> {
+    return this.transport.setParam(payload);
   }
 
   /**
-   * Retrieves parameters from the device using the configured transport mechanism.
+   * Retrieves parameters from the node using the configured transport mechanism.
    *
-   * @param payload - A record containing the data required to retrieve device parameters.
-   * @returns A promise that resolves to a record of the device parameters.
+   * @param payload - A record containing the data required to retrieve node parameters.
+   * @returns A promise that resolves to a record of the node parameters.
    */
-  async getDeviceParams(
-    payload: Record<string, any>
-  ): Promise<Record<string, any>> {
-    return this.transport.getDeviceParams(payload);
+  async getParams(payload: Record<string, any>): Promise<Record<string, any>> {
+    return this.transport.getParams(payload);
   }
 }
 

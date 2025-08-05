@@ -179,6 +179,7 @@ const transformNodeDeviceParams = (
       uiType: deviceParamData.ui_type,
       properties: deviceParamData.properties,
       bounds: deviceParamData.bounds,
+      validStrings: deviceParamData.valid_strs,
     };
   });
 };
@@ -188,11 +189,14 @@ const transformNodeServiceParams = (
   name: string
 ): ESPRMServiceParamInterface[] => {
   return serviceParamsData.map((serviceParamData) => ({
+    serviceName: name,
     name: serviceParamData.name,
     value: _nodeData?.params[name][serviceParamData.name] ?? undefined,
     type: serviceParamData.type,
     dataType: serviceParamData.data_type,
     properties: serviceParamData.properties,
+    bounds: serviceParamData.bounds,
+    validStrings: serviceParamData.valid_strs,
   }));
 };
 
