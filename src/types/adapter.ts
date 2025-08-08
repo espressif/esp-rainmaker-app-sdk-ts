@@ -24,4 +24,23 @@ interface ESPOauthAdapterInterface {
   getOauthCode(requestURL: string): Promise<string>;
 }
 
-export { ESPNotificationAdapterInterface, ESPOauthAdapterInterface };
+/**
+ * Interface for the app utility adapter.
+ */
+interface ESPAppUtilityAdapterInterface {
+  /**
+   * Checks if Bluetooth Low Energy (BLE) permission is granted.
+   */
+  isBlePermissionGranted(): Promise<boolean>;
+
+  /**
+   * Checks if location permission is granted.
+   */
+  isLocationPermissionGranted(): Promise<boolean>;
+}
+
+export {
+  ESPNotificationAdapterInterface,
+  ESPOauthAdapterInterface,
+  ESPAppUtilityAdapterInterface,
+};

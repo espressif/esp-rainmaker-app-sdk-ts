@@ -27,7 +27,6 @@ enum ESPSecurity {
 enum ESPConnectStatus {
   connected,
   failedToConnect,
-  disconnected,
 }
 
 /**
@@ -80,7 +79,7 @@ interface ESPProvisionAdapterInterface {
     softAPPassword?: string,
     username?: string
   ): Promise<ESPDeviceInterface>;
-  connect(deviceName: string): Promise<ESPProvResponse>;
+  connect(deviceName: string): Promise<ESPConnectStatus>;
   getDeviceCapabilities(deviceName: string): Promise<string[]>;
   getDeviceVersionInfo(deviceName: string): Promise<{ [key: string]: any }>;
   setProofOfPossession(

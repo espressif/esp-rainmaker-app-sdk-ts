@@ -9,6 +9,7 @@ import { ESPLocalDiscoveryAdapterInterface } from "../services/ESPTransport/ESPL
 import {
   ESPNotificationAdapterInterface,
   ESPOauthAdapterInterface,
+  ESPAppUtilityAdapterInterface,
 } from "./adapter";
 import { ESPRMNodeInterface } from "./node";
 import { ESPProvisionAdapterInterface } from "./provision";
@@ -30,6 +31,7 @@ interface ESPRMBaseConfig {
   localControlAdapter?: ESPLocalControlAdapterInterface;
   notificationAdapter?: ESPNotificationAdapterInterface;
   oauthAdapter?: ESPOauthAdapterInterface;
+  appUtilityAdapter?: ESPAppUtilityAdapterInterface;
 }
 
 /**

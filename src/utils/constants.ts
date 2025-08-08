@@ -310,6 +310,18 @@ const ProvErrorCodes = {
 } as const;
 
 /**
+ * An object containing error codes related to permission issues.
+ *
+ * @enum {string}
+ */
+const AppPermissionErrorCodes = {
+  /** Error code indicating the BLE permission is not granted. */
+  BLE_PERMISSION_NOT_GRANTED: "BLE_PERMISSION_NOT_GRANTED",
+  /** Error code indicating the location permission is not granted. */
+  LOCATION_PERMISSION_NOT_GRANTED: "LOCATION_PERMISSION_NOT_GRANTED",
+} as const;
+
+/**
  * An object containing service types.
  *
  * @enum {string}
@@ -414,6 +426,7 @@ const ErrorLabels = {
   ESPTokenError: "ESPTokenError",
   ESPStorageAdapterError: "ESPStorageAdapterError",
   ESPValidationError: "ESPValidationError",
+  ESPAppPermissionError: "ESPAppPermissionError",
 } as const;
 
 /** Represents the HTTP status codes */
@@ -531,6 +544,7 @@ export {
   TokenErrorCodes,
   Endpoint,
   ProvErrorCodes,
+  AppPermissionErrorCodes,
   ServiceType,
   ProtocolType,
   StatusMessage,
