@@ -187,6 +187,21 @@ const apiCallValidationErrorMessages = {
   /** Error message indicating that automation update details are missing. */
   MISSING_AUTOMATION_UPDATE_DETAILS:
     "Automation update details are required. Please provide at least one field to update.",
+  /** Error message indicating that the oauth adapter is missing. */
+  MISSING_OAUTH_ADAPTER:
+    "ESPAPICallValidationError: Oauth adapter is missing. Please set oauth adapter using ESPRMBase.setOauthAdapter method first",
+  /** Error message indicating that the identity provider is missing. */
+  MISSING_IDENTITY_PROVIDER:
+    "ESPAPICallValidationError: Identity provider is required. Please provide a valid identity provider.",
+  /** Error message indicating that the auth URL is missing. */
+  MISSING_AUTH_URL:
+    "ESPAPICallValidationError: Auth URL is required. Please provide a valid auth URL.",
+  /** Error message indicating that the redirect URL is missing. */
+  MISSING_REDIRECT_URL:
+    "ESPAPICallValidationError: Redirect URL is required. Please provide a valid redirect URL.",
+  /** Error message indicating that the client ID is missing. */
+  MISSING_CLIENT_ID:
+    "ESPAPICallValidationError: Client ID is required. Please provide a valid client ID.",
 };
 
 /**
