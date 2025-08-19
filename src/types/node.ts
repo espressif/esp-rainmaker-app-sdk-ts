@@ -60,6 +60,7 @@ interface ESPRMDeviceInterface {
   type: string;
   attributes?: ESPRMAttributeInterface[];
   params?: ESPRMDeviceParamInterface[];
+  primaryParam?: ESPRMDeviceParamInterface;
 }
 
 /**

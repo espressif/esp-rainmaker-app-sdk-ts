@@ -29,6 +29,9 @@ export class ESPRMDevice implements ESPRMDeviceInterface {
   /** Optional parameters associated with the device. */
   params?: ESPRMDeviceParam[];
 
+  /** The primary parameter of the device. */
+  primaryParam?: ESPRMDeviceParam;
+
   /**  Referance to ESPRMNode. */
   nodeRef: WeakRef<ESPRMNode>;
   /**
@@ -47,5 +50,9 @@ export class ESPRMDevice implements ESPRMDeviceInterface {
     this.params = data.params
       ? data.params.map((param) => new ESPRMDeviceParam(param, nodeRef))
       : [];
+
+    this.primaryParam = data.primaryParam
+      ? new ESPRMDeviceParam(data.primaryParam, nodeRef)
+      : undefined;
   }
 }
