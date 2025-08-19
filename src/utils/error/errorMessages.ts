@@ -187,6 +187,24 @@ const apiCallValidationErrorMessages = {
   /** Error message indicating that automation update details are missing. */
   MISSING_AUTOMATION_UPDATE_DETAILS:
     "Automation update details are required. Please provide at least one field to update.",
+  /** Error message indicating that the oauth adapter is missing. */
+  MISSING_OAUTH_ADAPTER:
+    "ESPAPICallValidationError: Oauth adapter is missing. Please set oauth adapter using ESPRMBase.setOauthAdapter method first",
+  /** Error message indicating that the identity provider is missing. */
+  MISSING_IDENTITY_PROVIDER:
+    "ESPAPICallValidationError: Identity provider is required. Please provide a valid identity provider.",
+  /** Error message indicating that the auth URL is missing. */
+  MISSING_AUTH_URL:
+    "ESPAPICallValidationError: Auth URL is required. Please provide a valid auth URL.",
+  /** Error message indicating that the redirect URL is missing. */
+  MISSING_REDIRECT_URL:
+    "ESPAPICallValidationError: Redirect URL is required. Please provide a valid redirect URL.",
+  /** Error message indicating that the client ID is missing. */
+  MISSING_CLIENT_ID:
+    "ESPAPICallValidationError: Client ID is required. Please provide a valid client ID.",
+  /** Error message indicating that the parameter value is invalid. */
+  INVALID_PARAMETER_VALUE:
+    "ESPAPICallValidationError: Invalid parameter value. Please refer to the validStrings property of the parameter to get the valid string values.",
 };
 
 /**
@@ -233,6 +251,15 @@ const provErrorMessages = {
     "ESPProvError: Timed out user device mapping on cloud",
 };
 
+const appPermissionErrorMessages = {
+  /** Error message indicating that the BLE permission is not granted. */
+  BLE_PERMISSION_NOT_GRANTED:
+    "ESPAppPermissionError: BLE permission is not granted. Please grant the permission to use BLE transport.",
+  /** Error message indicating that the location permission is not granted. */
+  LOCATION_PERMISSION_NOT_GRANTED:
+    "ESPAppPermissionError: Location permission is not granted. Please grant the permission to use SoftAP transport.",
+};
+
 const defaultErrorMessages = {
   /** Error message indicating that an unknown error occurred. */
   UNKNOWN_ERROR: "An unknown error occurred.",
@@ -249,5 +276,6 @@ export {
   apiCallValidationErrorMessages,
   tokenErrorMessages,
   provErrorMessages,
+  appPermissionErrorMessages,
   defaultErrorMessages,
 };

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ESPDevice } from "../../../src/ESPDevice";
-import { ESPProvResponseStatus } from "../../../src/types/provision";
+import { ESPConnectStatus, ESPDevice } from "../../../src";
 
 /**
  * Helper function to test successful device connection
@@ -13,8 +12,7 @@ import { ESPProvResponseStatus } from "../../../src/types/provision";
  */
 export async function connectDeviceSuccessTest(device: ESPDevice) {
   const response = await device.connect();
-  expect(response.status).toBe(ESPProvResponseStatus.succeed);
-  expect(response.description).toBeDefined();
+  expect(response).toBe(ESPConnectStatus.connected);
 }
 
 /**

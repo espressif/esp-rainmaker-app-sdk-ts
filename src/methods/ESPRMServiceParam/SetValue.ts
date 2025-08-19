@@ -4,28 +4,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ESPRMDeviceParam } from "../../ESPRMDeviceParam";
+import { ESPRMServiceParam } from "../../ESPRMServiceParam";
 import { delegatedTransportHandler } from "../../services/ESPRMHelpers/DelegatedTransportHandler";
 import { ESPAPIResponse } from "../../types/output";
 import { APICallValidationErrorCodes } from "../../utils/constants";
 import { ESPAPICallValidationError } from "../../utils/error/Error";
 
 /**
- * Augments the ESPRMDeviceParam class with the `setValue` method.
+ * Augments the ESPRMServiceParam class with the `setValue` method.
  */
-declare module "../../ESPRMDeviceParam" {
-  interface ESPRMDeviceParam {
+declare module "../../ESPRMServiceParam" {
+  interface ESPRMServiceParam {
     /**
-     * Sets the value of the device parameter.
+     * Sets the value of the service parameter.
      *
-     * @param value - The new value to set for the device parameter.
+     * @param value - The new value to set for the service parameter.
      * @returns A promise that resolves to the success response from the API.
      */
     setValue(value: any): Promise<ESPAPIResponse>;
   }
 }
 
-ESPRMDeviceParam.prototype.setValue = async function (
+ESPRMServiceParam.prototype.setValue = async function (
   value: any
 ): Promise<ESPAPIResponse> {
   const node = this.nodeRef.deref();
@@ -44,7 +44,7 @@ ESPRMDeviceParam.prototype.setValue = async function (
   const payload = {
     node_id: node.id,
     payload: {
-      [this.deviceName]: {
+      [this.serviceName]: {
         [this.name]: value,
       },
     },

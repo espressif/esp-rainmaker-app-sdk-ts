@@ -1,6 +1,6 @@
 {
   "name": "@espressif/rainmaker-base-sdk",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Espressif's Rainmaker Base SDK enables seamless integration of applications with the ESP Rainmaker ecosystem.",
   "license": "Apache-2.0",
   "author": "Espressif Systems (Shanghai) CO LTD",
@@ -113,6 +113,11 @@
       "import": "./dist/esm/ESPAutomation.js",
       "require": "./dist/cjs/ESPAutomation.cjs",
       "types": "./dist/types/ESPAutomation.d.ts"
+    },
+    "./ESPRMParam": {
+      "import": "./dist/esm/ESPRMParam.js",
+      "require": "./dist/cjs/ESPRMParam.cjs",
+      "types": "./dist/types/ESPRMParam.d.ts"
     }
   },
   "repository": {

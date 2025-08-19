@@ -53,9 +53,10 @@ ESPRMNode.prototype.getServices = async function (): Promise<ESPRMService[]> {
     const _service = { ...service };
     _service.params = updateServiceParamsValue(
       _service,
-      serviceParamsValuesResponse
+      serviceParamsValuesResponse,
+      this
     );
-    return new ESPRMService(_service);
+    return new ESPRMService(_service, this);
   });
 
   return updatedESPRMServiceList!;
@@ -70,11 +71,12 @@ ESPRMNode.prototype.getServices = async function (): Promise<ESPRMService[]> {
  */
 const updateServiceParamsValue = (
   service: ESPRMService,
-  serviceParamsValues: Record<string, any>
+  serviceParamsValues: Record<string, any>,
+  nodeRef: ESPRMNode
 ): ESPRMServiceParam[] => {
   return service.params.map((serviceParam) => {
     const _serviceParam = { ...serviceParam };
     _serviceParam.value = serviceParamsValues[service.name]?._serviceParam.name;
-    return new ESPRMServiceParam(_serviceParam);
+    return new ESPRMServiceParam(_serviceParam, nodeRef);
   });
 };

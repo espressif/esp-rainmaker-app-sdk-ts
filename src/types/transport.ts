@@ -39,8 +39,19 @@ interface ESPTransportConfig {
 }
 
 interface ESPTransportInterface {
-  setDeviceParam(payload: Record<string, any>): Promise<ESPAPIResponse>;
-  getDeviceParams(payload: Record<string, any>): Promise<Record<string, any>>;
+  /**
+   * Sets a parameter value on the node.
+   * @param payload - The payload containing parameters to set.
+   * @returns A promise that resolves to the API response.
+   */
+  setParam(payload: Record<string, any>): Promise<ESPAPIResponse>;
+
+  /**
+   * Gets parameters from the node.
+   * @param payload - The payload containing parameters to get.
+   * @returns A promise that resolves to the API response.
+   */
+  getParams(payload: Record<string, any>): Promise<Record<string, any>>;
 }
 
 export { ESPTransportMode, ESPTransportConfig, ESPTransportInterface };

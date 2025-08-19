@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v2.0.0]
+
+### Added
+
+- **Adapter-based OAuth Login**: Introduced adapter-based OAuth login functionality for more flexible authentication flows.
+- **Primary Parameter Retrieval**: Added API to fetch the primary parameter of an `ESPRMDevice`.
+- **Provisioning Enhancements**:
+  - Added BLE and location permission adapter support.
+  - Introduced customer-id-based BLE device search on the user instance.
+  - Added node ID retrieval support in the provisioning flow.
+- **Device & Service Parameter Enhancements**:
+  - Added support for `valid_strs` with validation.
+  - Introduced `bounds` support for service parameters.
+  - Added setter and getter support for service parameters.
+
+### Changed
+
+- **Provision Adapter**:
+  - Fixed response type for the `connect` method.
+- **Device & Service Parameter Classes**:
+  - Restructured classes for better maintainability and extensibility.
+
+### Fixed
+
+- **Notification Validation**: Corrected an incorrect validation condition for notification data.
+
+---
+
 ## [v1.1.0]
 
 ### Added
@@ -68,7 +96,6 @@ This is the **initial release** of `@espressif/rainmaker-base-sdk`, designed to 
     - **Group Management**: Organize and control multiple devices as groups.
 
 - **Native Module Support**:
-
   - Provides **adapter interfaces** for both **iOS and Android**, ensuring seamless integration with mobile applications.
 
 This release lays the foundation for future enhancements, allowing developers to build apps that integrate seamlessly with **ESP RainMaker** while maintaining **scalability** and **flexibility**.

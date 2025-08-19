@@ -51,7 +51,7 @@ export class ESPRMNodeConfig implements ESPRMNodeConfigInterface {
     );
     this.info = new ESPRMNodeInfo(data.info);
     this.services = data.services
-      ? data.services.map((service) => new ESPRMService(service))
+      ? data.services.map((service) => new ESPRMService(service, nodeRef))
       : [];
   }
 }

@@ -9,6 +9,7 @@ import "./ESPNodeSharingRequest";
 import "./ESPRMAuth";
 import "./ESPRMDevice";
 import "./ESPRMDeviceParam";
+import "./ESPRMServiceParam";
 import "./ESPRMGroup";
 import "./ESPRMNode";
 import "./ESPRMUser";

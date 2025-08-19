@@ -235,6 +235,18 @@ const APICallValidationErrorCodes = {
   MISSING_AUTOMATION_ID: "MISSING_AUTOMATION_ID",
   /** Error code indicating the automation update details are missing. */
   MISSING_AUTOMATION_UPDATE_DETAILS: "MISSING_AUTOMATION_UPDATE_DETAILS",
+  /** Error code indicating the oauth adapter is missing. */
+  MISSING_OAUTH_ADAPTER: "MISSING_OAUTH_ADAPTER",
+  /** Error code indicating the identity provider is missing. */
+  MISSING_IDENTITY_PROVIDER: "MISSING_IDENTITY_PROVIDER",
+  /** Error code indicating the auth URL is missing. */
+  MISSING_AUTH_URL: "MISSING_AUTH_URL",
+  /** Error code indicating the redirect URL is missing. */
+  MISSING_REDIRECT_URL: "MISSING_REDIRECT_URL",
+  /** Error code indicating the client ID is missing. */
+  MISSING_CLIENT_ID: "MISSING_CLIENT_ID",
+  /** Error code indicating invalid parameter value. */
+  INVALID_PARAMETER_VALUE: "INVALID_PARAMETER_VALUE",
 } as const;
 
 /**
@@ -295,6 +307,18 @@ const ProvErrorCodes = {
   /** Error code indicating the user node mapping cloud timeout. */
   FAILED_USER_NODE_MAPPING_CLOUD_TIMEOUT:
     "FAILED_USER_NODE_MAPPING_CLOUD_TIMEOUT",
+} as const;
+
+/**
+ * An object containing error codes related to permission issues.
+ *
+ * @enum {string}
+ */
+const AppPermissionErrorCodes = {
+  /** Error code indicating the BLE permission is not granted. */
+  BLE_PERMISSION_NOT_GRANTED: "BLE_PERMISSION_NOT_GRANTED",
+  /** Error code indicating the location permission is not granted. */
+  LOCATION_PERMISSION_NOT_GRANTED: "LOCATION_PERMISSION_NOT_GRANTED",
 } as const;
 
 /**
@@ -402,6 +426,7 @@ const ErrorLabels = {
   ESPTokenError: "ESPTokenError",
   ESPStorageAdapterError: "ESPStorageAdapterError",
   ESPValidationError: "ESPValidationError",
+  ESPAppPermissionError: "ESPAppPermissionError",
 } as const;
 
 /** Represents the HTTP status codes */
@@ -483,6 +508,30 @@ const APIResponseFields = {
   MQTT_HOST: "mqtt_host",
 } as const;
 
+/**
+ * An object containing API request fields.
+ */
+const APIRequestFields = {
+  /** Key for the identity provider. */
+  IDENTITY_PROVIDER_KEY: "identity_provider",
+  /** Key for the redirect URI. */
+  REDIRECT_URI_KEY: "redirect_uri",
+  /** Key for the client ID. */
+  CLIENT_ID_KEY: "client_id",
+  /** Key for the response type. */
+  RESPONSE_TYPE_KEY: "response_type",
+  /** Value for the response type. */
+  OAUTH_CODE_RESPONSE_TYPE: "code",
+  /** Key for the grant type. */
+  GRANT_TYPE_KEY: "grant_type",
+  /** Value for the grant type. */
+  OAUTH_CODE_GRANT_TYPE: "authorization_code",
+  /** Key for the content type. */
+  CONTENT_TYPE_KEY: "content-type",
+  /** Value for the content type. */
+  URL_ENCODED_CONTENT_TYPE: "application/x-www-form-urlencoded",
+} as const;
+
 export {
   HTTPMethods,
   APIEndpoints,
@@ -495,6 +544,7 @@ export {
   TokenErrorCodes,
   Endpoint,
   ProvErrorCodes,
+  AppPermissionErrorCodes,
   ServiceType,
   ProtocolType,
   StatusMessage,
@@ -513,4 +563,5 @@ export {
   Locale,
   TSDataConstants,
   APIResponseFields,
+  APIRequestFields,
 };

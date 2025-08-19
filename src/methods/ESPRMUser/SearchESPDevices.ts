@@ -9,7 +9,8 @@ import { ESPDevice } from "../../ESPDevice";
 import { ESPRMBase } from "../../ESPRMBase";
 import { ESPDeviceInterface, ESPTransport } from "../../types/provision";
 import { ESPProvError } from "../../utils/error/ESPProvError";
-import { ProvErrorCodes } from "../../utils/constants";
+import { AppPermissionErrorCodes, ProvErrorCodes } from "../../utils/constants";
+import { ESPAppPermissionError } from "../../utils/error/ESPAppPermissionError";
 
 /**
  * Augments the ESPRMUser class with the `searchESPDevices` method.
@@ -37,6 +38,16 @@ ESPRMUser.prototype.searchESPDevices = async function (
   devicePrefix: string,
   transport: ESPTransport
 ): Promise<ESPDevice[]> {
+  if (transport === ESPTransport.ble && ESPRMBase.ESPAppUtilityAdapter) {
+    const isBlePermissionGranted =
+      await ESPRMBase.ESPAppUtilityAdapter.isBlePermissionGranted();
+    if (!isBlePermissionGranted) {
+      throw new ESPAppPermissionError(
+        AppPermissionErrorCodes.BLE_PERMISSION_NOT_GRANTED
+      );
+    }
+  }
+
   if (!ESPRMBase.ESPProvisionAdapter) {
     throw new ESPProvError(ProvErrorCodes.MISSING_PROV_ADAPTER);
   }

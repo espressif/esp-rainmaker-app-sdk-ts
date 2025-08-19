@@ -79,11 +79,11 @@ class ESPLocalControlTransport implements ESPTransportInterface {
   }
 
   /**
-   * Sets device parameters.
+   * Sets node parameters.
    * @param payload - The payload containing parameters to set.
    * @returns A promise that resolves to the API response.
    */
-  async setDeviceParam(payload: Record<string, any>): Promise<ESPAPIResponse> {
+  async setParam(payload: Record<string, any>): Promise<ESPAPIResponse> {
     this.payload = payload;
     const isDeviceConnected =
       await ESPRMBase.ESPLocalControlAdapter.isConnected(this.payload?.node_id);
@@ -108,13 +108,11 @@ class ESPLocalControlTransport implements ESPTransportInterface {
   }
 
   /**
-   * Gets device parameters.
+   * Gets node parameters.
    * @param payload - The payload containing parameters to get.
-   * @returns A promise that resolves to the device parameters.
+   * @returns A promise that resolves to the node parameters.
    */
-  async getDeviceParams(
-    payload: Record<string, any>
-  ): Promise<Record<string, any>> {
+  async getParams(payload: Record<string, any>): Promise<Record<string, any>> {
     this.payload = payload;
     try {
       const isDeviceConnected =

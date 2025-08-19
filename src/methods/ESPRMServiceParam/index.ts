@@ -4,6 +4,5 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// ESPRMDevice Methods
-import "./GetParams";
-import "./GetPrimaryParam";
+// ESPRMServiceParam Methods
+import "./SetValue";

@@ -118,14 +118,25 @@ const transformNodeDevices = (
   nodeDevicesData: Record<string, any>[]
 ): ESPRMDeviceInterface[] => {
   return nodeDevicesData.map((nodeDeviceData) => {
+    const transformedParams = transformNodeDeviceParams(
+      nodeDeviceData.params,
+      nodeDeviceData.name
+    );
+
+    // Find the primary parameter from the transformed params
+    let primaryParam: ESPRMDeviceParamInterface | undefined;
+    if (nodeDeviceData.primary && transformedParams) {
+      primaryParam = transformedParams.find(
+        (param) => param.name === nodeDeviceData.primary
+      );
+    }
+
     return {
       name: nodeDeviceData.name,
       type: nodeDeviceData.type,
       attributes: transformNodeAttributes(nodeDeviceData.attributes),
-      params: transformNodeDeviceParams(
-        nodeDeviceData.params,
-        nodeDeviceData.name
-      ),
+      params: transformedParams,
+      primaryParam: primaryParam,
       displayName:
         _nodeData && dynamicDeviceNameKey
           ? _nodeData.params[nodeDeviceData.name][dynamicDeviceNameKey]
@@ -168,6 +179,7 @@ const transformNodeDeviceParams = (
       uiType: deviceParamData.ui_type,
       properties: deviceParamData.properties,
       bounds: deviceParamData.bounds,
+      validStrings: deviceParamData.valid_strs,
     };
   });
 };
@@ -177,11 +189,14 @@ const transformNodeServiceParams = (
   name: string
 ): ESPRMServiceParamInterface[] => {
   return serviceParamsData.map((serviceParamData) => ({
+    serviceName: name,
     name: serviceParamData.name,
     value: _nodeData?.params[name][serviceParamData.name] ?? undefined,
     type: serviceParamData.type,
     dataType: serviceParamData.data_type,
     properties: serviceParamData.properties,
+    bounds: serviceParamData.bounds,
+    validStrings: serviceParamData.valid_strs,
   }));
 };
 
