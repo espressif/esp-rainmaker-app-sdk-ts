@@ -6,6 +6,7 @@
 
 import { ESPRMServiceParam } from "./ESPRMServiceParam";
 import { ESPRMServiceInterface } from "./types/node";
+import { ESPRMNode } from "./ESPRMNode";
 
 /**
  * Represents a service associated with a device or node, including its name, parameters, and type.
@@ -21,14 +22,20 @@ export class ESPRMService implements ESPRMServiceInterface {
   /** The type of the service. */
   type: string;
 
+  /** Reference to ESPRMNode. */
+  nodeRef: WeakRef<ESPRMNode>;
+
   /**
    * Creates an instance of `ESPRMService`.
    *
    * @param data - An object containing the service details.
    */
-  constructor(data: ESPRMServiceInterface) {
+  constructor(data: ESPRMServiceInterface, nodeRef: ESPRMNode) {
     this.name = data.name;
-    this.params = data.params.map((param) => new ESPRMServiceParam(param));
+    this.params = data.params.map(
+      (param) => new ESPRMServiceParam(param, nodeRef)
+    );
     this.type = data.type;
+    this.nodeRef = new WeakRef(nodeRef);
   }
 }

@@ -113,6 +113,11 @@
       "import": "./dist/esm/ESPAutomation.js",
       "require": "./dist/cjs/ESPAutomation.cjs",
       "types": "./dist/types/ESPAutomation.d.ts"
+    },
+    "./ESPRMParam": {
+      "import": "./dist/esm/ESPRMParam.js",
+      "require": "./dist/cjs/ESPRMParam.cjs",
+      "types": "./dist/types/ESPRMParam.d.ts"
     }
   },
   "repository": {

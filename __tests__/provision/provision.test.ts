@@ -112,6 +112,7 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         value: "UTC",
         properties: [],
         dataType: "string",
+        serviceName: "Time",
       },
     };
 

@@ -10,16 +10,16 @@ import { APIEndpoints, HTTPMethods } from "../../utils/constants";
 import { ESPRMAPIManager } from "../ESPRMAPIManager";
 
 /**
- * Provides cloud-based transport mechanisms for setting and retrieving device parameters.
+ * Provides cloud-based transport mechanisms for setting and retrieving node parameters.
  */
 class ESPCloudTransport implements ESPTransportInterface {
   /**
-   * Sets a parameter on the device by sending a payload to the cloud service.
+   * Sets a parameter on the node by sending a payload to the cloud service.
    *
-   * @param payload - A record containing the parameter data to set on the device.
+   * @param payload - A record containing the parameter data to set on the node.
    * @returns A promise that resolves to the response of the set operation.
    */
-  async setDeviceParam(payload: Record<string, any>): Promise<ESPAPIResponse> {
+  async setParam(payload: Record<string, any>): Promise<ESPAPIResponse> {
     const requestConfig = {
       url: APIEndpoints.USER_NODE_PARAM,
       method: HTTPMethods.PUT,
@@ -31,14 +31,12 @@ class ESPCloudTransport implements ESPTransportInterface {
   }
 
   /**
-   * Retrieves parameters from the device by requesting data from the cloud service.
+   * Retrieves parameters from the node by requesting data from the cloud service.
    *
-   * @param payload - A record containing necessary data (e.g., `nodeId`) to retrieve the device parameters.
-   * @returns A promise that resolves to a record of the device parameters.
+   * @param payload - A record containing necessary data (e.g., `nodeId`) to retrieve the node parameters.
+   * @returns A promise that resolves to a record of the node parameters.
    */
-  async getDeviceParams(
-    payload: Record<string, any>
-  ): Promise<Record<string, any>> {
+  async getParams(payload: Record<string, any>): Promise<Record<string, any>> {
     const requestParams = {
       node_id: payload.node_id,
     };
