@@ -1,6 +1,6 @@
 {
   "name": "@espressif/rainmaker-base-sdk",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Espressif's Rainmaker Base SDK enables seamless integration of applications with the ESP Rainmaker ecosystem.",
   "license": "Apache-2.0",
   "author": "Espressif Systems (Shanghai) CO LTD",
