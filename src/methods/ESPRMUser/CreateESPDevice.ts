@@ -13,7 +13,8 @@ import {
   ESPTransport,
 } from "../../types/provision";
 import { ESPProvError } from "../../utils/error/ESPProvError";
-import { ProvErrorCodes } from "../../utils/constants";
+import { AppPermissionErrorCodes, ProvErrorCodes } from "../../utils/constants";
+import { ESPAppPermissionError } from "../../utils/error/ESPAppPermissionError";
 
 /**
  * Augments the ESPRMUser class with the `createESPDevice` method.
@@ -59,6 +60,25 @@ ESPRMUser.prototype.createESPDevice = async function (
   softAPPassword?: string,
   username?: string
 ): Promise<ESPDevice> {
+  if (ESPRMBase.ESPAppUtilityAdapter) {
+    if (transport === ESPTransport.softap) {
+      const isLocationPermissionGranted =
+        await ESPRMBase.ESPAppUtilityAdapter.isLocationPermissionGranted();
+      if (!isLocationPermissionGranted) {
+        throw new ESPAppPermissionError(
+          AppPermissionErrorCodes.LOCATION_PERMISSION_NOT_GRANTED
+        );
+      }
+    } else if (transport === ESPTransport.ble) {
+      const isBlePermissionGranted =
+        await ESPRMBase.ESPAppUtilityAdapter.isBlePermissionGranted();
+      if (!isBlePermissionGranted) {
+        throw new ESPAppPermissionError(
+          AppPermissionErrorCodes.BLE_PERMISSION_NOT_GRANTED
+        );
+      }
+    }
+  }
   if (!ESPRMBase.ESPProvisionAdapter) {
     throw new ESPProvError(ProvErrorCodes.MISSING_PROV_ADAPTER);
   }

@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ESPRMBase } from "../../src";
+import { ESPConnectStatus, ESPRMBase } from "../../src";
 import {
   createMockESPDevice,
-  MOCK_PROV_RESPONSES,
   connectDeviceSuccessTest,
   connectDeviceWithExpectedResultsTest,
   connectDeviceFailureTest,
@@ -42,7 +41,7 @@ describe("[Unit Test]: ESPDevice - connect()", () => {
   describe("Success Cases", () => {
     beforeEach(() => {
       mockProvisionAdapter.connect.mockResolvedValue(
-        MOCK_PROV_RESPONSES.CONNECT_SUCCESS
+        ESPConnectStatus.connected
       );
     });
 
@@ -58,7 +57,7 @@ describe("[Unit Test]: ESPDevice - connect()", () => {
       const device = createMockESPDevice();
       await connectDeviceWithExpectedResultsTest(
         device,
-        MOCK_PROV_RESPONSES.CONNECT_SUCCESS
+        ESPConnectStatus.connected
       );
     });
 

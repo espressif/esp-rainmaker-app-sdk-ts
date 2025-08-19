@@ -27,6 +27,7 @@ import { ESPLocalControlAdapterInterface } from "./services/ESPTransport/ESPLoca
 import {
   ESPNotificationAdapterInterface,
   ESPOauthAdapterInterface,
+  ESPAppUtilityAdapterInterface,
 } from "./types/adapter";
 import { ESPRMStorageAdapterInterface } from "./types/storage";
 import { isValidEnumValue } from "./services/ESPRMHelpers/IsValidEnumValue";
@@ -76,6 +77,11 @@ export class ESPRMBase {
   static ESPOauthAdapter: ESPOauthAdapterInterface;
 
   /**
+   * App utility adapter for the SDK.
+   */
+  static ESPAppUtilityAdapter: ESPAppUtilityAdapterInterface;
+
+  /**
    * Priority queue of transport modes.
    */
   static transportOrder: ESPTransportMode[] = [ESPTransportMode.cloud];
@@ -111,6 +117,9 @@ export class ESPRMBase {
     }
     if (config.oauthAdapter) {
       ESPRMBase.ESPOauthAdapter = config.oauthAdapter;
+    }
+    if (config.appUtilityAdapter) {
+      ESPRMBase.ESPAppUtilityAdapter = config.appUtilityAdapter;
     }
     const apiManagerConfig: ESPRMAPIManagerConfig = {
       baseUrl: config.baseUrl,
@@ -225,6 +234,17 @@ export class ESPRMBase {
    */
   public static setOauthAdapter(adapter: ESPOauthAdapterInterface): void {
     ESPRMBase.ESPOauthAdapter = adapter;
+  }
+
+  /**
+   * Sets the app utility adapter for the SDK.
+   *
+   * @param adapter - The app utility adapter implementing ESPAppUtilityAdapterInterface.
+   */
+  public static setAppUtilityAdapter(
+    adapter: ESPAppUtilityAdapterInterface
+  ): void {
+    ESPRMBase.ESPAppUtilityAdapter = adapter;
   }
 
   /**

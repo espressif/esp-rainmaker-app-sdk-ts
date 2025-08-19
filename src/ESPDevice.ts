@@ -13,6 +13,7 @@ import {
   ESPProvisionStatus,
   ESPProvResponse,
   ESPProvResponseStatus,
+  ESPConnectStatus,
   ESPWifiList,
 } from "./types/provision";
 
@@ -41,18 +42,28 @@ class ESPDevice {
   name;
   transport;
   security;
+  connected?: boolean;
+  username?: string;
+  versionInfo?: { [key: string]: any }[];
+  capabilities?: string[];
+  advertisementData?: { [key: string]: any }[];
 
   constructor(deviceConfig: ESPDeviceInterface) {
     this.name = deviceConfig.name;
     this.transport = deviceConfig.transport;
     this.security = deviceConfig.security;
+    this.connected = deviceConfig.connected;
+    this.username = deviceConfig.username;
+    this.versionInfo = deviceConfig.versionInfo;
+    this.capabilities = deviceConfig.capabilities;
+    this.advertisementData = deviceConfig.advertisementData;
   }
 
   /**
    * Connects to the device.
    * @returns A promise that resolves to the provisioning response.
    */
-  async connect(): Promise<ESPProvResponse> {
+  async connect(): Promise<ESPConnectStatus> {
     const response = await this.ESPProvisionAdapter.connect(this.name);
     return response;
   }

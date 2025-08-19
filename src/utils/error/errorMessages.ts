@@ -251,6 +251,15 @@ const provErrorMessages = {
     "ESPProvError: Timed out user device mapping on cloud",
 };
 
+const appPermissionErrorMessages = {
+  /** Error message indicating that the BLE permission is not granted. */
+  BLE_PERMISSION_NOT_GRANTED:
+    "ESPAppPermissionError: BLE permission is not granted. Please grant the permission to use BLE transport.",
+  /** Error message indicating that the location permission is not granted. */
+  LOCATION_PERMISSION_NOT_GRANTED:
+    "ESPAppPermissionError: Location permission is not granted. Please grant the permission to use SoftAP transport.",
+};
+
 const defaultErrorMessages = {
   /** Error message indicating that an unknown error occurred. */
   UNKNOWN_ERROR: "An unknown error occurred.",
@@ -267,5 +276,6 @@ export {
   apiCallValidationErrorMessages,
   tokenErrorMessages,
   provErrorMessages,
+  appPermissionErrorMessages,
   defaultErrorMessages,
 };
