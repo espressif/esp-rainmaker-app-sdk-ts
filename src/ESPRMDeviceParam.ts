@@ -4,18 +4,37 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ESPRMParam } from "./ESPRMParam";
 import { ESPRMNode } from "./ESPRMNode";
 import { ESPRMDeviceParamInterface } from "./types/node";
 
 /**
  * Represents a parameter associated with a device or node, including its name, value, and metadata.
- * Extends `ESPRMParam` and implements the `ESPRMDeviceParamInterface`.
  */
-export class ESPRMDeviceParam
-  extends ESPRMParam
-  implements ESPRMDeviceParamInterface
-{
+export class ESPRMDeviceParam implements ESPRMDeviceParamInterface {
+  /** The name of the parameter. */
+  name: string;
+
+  /** The value of the parameter. */
+  value?: any;
+
+  /** The type of the parameter. */
+  type: string;
+
+  /** Additional properties related to the parameter. */
+  properties: string[];
+
+  /** The data type of the parameter. */
+  dataType: string;
+
+  /** Bounds for the parameter values. */
+  bounds?: Record<string, any>;
+
+  /** The valid string values of the parameter. */
+  validStrings?: string[];
+
+  /** Reference to ESPRMNode. */
+  nodeRef: WeakRef<ESPRMNode>;
+
   /** The name of the device to which this parameter belongs. */
   deviceName: string;
 
@@ -29,10 +48,14 @@ export class ESPRMDeviceParam
    * @param nodeRef - Reference to the parent ESPRMNode.
    */
   constructor(data: ESPRMDeviceParamInterface, nodeRef: ESPRMNode) {
-    // Call parent constructor with base parameter data
-    super(data, nodeRef);
-
-    // Set device-specific properties
+    this.name = data.name;
+    this.value = data.value;
+    this.type = data.type;
+    this.properties = data.properties;
+    this.dataType = data.dataType;
+    this.bounds = data.bounds;
+    this.validStrings = data.validStrings;
+    this.nodeRef = new WeakRef(nodeRef);
     this.deviceName = data.deviceName;
     this.uiType = data.uiType;
   }
