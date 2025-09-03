@@ -67,19 +67,18 @@ const delegatedTransportHandler = async function <T>(
         transportMode as keyof typeof this.availableTransports
       ];
 
-    if (transportMode === ESPTransportMode.local) {
-      if (!config.metadata.baseUrl) {
-        throw new ESPAPICallValidationError(
-          APICallValidationErrorCodes.MISSING_BASE_URL
-        );
-      }
-      config.metadata.securityType = securityType || 0;
-      if (securityType === 1 || securityType === 2) {
-        config.metadata.pop = pop;
-      }
-    }
-
     if (config) {
+      if (transportMode === ESPTransportMode.local) {
+        if (!config.metadata.baseUrl) {
+          throw new ESPAPICallValidationError(
+            APICallValidationErrorCodes.MISSING_BASE_URL
+          );
+        }
+        config.metadata.securityType = securityType || 0;
+        if (securityType === 1 || securityType === 2) {
+          config.metadata.pop = pop;
+        }
+      }
       try {
         const transportManager = new ESPTransportManager(config);
         result = await operation(transportManager);
