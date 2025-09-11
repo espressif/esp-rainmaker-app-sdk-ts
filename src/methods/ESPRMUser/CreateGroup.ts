@@ -52,6 +52,7 @@ ESPRMUser.prototype.createGroup = async function (
   const groupInfoWithId: ESPRMGroupInterface = {
     ...createGroupRequestParams,
     id: responseData.group_id,
+    isPrimaryUser: true,
   };
   const groupInstance = new ESPRMGroup(groupInfoWithId);
 
