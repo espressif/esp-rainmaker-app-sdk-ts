@@ -15,6 +15,7 @@ import { ESPAPIResponse, StatusMessage } from "../../../src";
 import { ESPProvProgressMessages } from "../../../src/utils/constants";
 import { rainmaker } from "../../../src/proto/esp_rmaker_user_mapping";
 import { uint8ArrayToBase64 } from "../../../src/services/ESPRMHelpers/TransformEncoding";
+import { parseAPIErrorResponse } from "../../../src/utils/error/parser";
 
 // Mock device configuration
 export const MOCK_DEVICE_CONFIG: ESPDeviceInterface = {
@@ -29,6 +30,7 @@ export const MOCK_PASSPHRASE = "password123";
 export const MOCK_SECRET_KEY = "test-secret-key";
 export const MOCK_NODE_ID = "test-node-id";
 export const MOCK_REQUEST_ID = "test-request-id";
+export const MOCK_GROUP_ID = "test-group-id";
 
 /**
  * Creates a valid base64-encoded protobuf response for device association
@@ -237,3 +239,19 @@ export const MOCK_USER_TOKENS = {
     "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjdXN0b206dXNlcl9pZCI6InRlc3QtdXNlci1pZCIsImV4cCI6OTk5OTk5OTk5OX0._mock_signature",
   refreshToken: "mock-refresh-token",
 };
+
+/**
+ * Mock API error response
+ */
+export const MOCK_API_ERROR_RESPONSE = {
+  status: "failure",
+  error_code: 103035,
+  description:
+    "User Node Mapping is successful, but adding a node to a group failed",
+};
+
+// Parse it the same way ESPRMAPIManager.request would
+export const MOCK_API_ERROR = parseAPIErrorResponse(
+  MOCK_API_ERROR_RESPONSE,
+  400
+);

@@ -117,11 +117,13 @@ class ESPDevice {
    * @param ssid - The SSID of the Wi-Fi network.
    * @param passphrase - The passphrase of the Wi-Fi network.
    * @param onProgress - A callback function to report progress.
+   * @param groupId (optional) - The unique identifier of the group to which the node should be added.
    */
   async provision(
     ssid: string,
     passphrase: string,
-    onProgress: (message: ESPProvResponse) => void
+    onProgress: (message: ESPProvResponse) => void,
+    groupId?: string
   ): Promise<void> {
     // Start user device association
     try {
@@ -176,7 +178,8 @@ class ESPDevice {
             try {
               nodeMappingRequestId = await NodeMappingHelper.addNodeMapping(
                 nodeID,
-                secretKey
+                secretKey,
+                groupId
               );
               if (nodeMappingRequestId) {
                 break;
