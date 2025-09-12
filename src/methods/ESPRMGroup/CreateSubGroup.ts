@@ -48,6 +48,7 @@ ESPRMGroup.prototype.createSubGroup = async function (
     ...createSubGroupRequestParams,
     parentGroupId: this.id,
     id: responseData.group_id,
+    isPrimaryUser: true,
   };
   const groupInstance = new ESPRMGroup(groupInfoWithId);
 

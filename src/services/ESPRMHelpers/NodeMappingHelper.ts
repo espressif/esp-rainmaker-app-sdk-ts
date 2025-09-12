@@ -50,13 +50,18 @@ export const NodeMappingHelper = {
    *                 This parameter is required.
    * @param secretKey - The secret key corresponding to the node.
    *                    This parameter is required.
+   * @param groupId (optional) - The unique identifier of the group to which the node should be added.
    *
    * @returns A promise that resolves to the `request_id` generated for this operation.
    *
    * @throws {ESPAPICallValidationError} If the `nodeId` or `secretKey` is missing.
    * @throws {Error} If the API request fails.
    */
-  async addNodeMapping(nodeId: string, secretKey: string): Promise<string> {
+  async addNodeMapping(
+    nodeId: string,
+    secretKey: string,
+    groupId?: string
+  ): Promise<string> {
     if (!nodeId) {
       throw new ESPAPICallValidationError(
         APICallValidationErrorCodes.MISSING_NODE_ID
@@ -73,6 +78,7 @@ export const NodeMappingHelper = {
       node_id: nodeId,
       secret_key: secretKey,
       operation: APIOperations.ADD,
+      ...(groupId && { group_id: groupId }),
     };
 
     const requestConfig = {
