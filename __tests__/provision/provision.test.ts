@@ -24,6 +24,8 @@ import {
   MOCK_NODE_ID,
   mockProgressCallback,
   resetMockProgressCallback,
+  MOCK_GROUP_ID,
+  MOCK_API_ERROR,
 } from "../helpers/provision";
 
 // Mock dependencies
@@ -154,8 +156,12 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         MOCK_PASSPHRASE
       );
 
-      // Verify node mapping was attempted
-      expect(mockNodeMappingHelper.addNodeMapping).toHaveBeenCalled();
+      // Verify node mapping was attempted without groupId
+      expect(mockNodeMappingHelper.addNodeMapping).toHaveBeenCalledWith(
+        MOCK_NODE_ID,
+        expect.any(String), // secretKey
+        undefined // groupId should be undefined when not provided
+      );
 
       // Verify progress callbacks were made
       expect(mockProgressCallback).toHaveBeenCalled();
@@ -199,6 +205,54 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
           data: { nodeId: MOCK_NODE_ID },
         });
       }
+    }, 15000);
+
+    test("should provision device successfully with groupId", async () => {
+      const device = createMockESPDevice();
+
+      await device.provision(
+        MOCK_SSID,
+        MOCK_PASSPHRASE,
+        mockProgressCallback,
+        MOCK_GROUP_ID
+      );
+
+      // Wait for the interval to execute
+      await new Promise((resolve) => setTimeout(resolve, 6000));
+
+      // Verify node mapping was called with groupId
+      expect(mockNodeMappingHelper.addNodeMapping).toHaveBeenCalledWith(
+        MOCK_NODE_ID,
+        expect.any(String), // secretKey
+        MOCK_GROUP_ID
+      );
+
+      // Verify progress callbacks were made
+      expect(mockProgressCallback).toHaveBeenCalled();
+    }, 15000);
+
+    test("should handle empty groupId parameter", async () => {
+      const device = createMockESPDevice();
+
+      await device.provision(
+        MOCK_SSID,
+        MOCK_PASSPHRASE,
+        mockProgressCallback,
+        ""
+      );
+
+      // Wait for the interval to execute
+      await new Promise((resolve) => setTimeout(resolve, 6000));
+
+      // Verify node mapping was called with empty string
+      expect(mockNodeMappingHelper.addNodeMapping).toHaveBeenCalledWith(
+        MOCK_NODE_ID,
+        expect.any(String), // secretKey
+        ""
+      );
+
+      // Verify progress callbacks were made
+      expect(mockProgressCallback).toHaveBeenCalled();
     }, 15000);
   });
 
@@ -315,6 +369,37 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         expect(error).toBeDefined();
       }
     });
+
+    test("should handle node mapping failure with groupId", async () => {
+      // Simulate failure on addNodeMapping call with groupId
+      mockNodeMappingHelper.addNodeMapping.mockRejectedValue(MOCK_API_ERROR);
+
+      mockProvisionAdapter.sendData.mockResolvedValue(
+        MOCK_API_RESPONSES.DEVICE_ASSOCIATION_RESPONSE
+      );
+
+      const device = createMockESPDevice();
+
+      try {
+        await device.provision(
+          MOCK_SSID,
+          MOCK_PASSPHRASE,
+          mockProgressCallback,
+          MOCK_GROUP_ID
+        );
+        fail("Expected provision to throw a node mapping error with groupId");
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect(error).toEqual(MOCK_API_ERROR);
+
+        // Verify that addNodeMapping was called with the groupId before failing
+        expect(mockNodeMappingHelper.addNodeMapping).toHaveBeenCalledWith(
+          MOCK_NODE_ID,
+          expect.any(String), // secretKey
+          MOCK_GROUP_ID
+        );
+      }
+    }, 10000);
   });
 
   describe("Edge Cases", () => {
