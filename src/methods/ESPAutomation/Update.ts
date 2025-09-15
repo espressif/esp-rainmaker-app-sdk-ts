@@ -47,6 +47,7 @@ ESPAutomation.prototype.update = async function (
   // Validate that at least one field is provided
   if (
     !automationDetails.name &&
+    automationDetails.nodeId === undefined &&
     automationDetails.enabled === undefined &&
     automationDetails.metadata === undefined &&
     !automationDetails.location &&
@@ -64,6 +65,9 @@ ESPAutomation.prototype.update = async function (
   const requestPayload: Record<string, any> = {
     ...(isNonEmptyString(automationDetails.name) && {
       name: automationDetails.name,
+    }),
+    ...(isNonEmptyString(automationDetails.nodeId) && {
+      node_id: automationDetails.nodeId,
     }),
     ...(automationDetails.enabled !== undefined && {
       enabled: automationDetails.enabled,

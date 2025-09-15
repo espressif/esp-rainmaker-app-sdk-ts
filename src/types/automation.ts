@@ -113,6 +113,7 @@ interface ESPAutomationDetails {
  */
 interface ESPAutomationUpdateDetails {
   name?: string;
+  nodeId?: string;
   metadata?: any;
   events?: (
     | ESPAutomationEvent
