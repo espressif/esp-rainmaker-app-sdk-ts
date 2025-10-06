@@ -257,7 +257,7 @@ interface FetchGroupSharingRequestsParam {
  * Represents subscription model event callbacks mapper
  */
 type EventCallbacks = {
-  [event in ESPRMEventType]?: Function[];
+  [event in ESPRMEventType | string]?: Function[];
 };
 
 /**

@@ -46,7 +46,7 @@ ESPRMDevice.prototype.getParams = async function (): Promise<
 
   response = await (delegatedTransportHandler<Record<string, any>>).call(
     node,
-    (manager) => manager.getParams(payload)
+    (manager) => manager.getParams(payload, node)
   );
 
   const currentDeviceSpecificParamsData = response![this.name];
