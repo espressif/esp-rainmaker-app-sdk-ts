@@ -165,6 +165,7 @@ interface CreateGroupRequest {
   customData?: Record<string, any>;
   type?: string;
   mutuallyExclusive?: boolean;
+  metadata?: Record<string, any>;
 }
 
 /**

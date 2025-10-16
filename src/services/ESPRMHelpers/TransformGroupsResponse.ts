@@ -39,7 +39,7 @@ const transformGroupsResponse = (
           ? transformGroupsResponse(group.sub_groups)
           : undefined,
         description: group.description,
-        metadata: group.meta_data,
+        metadata: group.group_metadata,
         customData: group.custom_data,
         isMatter: group.is_matter,
         fabricId: group.fabric_id,
