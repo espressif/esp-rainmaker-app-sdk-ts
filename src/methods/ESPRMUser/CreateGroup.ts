@@ -50,9 +50,16 @@ ESPRMUser.prototype.createGroup = async function (
     await ESPRMAPIManager.authorizeRequest(requestConfig);
 
   const groupInfoWithId: ESPRMGroupInterface = {
-    ...createGroupRequestParams,
     id: responseData.group_id,
     isPrimaryUser: true,
+    name: createGroupRequestParams.name,
+    nodes: createGroupRequestParams.nodeIds,
+    description: createGroupRequestParams.description,
+    customData: createGroupRequestParams.customData,
+    metadata: createGroupRequestParams.metadata,
+    type: createGroupRequestParams.type,
+    mutuallyExclusive: createGroupRequestParams.mutuallyExclusive,
+    totalNodes: createGroupRequestParams.nodeIds?.length,
   };
   const groupInstance = new ESPRMGroup(groupInfoWithId);
 
@@ -87,6 +94,9 @@ function createRequestData(
     }),
     ...(createGroupRequestParams.mutuallyExclusive !== undefined && {
       mutually_exclusive: createGroupRequestParams.mutuallyExclusive,
+    }),
+    ...(createGroupRequestParams.metadata !== undefined && {
+      group_metadata: createGroupRequestParams.metadata,
     }),
   };
 }

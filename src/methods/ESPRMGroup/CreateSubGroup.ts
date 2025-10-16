@@ -45,10 +45,17 @@ ESPRMGroup.prototype.createSubGroup = async function (
     await ESPRMAPIManager.authorizeRequest(requestConfig);
 
   const groupInfoWithId: ESPRMGroupInterface = {
-    ...createSubGroupRequestParams,
     parentGroupId: this.id,
     id: responseData.group_id,
     isPrimaryUser: true,
+    name: createSubGroupRequestParams.name,
+    nodes: createSubGroupRequestParams.nodeIds,
+    description: createSubGroupRequestParams.description,
+    customData: createSubGroupRequestParams.customData,
+    type: createSubGroupRequestParams.type,
+    mutuallyExclusive: createSubGroupRequestParams.mutuallyExclusive,
+    totalNodes: createSubGroupRequestParams.nodeIds?.length,
+    metadata: createSubGroupRequestParams.metadata,
   };
   const groupInstance = new ESPRMGroup(groupInfoWithId);
 
@@ -83,6 +90,9 @@ function createRequestData(
     }),
     ...(createSubGroupRequestParams.mutuallyExclusive !== undefined && {
       mutually_exclusive: createSubGroupRequestParams.mutuallyExclusive,
+    }),
+    ...(createSubGroupRequestParams.metadata !== undefined && {
+      group_metadata: createSubGroupRequestParams.metadata,
     }),
   };
 }

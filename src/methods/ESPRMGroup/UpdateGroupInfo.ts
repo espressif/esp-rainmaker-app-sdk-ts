@@ -88,7 +88,7 @@ function createRequestData(
       description: updateInfo.description,
     }),
     ...(updateInfo.groupMetaData !== undefined && {
-      group_meta_data: updateInfo.groupMetaData,
+      group_metadata: updateInfo.groupMetaData,
     }),
     ...(updateInfo.customData !== undefined && {
       custom_data: updateInfo.customData,
