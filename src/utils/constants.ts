@@ -251,6 +251,10 @@ const APICallValidationErrorCodes = {
   MISSING_CLIENT_ID: "MISSING_CLIENT_ID",
   /** Error code indicating invalid parameter value. */
   INVALID_PARAMETER_VALUE: "INVALID_PARAMETER_VALUE",
+  /** Error code indicating the custom parameter name is missing. */
+  MISSING_CUSTOM_PARAM_NAME: "MISSING_CUSTOM_PARAM_NAME",
+  /** Error code indicating the custom parameter data type is missing. */
+  MISSING_CUSTOM_PARAM_DATA_TYPE: "MISSING_CUSTOM_PARAM_DATA_TYPE",
 } as const;
 
 /**

@@ -205,6 +205,12 @@ const apiCallValidationErrorMessages = {
   /** Error message indicating that the parameter value is invalid. */
   INVALID_PARAMETER_VALUE:
     "ESPAPICallValidationError: Invalid parameter value. Please refer to the validStrings property of the parameter to get the valid string values.",
+  /** Error message indicating that the custom parameter name is missing. */
+  MISSING_CUSTOM_PARAM_NAME:
+    "ESPAPICallValidationError: Custom parameter name is required.",
+  /** Error message indicating that the custom parameter data type is missing. */
+  MISSING_CUSTOM_PARAM_DATA_TYPE:
+    "ESPAPICallValidationError: Custom parameter data type is required.",
 };
 
 /**
