@@ -381,6 +381,34 @@ enum ESPIdProvider {
   SIGN_IN_WITH_APPLE = "SignInWithApple",
 }
 
+/**
+ * Represents the supported user roles for assuming a role.
+ */
+enum ESPUserRole {
+  /** MQTT role - works with group_ids and node_ids. Default role if not specified. */
+  MQTT = "mqtt",
+  /** Video stream role - requires node_ids to generate credentials. */
+  VIDEOSTREAM = "videostream",
+}
+
+/**
+ * Request payload for assuming user role.
+ *
+ * This API allows a user to assume a role and get temporary security credentials for MQTT and other AWS services.
+ *
+ * @remarks
+ * - `userRole` is optional. If not provided or empty, it defaults to "mqtt". Can be either a string (for future flexibility) or ESPUserRole enum value. Only the values "mqtt" and "videostream" are supported. Any other value will result in an error.
+ * - `videostream` role requires `nodeIds` to generate credentials.
+ * - `mqtt` role works with `groupIds` and `nodeIds`.
+ * - `groupIds` and `nodeIds` are both optional arrays (max 5 each). Only one of them can be non-empty in a request. Cannot be provided together.
+ * - If both `groupIds` and `nodeIds` are empty or omitted, credentials will be granted for all groups the user has access to.
+ */
+interface AssumeRoleRequest {
+  userRole?: string | ESPUserRole;
+  groupIds?: string[];
+  nodeIds?: string[];
+}
+
 export {
   ESPRMBaseConfig,
   ESPRMAPIManagerConfig,
@@ -424,4 +452,6 @@ export {
   UserCustomDataRequest,
   UserCustomDataResponse,
   ESPIdProvider,
+  ESPUserRole,
+  AssumeRoleRequest,
 };

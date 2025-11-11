@@ -167,6 +167,15 @@ interface GetGroupSharingRequestsAPIResponse {
 }
 
 /**
+ * Represents the response from assuming a user role.
+ */
+interface AssumeRoleResponse {
+  accessKey: string;
+  secretKey: string;
+  sessionToken: string;
+}
+
+/**
  * Represents the processed paginated response for user node sharing requests/invitations.
  */
 interface ESPNodeSharingResponse {
@@ -215,4 +224,5 @@ export {
   CreateSubGroupAPIResponse,
   ESPGroupSharingResponse,
   GetGroupSharingRequestsAPIResponse,
+  AssumeRoleResponse,
 };

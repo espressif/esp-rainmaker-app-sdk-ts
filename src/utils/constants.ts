@@ -81,10 +81,13 @@ const APIEndpoints = {
   USER_NODE_MAPPING_VERIFY: "user/nodes/mapping/verify",
   /** The endpoint for retriving mqtt host. */
   MQTT_HOST: "mqtt_host",
+
   /** The endpoint for initiating claiming. */
   CLAIM_INITIATE: "claim/initiate",
   /** The endpoint for verifying claiming. */
   CLAIM_VERIFY: "claim/verify",
+  /** The endpoint for assuming user role. */
+  USER_ASSUME_ROLE: "user/assume_role",
 } as const;
 
 /**
@@ -255,6 +258,17 @@ const APICallValidationErrorCodes = {
   MISSING_CUSTOM_PARAM_NAME: "MISSING_CUSTOM_PARAM_NAME",
   /** Error code indicating the custom parameter data type is missing. */
   MISSING_CUSTOM_PARAM_DATA_TYPE: "MISSING_CUSTOM_PARAM_DATA_TYPE",
+  /** Error code indicating that the number of node IDs exceeds the maximum allowed. */
+  INVALID_ASSUME_ROLE_NODE_IDS_COUNT: "INVALID_ASSUME_ROLE_NODE_IDS_COUNT",
+  /** Error code indicating that the number of group IDs exceeds the maximum allowed. */
+  INVALID_ASSUME_ROLE_GROUP_IDS_COUNT: "INVALID_ASSUME_ROLE_GROUP_IDS_COUNT",
+  /** Error code indicating that an invalid user role was provided. */
+  INVALID_ASSUME_ROLE_USER_ROLE: "INVALID_ASSUME_ROLE_USER_ROLE",
+  /** Error code indicating that both group_ids and node_ids are provided when only one is allowed. */
+  INVALID_ASSUME_ROLE_PARAMS: "INVALID_ASSUME_ROLE_PARAMS",
+  /** Error code indicating that node_ids is required for videostream role. */
+  MISSING_ASSUME_ROLE_NODE_IDS_FOR_VIDEOSTREAM:
+    "MISSING_ASSUME_ROLE_NODE_IDS_FOR_VIDEOSTREAM",
 } as const;
 
 /**
@@ -581,6 +595,16 @@ const TSDataConstants = {
 } as const;
 
 /**
+ * An object containing assume role related constants.
+ */
+const AssumeRoleConstants = {
+  /** Maximum number of node IDs that can be provided in an assume role request */
+  MAX_NODE_IDS: 5,
+  /** Maximum number of group IDs that can be provided in an assume role request */
+  MAX_GROUP_IDS: 5,
+} as const;
+
+/**
  * An object containing field names used in API responses.
  */
 const APIResponseFields = {
@@ -642,6 +666,7 @@ export {
   ParamProperties,
   Locale,
   TSDataConstants,
+  AssumeRoleConstants,
   APIResponseFields,
   APIRequestFields,
   // Claiming related exports
