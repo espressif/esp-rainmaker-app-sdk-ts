@@ -5,6 +5,7 @@
  */
 
 import { ESPRMNodeInfoInterface } from "./types/node";
+import { copyAdditionalFields } from "./services/ESPRMHelpers/CopyAdditionalFields";
 
 /**
  * Represents information about a node, including its name, type, model, and firmware version.
@@ -23,6 +24,12 @@ export class ESPRMNodeInfo implements ESPRMNodeInfoInterface {
   /** The firmware version of the node. */
   firmwareVersion: string;
 
+  /** The readme of the node. */
+  readme?: string;
+
+  /** Allow additional fields that might be added in future API responses */
+  [key: string]: any;
+
   /**
    * Creates an instance of `ESPRMNodeInfo`.
    *
@@ -33,5 +40,16 @@ export class ESPRMNodeInfo implements ESPRMNodeInfoInterface {
     this.type = data.type;
     this.model = data.model;
     this.firmwareVersion = data.firmwareVersion;
+    this.readme = data.readme;
+
+    // Assign any additional fields dynamically
+    const knownFields = new Set([
+      "name",
+      "type",
+      "model",
+      "firmwareVersion",
+      "readme",
+    ]);
+    copyAdditionalFields(data, this, knownFields);
   }
 }
