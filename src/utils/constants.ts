@@ -81,6 +81,10 @@ const APIEndpoints = {
   USER_NODE_MAPPING_VERIFY: "user/nodes/mapping/verify",
   /** The endpoint for retriving mqtt host. */
   MQTT_HOST: "mqtt_host",
+  /** The endpoint for initiating claiming. */
+  CLAIM_INITIATE: "claim/initiate",
+  /** The endpoint for verifying claiming. */
+  CLAIM_VERIFY: "claim/verify",
 } as const;
 
 /**
@@ -283,7 +287,30 @@ const Endpoint = {
   LOCAL_CTRL: "esp_local_ctrl/control",
   /** The endpoint for cloud user association. */
   CLOUD_USER_ASSOCIATION: "cloud_user_assoc",
+  /** The endpoint for RainMaker claiming. */
+  RM_CLAIM: "rmaker_claim",
 } as const;
+
+/**
+ * An object containing device capability constants for RainMaker.
+ *
+ * @enum {string}
+ */
+const RMakerCapabilities = {
+  /** Capability indicating device supports assisted claiming. */
+  CLAIM: "claim",
+  /** Capability indicating device supports WiFi scanning. */
+  WIFI_SCAN: "wifi_scan",
+  /** Capability indicating device supports WiFi provisioning. */
+  WIFI_PROV: "wifi_prov",
+  /** Capability indicating device does not require Proof of Possession. */
+  NO_POP: "no_pop",
+} as const;
+
+/**
+ * The default claiming base URL.
+ */
+const DEFAULT_CLAIM_BASE_URL = "https://esp-claiming.rainmaker.espressif.com";
 
 /**
  * An object containing error codes related to provisioning issues.
@@ -307,6 +334,54 @@ const ProvErrorCodes = {
   /** Error code indicating the user node mapping cloud timeout. */
   FAILED_USER_NODE_MAPPING_CLOUD_TIMEOUT:
     "FAILED_USER_NODE_MAPPING_CLOUD_TIMEOUT",
+} as const;
+
+/**
+ * An object containing error codes related to claiming issues.
+ *
+ * @enum {string}
+ */
+const ClaimErrorCodes = {
+  /** Error code indicating claiming start failed. */
+  CLAIM_START_FAILED: "CLAIM_START_FAILED",
+  /** Error code indicating claiming was aborted. */
+  CLAIM_ABORTED: "CLAIM_ABORTED",
+  /** Error code indicating claiming API call failed. */
+  CLAIM_API_FAILED: "CLAIM_API_FAILED",
+  /** Error code indicating CSR retrieval failed. */
+  CSR_RETRIEVAL_FAILED: "CSR_RETRIEVAL_FAILED",
+  /** Error code indicating certificate send failed. */
+  CERTIFICATE_SEND_FAILED: "CERTIFICATE_SEND_FAILED",
+} as const;
+
+/**
+ * An object containing claiming progress messages.
+ */
+const ClaimProgressMessages = {
+  /** Message indicating claiming start. */
+  CLAIM_STARTING: "Starting assisted claiming...",
+  /** Message indicating claim start request sent. */
+  CLAIM_START_SENT: "Claim start request sent to device.",
+  /** Message indicating device info received. */
+  DEVICE_INFO_RECEIVED: "Device info received.",
+  /** Message indicating claim init API call. */
+  CLAIM_INIT_API: "Sending device info to cloud...",
+  /** Message indicating claim init sent to device. */
+  CLAIM_INIT_SENT: "Claim init sent to device.",
+  /** Message indicating CSR retrieval. */
+  CSR_RETRIEVING: "Retrieving CSR from device...",
+  /** Message indicating CSR received. */
+  CSR_RECEIVED: "CSR received from device.",
+  /** Message indicating verify API call. */
+  CLAIM_VERIFY_API: "Sending CSR to cloud for verification...",
+  /** Message indicating certificate received. */
+  CERTIFICATE_RECEIVED: "Certificate received from cloud.",
+  /** Message indicating certificate being sent to device. */
+  CERTIFICATE_SENDING: "Sending certificate to device...",
+  /** Message indicating claiming completed successfully. */
+  CLAIM_SUCCESS: "Assisted claiming completed successfully.",
+  /** Message indicating claiming failed. */
+  CLAIM_FAILED: "Assisted claiming failed.",
 } as const;
 
 /**
@@ -423,6 +498,7 @@ const ErrorLabels = {
   ESPAPICallValidationError: "ESPAPICallValidationError",
   ESPConfigError: "ESPConfigError",
   ESPProvError: "ESPProvError",
+  ESPClaimError: "ESPClaimError",
   ESPTokenError: "ESPTokenError",
   ESPStorageAdapterError: "ESPStorageAdapterError",
   ESPValidationError: "ESPValidationError",
@@ -564,4 +640,9 @@ export {
   TSDataConstants,
   APIResponseFields,
   APIRequestFields,
+  // Claiming related exports
+  RMakerCapabilities,
+  DEFAULT_CLAIM_BASE_URL,
+  ClaimErrorCodes,
+  ClaimProgressMessages,
 };
