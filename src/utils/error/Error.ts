@@ -10,4 +10,5 @@ export { ESPStorageAdapterError } from "./ESPStorageAdapterError";
 export { ESPAPICallValidationError } from "./ESPAPICallValidationError";
 export { ESPTokenError } from "./ESPTokenError";
 export { ESPProvError } from "./ESPProvError";
+export { ESPClaimError } from "./ESPClaimError";
 export { ESPAppPermissionError } from "./ESPAppPermissionError";

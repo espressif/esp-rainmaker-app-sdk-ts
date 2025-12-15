@@ -17,6 +17,7 @@ import {
   ESPRMServiceParamInterface,
 } from "../../types/node";
 import { ESPTransportMode } from "../../types/transport";
+import { copyAdditionalFields } from "./CopyAdditionalFields";
 
 /**
  * Transforms the raw node info response from the API into a structured format.
@@ -148,12 +149,27 @@ const transformNodeDevices = (
 const transformNodeInfo = (
   nodeInfoData: Record<string, any>
 ): ESPRMNodeInfoInterface => {
-  return {
+  // Start with the known/expected fields with proper mapping
+  const transformedInfo: ESPRMNodeInfoInterface = {
     name: nodeInfoData.name,
     type: nodeInfoData.type,
     model: nodeInfoData.model,
     firmwareVersion: nodeInfoData.fw_version,
+    ...(nodeInfoData.readme !== undefined && { readme: nodeInfoData.readme }),
   };
+
+  // Add any additional fields that might be present in the API response
+  // but are not part of the known fields
+  const knownFields = new Set([
+    "name",
+    "type",
+    "model",
+    "fw_version",
+    "readme",
+  ]);
+  copyAdditionalFields(nodeInfoData, transformedInfo, knownFields);
+
+  return transformedInfo;
 };
 
 const transformNodeDeviceParams = (
