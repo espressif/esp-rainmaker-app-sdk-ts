@@ -6,6 +6,7 @@
 
 import { ESPRMBase } from "./ESPRMBase";
 import { rainmaker } from "./proto/esp_rmaker_user_mapping";
+import { ClaimingProtoHelper } from "./proto/esp_rmaker_claim";
 
 import {
   ESPDeviceInterface,
@@ -15,6 +16,8 @@ import {
   ESPProvResponseStatus,
   ESPConnectStatus,
   ESPWifiList,
+  ESPClaimStatus,
+  ESPClaimProgressCallback,
 } from "./types/provision";
 
 import { ESPRMStorage } from "./services/ESPRMStorage/ESPRMStorage";
@@ -29,12 +32,16 @@ import {
   ESPProvProgressMessages,
   StorageKeys,
   StatusMessage,
+  ClaimProgressMessages,
+  ClaimErrorCodes,
 } from "./utils/constants";
 import { ESPProvError } from "./utils/error/Error";
+import { ESPClaimError } from "./utils/error/ESPClaimError";
 import { NodeMappingHelper } from "./services/ESPRMHelpers/NodeMappingHelper";
 import { ESPRMUser } from "./ESPRMUser";
 import { NodeTimeZoneSetupService } from "./services/ESPRMHelpers/NodeTimeZoneSetupService";
 import { ESPAPIResponse } from "./types/output";
+import { ClaimingHelper } from "./services/ESPRMHelpers/ClaimingHelper";
 
 class ESPDevice {
   ESPProvisionAdapter: ESPProvisionAdapterInterface =
@@ -99,9 +106,238 @@ class ESPDevice {
 
   /**
    * Starts the assisted claiming process.
+   * This method handles the complete claiming flow:
+   * 1. Send ClaimStart to device
+   * 2. Get device info and send to cloud
+   * 3. Send ClaimInit with cloud response to device
+   * 4. Get CSR from device
+   * 5. Send CSR to cloud for verification
+   * 6. Send certificate to device
+   *
+   * @param onProgress - Callback for progress updates
+   * @returns Promise that resolves when claiming is complete
+   * @throws Error if claiming fails at any step
    */
-  async startAssistedClaiming() {
-    // To Do
+  async startAssistedClaiming(
+    onProgress?: ESPClaimProgressCallback
+  ): Promise<void> {
+    // Default callback if none provided
+    const progressCallback: ESPClaimProgressCallback = onProgress || (() => {});
+
+    let isClaimingAborted = false;
+
+    try {
+      // Step 1: Send ClaimStart request to device
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.CLAIM_STARTING,
+      });
+
+      const claimStartPayload = ClaimingProtoHelper.createClaimStartRequest();
+      const claimStartBase64 = uint8ArrayToBase64(claimStartPayload);
+
+      const claimStartResponse = await this.sendData(
+        Endpoint.RM_CLAIM,
+        claimStartBase64
+      );
+
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.CLAIM_START_SENT,
+      });
+
+      // Parse the response
+      const claimStartData = base64ToUint8Array(claimStartResponse);
+
+      const claimStartParsed =
+        ClaimingProtoHelper.parseClaimResponse(claimStartData);
+
+      if (!ClaimingProtoHelper.isSuccess(claimStartParsed)) {
+        throw new ESPClaimError(ClaimErrorCodes.CLAIM_START_FAILED);
+      }
+
+      // Extract device info from response
+      const deviceInfo =
+        ClaimingProtoHelper.extractPayloadString(claimStartParsed);
+      if (!deviceInfo) {
+        throw new ESPClaimError(ClaimErrorCodes.CLAIM_START_FAILED);
+      }
+
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.DEVICE_INFO_RECEIVED,
+      });
+
+      // Step 2: Send device info to cloud
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.CLAIM_INIT_API,
+      });
+
+      let deviceInfoJson: any;
+      try {
+        deviceInfoJson = JSON.parse(deviceInfo);
+      } catch {
+        deviceInfoJson = { data: deviceInfo };
+      }
+
+      const cloudInitResponse =
+        await ClaimingHelper.initiateClaim(deviceInfoJson);
+
+      // Step 3: Send ClaimInit with cloud response to device
+      const claimInitPayload =
+        ClaimingProtoHelper.createClaimInitRequest(cloudInitResponse);
+      const claimInitBase64 = uint8ArrayToBase64(claimInitPayload);
+
+      const claimInitResponse = await this.sendData(
+        Endpoint.RM_CLAIM,
+        claimInitBase64
+      );
+
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.CLAIM_INIT_SENT,
+      });
+
+      // Step 4: Get CSR from device (may require multiple requests)
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.CSR_RETRIEVING,
+      });
+
+      let csrData = "";
+      let csrComplete = false;
+      let currentResponse = claimInitResponse;
+      let deviceChunkSize = 0; // Capture the chunk size from device's response
+
+      while (!csrComplete && !isClaimingAborted) {
+        const responseData = base64ToUint8Array(currentResponse);
+        const parsedResponse =
+          ClaimingProtoHelper.parseClaimResponse(responseData);
+
+        if (!ClaimingProtoHelper.isSuccess(parsedResponse)) {
+          throw new ESPClaimError(ClaimErrorCodes.CSR_RETRIEVAL_FAILED);
+        }
+
+        const chunk = ClaimingProtoHelper.extractPayloadString(parsedResponse);
+        const offset = ClaimingProtoHelper.getOffset(parsedResponse);
+        const totalLen = ClaimingProtoHelper.getTotalLen(parsedResponse);
+
+        // Capture chunk size from first response (like Android does)
+        if (offset === 0) {
+          csrData = chunk;
+          deviceChunkSize = chunk.length;
+        } else {
+          csrData += chunk;
+        }
+
+        if (csrData.length >= totalLen) {
+          csrComplete = true;
+        } else {
+          // Request more data
+          const continuePayload =
+            ClaimingProtoHelper.createClaimInitContinueRequest();
+          const continueBase64 = uint8ArrayToBase64(continuePayload);
+          currentResponse = await this.sendData(
+            Endpoint.RM_CLAIM,
+            continueBase64
+          );
+        }
+      }
+
+      if (isClaimingAborted) {
+        throw new ESPClaimError(ClaimErrorCodes.CLAIM_ABORTED);
+      }
+
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.CSR_RECEIVED,
+      });
+
+      // Step 5: Send CSR to cloud for verification
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.CLAIM_VERIFY_API,
+      });
+
+      let csrJson: any;
+      try {
+        csrJson = JSON.parse(csrData);
+      } catch {
+        csrJson = { csr: csrData };
+      }
+
+      const certificateData = await ClaimingHelper.verifyClaim(csrJson);
+
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.CERTIFICATE_RECEIVED,
+      });
+
+      // Step 6: Send certificate to device (chunked)
+      progressCallback({
+        status: ESPClaimStatus.inProgress,
+        message: ClaimProgressMessages.CERTIFICATE_SENDING,
+      });
+
+      // Use the chunk size from device's CSR response (like Android does)
+      // Fall back to 200 if not captured (conservative default)
+      const chunkSize = deviceChunkSize > 0 ? deviceChunkSize : 200;
+      let offset = 0;
+
+      while (offset < certificateData.length && !isClaimingAborted) {
+        const verifyPayload = ClaimingProtoHelper.createClaimVerifyRequest(
+          certificateData,
+          offset,
+          chunkSize
+        );
+        const verifyBase64 = uint8ArrayToBase64(verifyPayload);
+
+        const verifyResponse = await this.sendData(
+          Endpoint.RM_CLAIM,
+          verifyBase64
+        );
+
+        // Parse response to ensure success
+        const verifyData = base64ToUint8Array(verifyResponse);
+        const verifyParsed = ClaimingProtoHelper.parseClaimResponse(verifyData);
+
+        if (!ClaimingProtoHelper.isSuccess(verifyParsed)) {
+          throw new ESPClaimError(ClaimErrorCodes.CERTIFICATE_SEND_FAILED);
+        }
+
+        offset += chunkSize;
+      }
+
+      if (isClaimingAborted) {
+        throw new ESPClaimError(ClaimErrorCodes.CLAIM_ABORTED);
+      }
+
+      // Claiming completed successfully
+      progressCallback({
+        status: ESPClaimStatus.success,
+        message: ClaimProgressMessages.CLAIM_SUCCESS,
+      });
+    } catch (error: any) {
+      // Send abort command if we haven't completed
+      if (!isClaimingAborted) {
+        try {
+          const abortPayload = ClaimingProtoHelper.createClaimAbortRequest();
+          const abortBase64 = uint8ArrayToBase64(abortPayload);
+          await this.sendData(Endpoint.RM_CLAIM, abortBase64);
+        } catch {
+          // Ignore abort errors
+        }
+      }
+
+      progressCallback({
+        status: ESPClaimStatus.failed,
+        message: ClaimProgressMessages.CLAIM_FAILED,
+        error: error.message || String(error),
+      });
+
+      throw error;
+    }
   }
 
   /**

@@ -114,6 +114,53 @@ interface ESPProvResponse {
   data?: Record<string, any>;
 }
 
+/**
+ * Represents the status of a claiming operation.
+ */
+enum ESPClaimStatus {
+  /** Claiming in progress */
+  inProgress = "inProgress",
+  /** Claiming succeeded */
+  success = "success",
+  /** Claiming failed */
+  failed = "failed",
+  /** Claiming was aborted */
+  aborted = "aborted",
+}
+
+/**
+ * Represents a claiming progress callback response.
+ */
+interface ESPClaimResponse {
+  /** Current status of the claiming operation */
+  status: ESPClaimStatus;
+  /** Progress message description */
+  message: string;
+  /** Optional error information */
+  error?: string;
+}
+
+/**
+ * Callback type for claiming progress updates.
+ */
+type ESPClaimProgressCallback = (response: ESPClaimResponse) => void;
+
+/**
+ * Represents RainMaker capabilities extracted from device version info.
+ */
+interface ESPRMakerCapabilities {
+  /** Whether device supports assisted claiming */
+  hasClaim: boolean;
+  /** Whether device supports WiFi scanning */
+  hasWifiScan: boolean;
+  /** Whether device supports WiFi provisioning */
+  hasWifiProv: boolean;
+  /** Whether device requires Proof of Possession */
+  requiresPop: boolean;
+  /** Raw capabilities array */
+  rawCapabilities: string[];
+}
+
 export {
   ESPTransport,
   ESPSecurity,
@@ -124,4 +171,8 @@ export {
   ESPProvisionAdapterInterface,
   ESPProvResponse,
   ESPProvResponseStatus,
+  ESPClaimStatus,
+  ESPClaimResponse,
+  ESPClaimProgressCallback,
+  ESPRMakerCapabilities,
 };
