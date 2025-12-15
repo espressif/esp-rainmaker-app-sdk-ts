@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v2.1.0]
+
+### Added
+
+- **Assisted Claiming Support**:
+  - Introduced assisted claiming flow.
+
+### Enhanced
+
+- **Node Config Information**:
+  - Extended node config info to support additional parameters for greater flexibility.
+
 ## [v2.0.5]
 
 ### Fixed
