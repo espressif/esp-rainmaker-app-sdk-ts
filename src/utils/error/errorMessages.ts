@@ -260,6 +260,28 @@ const appPermissionErrorMessages = {
     "ESPAppPermissionError: Location permission is not granted. Please grant the permission to use SoftAP transport.",
 };
 
+/**
+ * Contains claiming-related error messages.
+ *
+ * These messages are used to inform users about issues during the
+ * device claiming process.
+ */
+const claimErrorMessages = {
+  /** Error message indicating that claiming start failed. */
+  CLAIM_START_FAILED:
+    "ESPClaimError: Failed to start the claiming process. Please check device connection and try again.",
+  /** Error message indicating that claiming was aborted. */
+  CLAIM_ABORTED: "ESPClaimError: Claiming process was aborted.",
+  /** Error message indicating that claiming API call failed. */
+  CLAIM_API_FAILED: "ESPClaimError: Failed to communicate with claiming API.",
+  /** Error message indicating that CSR retrieval failed. */
+  CSR_RETRIEVAL_FAILED:
+    "ESPClaimError: Failed to retrieve CSR (Certificate Signing Request) from device.",
+  /** Error message indicating that certificate send failed. */
+  CERTIFICATE_SEND_FAILED:
+    "ESPClaimError: Failed to send certificate to device.",
+};
+
 const defaultErrorMessages = {
   /** Error message indicating that an unknown error occurred. */
   UNKNOWN_ERROR: "An unknown error occurred.",
@@ -267,6 +289,8 @@ const defaultErrorMessages = {
   CONFIGURATION_ERROR: "An unknown error occurred while configuring.",
   /** Error message indicating that an unknown error occurred during provision. */
   PROVISION_ERROR: "An unknown error occurred while provisioning.",
+  /** Error message indicating that an unknown error occurred during claiming. */
+  CLAIM_ERROR: "An unknown error occurred while claiming device.",
 };
 
 export {
@@ -277,5 +301,6 @@ export {
   tokenErrorMessages,
   provErrorMessages,
   appPermissionErrorMessages,
+  claimErrorMessages,
   defaultErrorMessages,
 };
