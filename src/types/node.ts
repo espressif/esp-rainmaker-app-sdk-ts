@@ -82,6 +82,9 @@ interface ESPRMNodeInfoInterface {
   type: string;
   model: string;
   firmwareVersion: string;
+  readme?: string;
+  // Allow additional fields that might be added in future API responses
+  [key: string]: any;
 }
 
 /**
