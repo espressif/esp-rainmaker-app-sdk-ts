@@ -12,6 +12,8 @@ import {
   ESPAggregationMethod,
   ESPAggregationInterval,
   ESPWeekStart,
+  ESPCustomParamSimpleTSDataRequest,
+  ESPCustomParamTSDataRequest,
 } from "../../types/tsData";
 import {
   TSCompatibleParamTypes,
@@ -20,6 +22,7 @@ import {
   TSDataConstants,
 } from "../../utils/constants";
 import { isValidEnumValue } from "./IsValidEnumValue";
+import { isNonEmptyString } from "../../utils/validator/validators";
 
 const validateUnixTimestamp = (timestamp: number): void => {
   // Check if timestamp is a positive integer (epoch seconds)
@@ -128,16 +131,37 @@ const validateAggregation = (request: ESPTSDataRequest): void => {
   }
 };
 
+export const validateCustomParamRequest = (
+  request: ESPCustomParamSimpleTSDataRequest | ESPCustomParamTSDataRequest
+): void => {
+  if (!isNonEmptyString(request.paramName)) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.MISSING_CUSTOM_PARAM_NAME
+    );
+  }
+  if (!isNonEmptyString(request.dataType)) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.MISSING_CUSTOM_PARAM_DATA_TYPE
+    );
+  }
+};
+
 export const validateSimpleTSDataRequest = (
-  request: ESPSimpleTSDataRequest,
+  request: ESPSimpleTSDataRequest | ESPCustomParamSimpleTSDataRequest,
   dataType: string,
-  supportsSimpleTS: boolean
+  supportsSimpleTS: boolean,
+  isCustomParamRequest: boolean = false
 ): void => {
   // Check if parameter supports simple_ts
   if (!supportsSimpleTS) {
     throw new ESPAPICallValidationError(
       APICallValidationErrorCodes.INVALID_SIMPLE_TS_PARAMETER
     );
+  }
+
+  // Validate custom parameter request
+  if (isCustomParamRequest) {
+    validateCustomParamRequest(request as ESPCustomParamSimpleTSDataRequest);
   }
 
   // Validate data type
@@ -159,15 +183,20 @@ export const validateSimpleTSDataRequest = (
 };
 
 export const validateTSDataRequest = (
-  request: ESPTSDataRequest,
+  request: ESPTSDataRequest | ESPCustomParamTSDataRequest,
   dataType: string,
-  supportsTS: boolean
+  supportsTS: boolean,
+  isCustomParamRequest: boolean = false
 ): void => {
   // Check if parameter supports time series
   if (!supportsTS) {
     throw new ESPAPICallValidationError(
       APICallValidationErrorCodes.INVALID_TS_PARAMETER
     );
+  }
+  // Validate custom parameter request
+  if (isCustomParamRequest) {
+    validateCustomParamRequest(request as ESPCustomParamTSDataRequest);
   }
 
   // Validate data type

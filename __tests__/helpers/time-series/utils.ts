@@ -110,3 +110,11 @@ export const TS_MOCK_RESPONSES = {
     ],
   },
 };
+
+/**
+ * Custom parameter name value for time series data
+ */
+export const CUSTOM_PARAMETER_DATA = {
+  NAME: "custom.device.parameter",
+  DATA_TYPE: "int",
+};
