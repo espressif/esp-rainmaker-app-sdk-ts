@@ -49,9 +49,11 @@ ESPRMDeviceParam.prototype.getSimpleTSData = async function (
     this.properties.includes(ParamProperties.SIMPLE_TS)
   );
 
+  const APISupportedParamName = `${this.deviceName}.${this.name}`;
+
   const config: FetchTSDataConfig = {
     nodeId: node.id,
-    paramName: this.name,
+    paramName: APISupportedParamName,
     endpoint: APIEndpoints.USER_NODE_SIMPLE_TS_DATA,
     requestParams: {
       data_type: this.dataType,

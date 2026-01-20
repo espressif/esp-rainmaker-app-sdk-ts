@@ -6,3 +6,5 @@
 
 export * from "./device-param/getSimpleTSData";
 export * from "./device-param/getTSData";
+export * from "./node/getCustomParamSimpleTSData";
+export * from "./node/getCustomParamTSData";
