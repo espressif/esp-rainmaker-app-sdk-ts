@@ -1,60 +1,54 @@
 /*
- * SPDX-FileCopyrightText: 2025 Espressif Systems (Shanghai) CO LTD
+ * SPDX-FileCopyrightText: 2026 Espressif Systems (Shanghai) CO LTD
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ESPRMDeviceParam } from "../../ESPRMDeviceParam";
-import { APIEndpoints, ParamProperties } from "../../utils/constants";
+import { ESPRMNode } from "../../ESPRMNode";
+import { APIEndpoints } from "../../utils/constants";
 import {
-  ESPTSDataRequest,
+  ESPCustomParamTSDataRequest,
   ESPSimpleTSDataResponse,
   FetchTSDataConfig,
 } from "../../types/tsData";
-import { ESPAPICallValidationError } from "../../utils/error/Error";
-import { APICallValidationErrorCodes } from "../../utils/constants";
 import { validateTSDataRequest } from "../../services/ESPRMHelpers/ValidateTSData";
 import { fetchTSData } from "../../services/ESPRMHelpers/FetchTSData";
 
 /**
- * Augments the ESPRMDeviceParam class with the `getTSData` method.
+ * Augments the ESPRMNode class with the `getCustomParamTSData` method.
  */
-declare module "../../ESPRMDeviceParam" {
-  interface ESPRMDeviceParam {
+declare module "../../ESPRMNode" {
+  interface ESPRMNode {
     /**
-     * Retrieves time series data in a paginated format for this parameter.
+     * Retrieves time series data in a paginated format for a custom parameter.
      * @param request The request parameters for fetching time series data
      * @returns A promise that resolves to a paginated response containing time series data points
      */
-    getTSData(request: ESPTSDataRequest): Promise<ESPSimpleTSDataResponse>;
+    getCustomParamTSData(
+      request: ESPCustomParamTSDataRequest
+    ): Promise<ESPSimpleTSDataResponse>;
   }
 }
 
-ESPRMDeviceParam.prototype.getTSData = async function (
-  request: ESPTSDataRequest
+ESPRMNode.prototype.getCustomParamTSData = async function (
+  request: ESPCustomParamTSDataRequest
 ): Promise<ESPSimpleTSDataResponse> {
-  const node = this.nodeRef.deref();
-  if (!node) {
-    throw new ESPAPICallValidationError(
-      APICallValidationErrorCodes.INVALID_NODE_REFERENCE
-    );
-  }
-
   // Validate the request
+  const isCustomParamCall = true;
+  const supportsTS = true;
   validateTSDataRequest(
     request,
-    this.dataType,
-    this.properties.includes(ParamProperties.TS)
+    request.dataType,
+    supportsTS,
+    isCustomParamCall
   );
 
-  const APISupportedParamName = `${this.deviceName}.${this.name}`;
-
   const config: FetchTSDataConfig = {
-    nodeId: node.id,
-    paramName: APISupportedParamName,
+    nodeId: this.id,
+    paramName: request.paramName,
     endpoint: APIEndpoints.USER_NODE_TS_DATA,
     requestParams: {
-      type: this.dataType,
+      type: request.dataType,
       ...(request.startTime && { start_time: request.startTime }),
       ...(request.endTime && { end_time: request.endTime }),
       ...(request.numIntervals && { num_intervals: request.numIntervals }),

@@ -23,3 +23,5 @@ import "./PushOTAUpdate";
 import "./GetOTAUpdateStatus";
 import "./AddAutomation";
 import "./GetAutomations";
+import "./GetCustomParamTSData";
+import "./GetCustomParamSimpleTSData";

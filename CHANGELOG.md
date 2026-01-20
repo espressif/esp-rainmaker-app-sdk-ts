@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v2.1.1]
+
+### Added
+
+- **Custom Parameter Time Series APIs**:
+  - Introduced support for explicitly specifying a **custom parameter name** for time series queries on parameters **outside the node configuration**.
+
+### Fixed
+
+- **Time Series Parameter Name Resolution**:
+  - Corrected parameter name value formatting to align with backend API expectations.
+
 ## [v2.1.0]
 
 ### Added

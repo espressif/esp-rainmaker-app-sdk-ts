@@ -118,6 +118,20 @@ interface ESPTSDataRequest extends ESPRawTSDataRequest {
 }
 
 /**
+ * Interface for custom parameter time series data request parameters.
+ */
+interface ESPCustomParamTSDataRequest extends ESPTSDataRequest {
+  paramName: string;
+  dataType: string;
+}
+/**
+ * Interface for custom parameter simple time series data request parameters.
+ */
+interface ESPCustomParamSimpleTSDataRequest extends ESPSimpleTSDataRequest {
+  paramName: string;
+  dataType: string;
+}
+/**
  * Interface for configuration parameters for fetching time series data.
  */
 interface FetchTSDataConfig {
@@ -139,5 +153,7 @@ export {
   ESPWeekStart,
   ESPRawTSDataRequest,
   ESPTSDataRequest,
+  ESPCustomParamTSDataRequest,
+  ESPCustomParamSimpleTSDataRequest,
   FetchTSDataConfig,
 };
