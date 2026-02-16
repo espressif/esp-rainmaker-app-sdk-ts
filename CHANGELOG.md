@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v2.2.1]
+
+### Added
+
+- **Assume Role API with MQTT & Video Stream Support**
+  - Introduced an assume role API enabling authenticated access for MQTT operations and secure video streaming workflows.
+
+### **Enhanced**
+
+- **Assisted Claiming for Camera Devices**
+  - Updated the assisted claiming flow for video-capable device onboarding requirements.
+
 ## [v2.1.1]
 
 ### Added

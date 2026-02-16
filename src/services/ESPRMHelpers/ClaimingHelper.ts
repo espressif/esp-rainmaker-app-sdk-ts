@@ -10,6 +10,8 @@ import {
   DEFAULT_CLAIM_BASE_URL,
   ClaimErrorCodes,
   APIEndpoints,
+  ClaimCapabilities,
+  ClaimNodePolicies,
 } from "../../utils/constants";
 import { ESPClaimError } from "../../utils/error/ESPClaimError";
 
@@ -76,12 +78,19 @@ export class ClaimingHelper {
    * Verifies the claiming by sending CSR to the cloud and getting the certificate.
    *
    * @param csrData - The CSR JSON data from the device
+   * @param claimCapability - Optional claim capability string. When set to ClaimCapabilities.CAMERA_CLAIM, adds node_policies for video streaming.
    * @returns Promise resolving to the certificate data
    * @throws Error if the API call fails
    */
-  static async verifyClaim(csrData: ClaimVerifyRequest): Promise<string> {
+  static async verifyClaim(csrData: ClaimVerifyRequest, claimCapability?: ClaimCapabilities): Promise<string> {
     try {
       const baseUrl = this.getClaimBaseUrl();
+
+      // If camera_claim capability is specified, add node_policies for video streaming
+      const requestData = { ...csrData };
+      if (claimCapability === ClaimCapabilities.CAMERA_CLAIM) {
+        requestData.node_policies = ClaimNodePolicies.VIDEOSTREAM;
+      }
 
       const response = await ESPRMAPIManager.authorizeRequest({
         method: HTTPMethods.POST,
@@ -90,7 +99,7 @@ export class ClaimingHelper {
         headers: {
           "Content-Type": "application/json",
         },
-        data: csrData,
+        data: requestData,
       });
 
       // The response should contain the certificate
