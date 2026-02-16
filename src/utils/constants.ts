@@ -326,6 +326,24 @@ const RMakerCapabilities = {
 } as const;
 
 /**
+ * Enum containing additional claim capabilities.
+ * These are capabilities found in versionInfo (rmaker.cap) and should be
+ * passed by the consuming application when calling startAssistedClaiming.
+ */
+enum ClaimCapabilities {
+  /** Capability indicating device supports camera claiming with video streaming. */
+  CAMERA_CLAIM = "camera_claim",
+}
+
+/**
+ * Node policy values used during the claiming process.
+ */
+const ClaimNodePolicies = {
+  /** Policy enabling video streaming for camera devices. */
+  VIDEOSTREAM: "videostream",
+} as const;
+
+/**
  * The default claiming base URL.
  */
 const DEFAULT_CLAIM_BASE_URL = "https://esp-claiming.rainmaker.espressif.com";
@@ -671,6 +689,8 @@ export {
   APIRequestFields,
   // Claiming related exports
   RMakerCapabilities,
+  ClaimCapabilities,
+  ClaimNodePolicies,
   DEFAULT_CLAIM_BASE_URL,
   ClaimErrorCodes,
   ClaimProgressMessages,
