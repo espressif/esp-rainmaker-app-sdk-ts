@@ -211,6 +211,21 @@ const apiCallValidationErrorMessages = {
   /** Error message indicating that the custom parameter data type is missing. */
   MISSING_CUSTOM_PARAM_DATA_TYPE:
     "ESPAPICallValidationError: Custom parameter data type is required.",
+  /** Error message indicating that the number of node IDs exceeds the maximum allowed (5). */
+  INVALID_ASSUME_ROLE_NODE_IDS_COUNT:
+    "ESPAPICallValidationError: Maximum 5 node IDs are allowed.",
+  /** Error message indicating that the number of group IDs exceeds the maximum allowed (5). */
+  INVALID_ASSUME_ROLE_GROUP_IDS_COUNT:
+    "ESPAPICallValidationError: Maximum 5 group IDs are allowed.",
+  /** Error message indicating that an invalid user role was provided. */
+  INVALID_ASSUME_ROLE_USER_ROLE:
+    "ESPAPICallValidationError: Invalid user role. Only 'mqtt' and 'videostream' are supported.",
+  /** Error message indicating that both group_ids and node_ids are provided when only one is allowed. */
+  INVALID_ASSUME_ROLE_PARAMS:
+    "ESPAPICallValidationError: Only one of group_ids or node_ids can be provided, not both.",
+  /** Error message indicating that node_ids is required for videostream role. */
+  MISSING_ASSUME_ROLE_NODE_IDS_FOR_VIDEOSTREAM:
+    "ESPAPICallValidationError: node_ids is required when user_role is 'videostream'.",
 };
 
 /**

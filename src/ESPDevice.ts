@@ -34,6 +34,7 @@ import {
   StatusMessage,
   ClaimProgressMessages,
   ClaimErrorCodes,
+  ClaimCapabilities,
 } from "./utils/constants";
 import { ESPProvError } from "./utils/error/Error";
 import { ESPClaimError } from "./utils/error/ESPClaimError";
@@ -115,14 +116,16 @@ class ESPDevice {
    * 6. Send certificate to device
    *
    * @param onProgress - Callback for progress updates
+   * @param claimCapability - Optional claim capability string. Pass ClaimCapabilities.CAMERA_CLAIM for camera devices to add video streaming node_policies.
    * @returns Promise that resolves when claiming is complete
    * @throws Error if claiming fails at any step
    */
   async startAssistedClaiming(
-    onProgress?: ESPClaimProgressCallback
+    onProgress?: ESPClaimProgressCallback,
+    claimCapability?: ClaimCapabilities
   ): Promise<void> {
     // Default callback if none provided
-    const progressCallback: ESPClaimProgressCallback = onProgress || (() => {});
+    const progressCallback: ESPClaimProgressCallback = onProgress || (() => { });
 
     let isClaimingAborted = false;
 
@@ -267,7 +270,10 @@ class ESPDevice {
         csrJson = { csr: csrData };
       }
 
-      const certificateData = await ClaimingHelper.verifyClaim(csrJson);
+      const certificateData = await ClaimingHelper.verifyClaim(
+        csrJson,
+        claimCapability
+      );
 
       progressCallback({
         status: ESPClaimStatus.inProgress,
