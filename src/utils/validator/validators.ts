@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { APICallValidationErrorCodes, AssumeRoleConstants } from "../constants";
+import { ESPAPICallValidationError } from "../error/Error";
+
 /**
  * Checks if the provided string is a valid URL.
  *
@@ -60,10 +63,44 @@ const validateString = (input: string, pattern: RegExp): boolean => {
   return pattern.test(input);
 };
 
+/**
+ * Validates that the number of node IDs does not exceed the maximum allowed.
+ *
+ * @param nodeIds - The array of node IDs to validate.
+ * @throws {ESPAPICallValidationError} If the number of node IDs exceeds the maximum allowed.
+ */
+const validateAssumeRoleNodeIdsCount = (
+  nodeIds: string[] | undefined
+): void => {
+  if (nodeIds && nodeIds.length > AssumeRoleConstants.MAX_NODE_IDS) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.INVALID_ASSUME_ROLE_NODE_IDS_COUNT
+    );
+  }
+};
+
+/**
+ * Validates that the number of group IDs does not exceed the maximum allowed.
+ *
+ * @param groupIds - The array of group IDs to validate.
+ * @throws {ESPAPICallValidationError} If the number of group IDs exceeds the maximum allowed.
+ */
+const validateAssumeRoleGroupIdsCount = (
+  groupIds: string[] | undefined
+): void => {
+  if (groupIds && groupIds.length > AssumeRoleConstants.MAX_GROUP_IDS) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.INVALID_ASSUME_ROLE_GROUP_IDS_COUNT
+    );
+  }
+};
+
 export {
   isValidUrl,
   isNonEmptyString,
   isValidObject,
   isObjectEmpty,
   validateString,
+  validateAssumeRoleNodeIdsCount,
+  validateAssumeRoleGroupIdsCount,
 };
