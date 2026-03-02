@@ -9,6 +9,7 @@ import {
   ESPTransportInterface,
   ESPTransportMode,
 } from "./transport";
+import { ESPNodeSubscriptionConfig } from "./subscription";
 
 /**
  * Represents the node in the system.
@@ -25,6 +26,7 @@ interface ESPRMNodeInterface {
   transportOrder: (ESPTransportMode | string)[];
   availableTransports: Record<ESPTransportMode | string, ESPTransportConfig>;
   customTransportManagers?: Record<ESPTransportType, ESPTransportInterface>;
+  subscriptionConfig?: ESPNodeSubscriptionConfig;
 }
 
 type ESPTransportType = string;

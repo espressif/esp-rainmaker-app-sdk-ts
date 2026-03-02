@@ -210,6 +210,11 @@ const transformNotificationData = (
     : gcmTransformationConfig;
 
   const transformationRule = transformationConfig[notificationEventType];
+  
+  if (!transformationRule) {
+    return null;
+  }
+  
   return transformPayload(notificationData, transformationRule);
 };
 

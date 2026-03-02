@@ -25,3 +25,4 @@ import "./AddAutomation";
 import "./GetAutomations";
 import "./GetCustomParamTSData";
 import "./GetCustomParamSimpleTSData";
+import "./SubscriptionConfig";

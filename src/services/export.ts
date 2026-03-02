@@ -10,3 +10,7 @@ export { ESPRMStorage } from "../services/ESPRMStorage/ESPRMStorage";
 
 // Re-export classes related to transports and discovery module.
 export * from "../services/ESPTransport";
+
+// Re-export classes related to subscription management.
+export { ESPSubscriptionManager } from "../services/ESPSubscriptionManager";
+export * from "../services/ESPSubscriptionChannels";
