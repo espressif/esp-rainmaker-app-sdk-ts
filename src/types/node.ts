@@ -4,7 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ESPTransportConfig, ESPTransportMode } from "./transport";
+import {
+  ESPTransportConfig,
+  ESPTransportInterface,
+  ESPTransportMode,
+} from "./transport";
+import { ESPNodeSubscriptionConfig } from "./subscription";
 
 /**
  * Represents the node in the system.
@@ -18,11 +23,13 @@ interface ESPRMNodeInterface {
   metadata?: Record<string, any>;
   tags?: string[];
   role?: string;
-  transportOrder: ESPTransportMode[] | [];
-  availableTransports:
-    | Partial<Record<ESPTransportMode, ESPTransportConfig>>
-    | {};
+  transportOrder: (ESPTransportMode | string)[];
+  availableTransports: Record<ESPTransportMode | string, ESPTransportConfig>;
+  customTransportManagers?: Record<ESPTransportType, ESPTransportInterface>;
+  subscriptionConfig?: ESPNodeSubscriptionConfig;
 }
+
+type ESPTransportType = string;
 
 /**
  * Represents the connectivity status of a node.
@@ -123,4 +130,5 @@ export {
   ESPRMDeviceParamInterface,
   ESPRMServiceInterface,
   ESPRMServiceParamInterface,
+  ESPTransportType,
 };

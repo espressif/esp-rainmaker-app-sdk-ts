@@ -5,6 +5,7 @@
  */
 
 import { ESPAPIResponse } from "./output";
+import { ESPRMNode } from "../ESPRMNode";
 
 /**
  * Defines the transport mode for ESP device communication.
@@ -28,7 +29,7 @@ enum ESPTransportMode {
  */
 interface ESPTransportConfig {
   /** The transport mode, specifying if the communication is local or cloud-based. */
-  type: ESPTransportMode;
+  type: ESPTransportMode | string;
 
   /**
    * Additional metadata for the transport configuration.
@@ -44,14 +45,20 @@ interface ESPTransportInterface {
    * @param payload - The payload containing parameters to set.
    * @returns A promise that resolves to the API response.
    */
-  setParam(payload: Record<string, any>): Promise<ESPAPIResponse>;
+  setParam(
+    payload: Record<string, any>,
+    nodeRef?: ESPRMNode
+  ): Promise<ESPAPIResponse>;
 
   /**
    * Gets parameters from the node.
    * @param payload - The payload containing parameters to get.
    * @returns A promise that resolves to the API response.
    */
-  getParams(payload: Record<string, any>): Promise<Record<string, any>>;
+  getParams(
+    payload: Record<string, any>,
+    nodeRef?: ESPRMNode
+  ): Promise<Record<string, any>>;
 }
 
 export { ESPTransportMode, ESPTransportConfig, ESPTransportInterface };

@@ -5,6 +5,7 @@
  */
 
 import { ESPRMBase } from "../../ESPRMBase";
+import { ESPRMNode } from "../../ESPRMNode";
 import { Status } from "../../proto/constants";
 import {
   CmdGetPropertyCount,
@@ -83,7 +84,10 @@ class ESPLocalControlTransport implements ESPTransportInterface {
    * @param payload - The payload containing parameters to set.
    * @returns A promise that resolves to the API response.
    */
-  async setParam(payload: Record<string, any>): Promise<ESPAPIResponse> {
+  async setParam(
+    payload: Record<string, any>,
+    _nodeRef?: ESPRMNode
+  ): Promise<ESPAPIResponse> {
     this.payload = payload;
     const isDeviceConnected =
       await ESPRMBase.ESPLocalControlAdapter.isConnected(this.payload?.node_id);
@@ -112,7 +116,10 @@ class ESPLocalControlTransport implements ESPTransportInterface {
    * @param payload - The payload containing parameters to get.
    * @returns A promise that resolves to the node parameters.
    */
-  async getParams(payload: Record<string, any>): Promise<Record<string, any>> {
+  async getParams(
+    payload: Record<string, any>,
+    _nodeRef?: ESPRMNode
+  ): Promise<Record<string, any>> {
     this.payload = payload;
     try {
       const isDeviceConnected =

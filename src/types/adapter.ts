@@ -6,10 +6,20 @@
 
 interface ESPNotificationAdapterInterface {
   /**
-   * Retrieves delivered notifications.
-   * @param callback - The function to call with the delivered notifications.
+   * Registers a listener for incoming push notifications.
+   * @param callback - The function to call with notification data.
    */
-  addNotificationListener(callback: Function): void;
+  addNotificationListener(
+    callback: (info: Record<string, any>) => void
+  ): void;
+
+  /**
+   * Removes a previously registered notification listener.
+   * @param callback - The same callback reference that was passed to addNotificationListener.
+   */
+  removeNotificationListener(
+    callback: (info: Record<string, any>) => void
+  ): void;
 }
 
 interface ESPOauthAdapterInterface {

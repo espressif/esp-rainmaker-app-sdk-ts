@@ -18,6 +18,7 @@ import {
   APIEndpoints,
   HTTPMethods,
   APIResponseFields,
+  SubscriptionChannelIds,
 } from "./utils/constants";
 import { ESPConfigError } from "./utils/error/Error";
 import { ESPProvisionAdapterInterface } from "./types/provision";
@@ -30,7 +31,8 @@ import {
   ESPAppUtilityAdapterInterface,
 } from "./types/adapter";
 import { ESPRMStorageAdapterInterface } from "./types/storage";
-import { isValidEnumValue } from "./services/ESPRMHelpers/IsValidEnumValue";
+import { ESPSubscriptionManager } from "./services/ESPSubscriptionManager";
+import { NotificationSubscriptionChannel } from "./services/ESPSubscriptionChannels/NotificationSubscriptionChannel";
 
 /**
  * Base class for configuring and managing the ESP Rainmaker SDK.
@@ -84,7 +86,16 @@ export class ESPRMBase {
   /**
    * Priority queue of transport modes.
    */
-  static transportOrder: ESPTransportMode[] = [ESPTransportMode.cloud];
+  static transportOrder: (ESPTransportMode | string)[] = [
+    ESPTransportMode.cloud,
+  ];
+
+  /**
+   * Subscription manager for handling parameter updates from multiple sources.
+   * Manages subscription channels and coordinates node update subscriptions.
+   */
+  static subscriptionManager: ESPSubscriptionManager =
+    new ESPSubscriptionManager();
 
   /**
    * Configures the ESPRMBase instance with the specified configuration.
@@ -127,6 +138,19 @@ export class ESPRMBase {
     };
     ESPRMAPIManager.initialize(apiManagerConfig);
     ESPRMStorage.initialize(ESPRMBase.ESPStorageAdapter);
+
+    if (config.notificationAdapter) {
+      ESPRMBase.subscriptionManager
+        .registerChannel(new NotificationSubscriptionChannel())
+        .then(() => {
+          ESPRMBase.subscriptionManager.setGlobalChannelOrder([
+            SubscriptionChannelIds.NOTIFICATION,
+          ]);
+        })
+        .catch((error) => {
+          console.error("Failed to register notification channel:", error);
+        });
+    }
   }
 
   /**
@@ -218,6 +242,8 @@ export class ESPRMBase {
 
   /**
    * Sets the notification adapter for the SDK.
+   * If the subscription manager is already initialized, this will also register
+   * the notification channel automatically.
    *
    * @param adapter - The notification adapter implementing ESPNotificationAdapterInterface.
    */
@@ -225,6 +251,30 @@ export class ESPRMBase {
     adapter: ESPNotificationAdapterInterface
   ): void {
     ESPRMBase.ESPNotificationAdapter = adapter;
+
+    const isChannelRegistered = ESPRMBase.subscriptionManager
+      .getRegisteredChannels()
+      .includes(SubscriptionChannelIds.NOTIFICATION);
+
+    if (!isChannelRegistered) {
+      ESPRMBase.subscriptionManager
+        .registerChannel(new NotificationSubscriptionChannel())
+        .then(() => {
+          const currentOrder =
+            ESPRMBase.subscriptionManager.getGlobalChannelOrder();
+          if (currentOrder.length === 0) {
+            ESPRMBase.subscriptionManager.setGlobalChannelOrder([
+              SubscriptionChannelIds.NOTIFICATION,
+            ]);
+          }
+        })
+        .catch((error) => {
+          console.error(
+            "Failed to register notification channel in setNotificationAdapter:",
+            error
+          );
+        });
+    }
   }
 
   /**
@@ -250,7 +300,7 @@ export class ESPRMBase {
   /**
    * Sets the order of transport modes.
    *
-   * This method allows you to specify the preferred order of transport modes (e.g., local, cloud, etc.)
+   * This method allows you to specify the preferred order of transport modes (e.g., local, cloud, custom etc.)
    * that the ESPRMBase instance should use when communicating with nodes devices. The transport modes
    * are tried in the order they are provided until a successful connection is established.
    *
@@ -258,16 +308,13 @@ export class ESPRMBase {
    *
    * @example
    * ```typescript
-   * const transportOrder = [ESPTransportMode.WIFI, ESPTransportMode.BLE];
+   * const transportOrder = [ESPTransportMode.local, ESPTransportMode.cloud, "custom"];
    * espRMBaseInstance.setTransportOrder(transportOrder);
    * ```
    */
-  public static setTransportOrder(transportOrder: ESPTransportMode[]): void {
-    for (const transport of transportOrder) {
-      if (!isValidEnumValue(transport, ESPTransportMode)) {
-        throw new ESPConfigError(ConfigErrorCodes.INVALID_TRANSPORT_MODE);
-      }
-    }
+  public static setTransportOrder(
+    transportOrder: (ESPTransportMode | string)[]
+  ): void {
     ESPRMBase.transportOrder = transportOrder;
   }
 
