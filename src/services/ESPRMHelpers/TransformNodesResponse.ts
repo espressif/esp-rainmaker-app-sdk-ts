@@ -52,7 +52,7 @@ const transformNodesResponse = (
             ? {
                 [ESPTransportMode.cloud]: {
                   type: ESPTransportMode.cloud,
-                  metadata: null,
+                  metadata: {},
                 },
               }
             : {},

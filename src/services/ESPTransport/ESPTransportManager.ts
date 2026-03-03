@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { ESPRMNode } from "../../ESPRMNode";
 import { ESPAPIResponse } from "../../types/output";
 import {
   ESPTransportConfig,
@@ -27,15 +28,11 @@ class ESPTransportManager {
   /**
    * Creates an instance of `ESPTransportManager` with a specified transport configuration.
    *
-   * @param transportConfig - The configuration specifying the type of transport (local or cloud)
-   * and any additional metadata.
-   * @param transportObj - The object representing custom transport.
+   * @param transportConfig - The configuration specifying the type of transport (local or cloud or custom)
+   * with any additional metadata and transportManager for custom transport.
    */
 
-  constructor(
-    transportConfig?: ESPTransportConfig,
-    transportObj?: ESPTransportInterface
-  ) {
+  constructor(transportConfig: ESPTransportConfig) {
     if (transportConfig) {
       switch (transportConfig.type) {
         case ESPTransportMode.cloud:
@@ -46,11 +43,9 @@ class ESPTransportManager {
           break;
         default:
           throw new Error(
-            `Unsupported transport type: ${transportConfig.type}`
+            `Unsupported transport type: ${transportConfig.type}. Please provide a transportManager in the config.`
           );
       }
-    } else if (transportObj) {
-      this.transport = transportObj;
     }
   }
 
@@ -58,20 +53,28 @@ class ESPTransportManager {
    * Sets a parameter on the node using the configured transport mechanism.
    *
    * @param payload - A record containing the parameter data to set on the node.
+   * @param nodeRef - Optional reference to the ESPRMNode instance for custom transport.
    * @returns A promise that resolves to the response of the set operation.
    */
-  async setParam(payload: Record<string, any>): Promise<ESPAPIResponse> {
-    return this.transport.setParam(payload);
+  async setParam(
+    payload: Record<string, any>,
+    nodeRef?: ESPRMNode
+  ): Promise<ESPAPIResponse> {
+    return this.transport.setParam(payload, nodeRef);
   }
 
   /**
    * Retrieves parameters from the node using the configured transport mechanism.
    *
    * @param payload - A record containing the data required to retrieve node parameters.
+   * @param nodeRef - Optional reference to the ESPRMNode instance for custom transport.
    * @returns A promise that resolves to a record of the node parameters.
    */
-  async getParams(payload: Record<string, any>): Promise<Record<string, any>> {
-    return this.transport.getParams(payload);
+  async getParams(
+    payload: Record<string, any>,
+    nodeRef?: ESPRMNode
+  ): Promise<Record<string, any>> {
+    return this.transport.getParams(payload, nodeRef);
   }
 }
 

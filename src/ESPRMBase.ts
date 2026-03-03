@@ -30,7 +30,6 @@ import {
   ESPAppUtilityAdapterInterface,
 } from "./types/adapter";
 import { ESPRMStorageAdapterInterface } from "./types/storage";
-import { isValidEnumValue } from "./services/ESPRMHelpers/IsValidEnumValue";
 
 /**
  * Base class for configuring and managing the ESP Rainmaker SDK.
@@ -84,7 +83,9 @@ export class ESPRMBase {
   /**
    * Priority queue of transport modes.
    */
-  static transportOrder: ESPTransportMode[] = [ESPTransportMode.cloud];
+  static transportOrder: (ESPTransportMode | string)[] = [
+    ESPTransportMode.cloud,
+  ];
 
   /**
    * Configures the ESPRMBase instance with the specified configuration.
@@ -250,7 +251,7 @@ export class ESPRMBase {
   /**
    * Sets the order of transport modes.
    *
-   * This method allows you to specify the preferred order of transport modes (e.g., local, cloud, etc.)
+   * This method allows you to specify the preferred order of transport modes (e.g., local, cloud, custom etc.)
    * that the ESPRMBase instance should use when communicating with nodes devices. The transport modes
    * are tried in the order they are provided until a successful connection is established.
    *
@@ -258,16 +259,13 @@ export class ESPRMBase {
    *
    * @example
    * ```typescript
-   * const transportOrder = [ESPTransportMode.WIFI, ESPTransportMode.BLE];
+   * const transportOrder = [ESPTransportMode.local, ESPTransportMode.cloud, "custom"];
    * espRMBaseInstance.setTransportOrder(transportOrder);
    * ```
    */
-  public static setTransportOrder(transportOrder: ESPTransportMode[]): void {
-    for (const transport of transportOrder) {
-      if (!isValidEnumValue(transport, ESPTransportMode)) {
-        throw new ESPConfigError(ConfigErrorCodes.INVALID_TRANSPORT_MODE);
-      }
-    }
+  public static setTransportOrder(
+    transportOrder: (ESPTransportMode | string)[]
+  ): void {
     ESPRMBase.transportOrder = transportOrder;
   }
 

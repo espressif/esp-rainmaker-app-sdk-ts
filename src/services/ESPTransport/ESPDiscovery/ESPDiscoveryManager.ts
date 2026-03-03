@@ -10,10 +10,12 @@ import { ServiceType } from "../../../utils/constants";
 import { DiscoveryParamsInterface } from "../ESPLocalDiscoveryAdapterInterface";
 
 /**
- * Manages the discovery of devices using various discovery protocols.
+ * Manages the discovery of devices using various discovery protocols
+ * - Default is local discovery protocol which is used when no discovery config is provided.
+ * - Custom discovery protocol is used when discovery config is provided.
  *
  * The `ESPDiscoveryManager` facilitates the initialization and management of discovery operations,
- * such as starting and stopping device discovery based on the specified protocol.
+ * such as starting and stopping device discovery based on the custom protocol or default local discovery protocol.
  */
 class ESPDiscoveryManager {
   /**
@@ -24,21 +26,17 @@ class ESPDiscoveryManager {
   /**
    * Creates an instance of the `ESPDiscoveryManager` class.
    *
-   * @param type - The discovery protocol to use, represented by {@link ESPDiscoveryProtocol}.
+   * @param discoveryConfig - The discovery configuration to use, represented by {@link DiscoveryParamsInterface}.
    * @throws An error if the `ESPLocalDiscoveryAdapter` is not set in `ESPRMBase`.
    */
-  constructor(type: ESPDiscoveryProtocol) {
+  constructor(discoveryConfig?: DiscoveryParamsInterface) {
     if (!ESPRMBase.ESPLocalDiscoveryAdapter) {
       throw Error("ESPLocalDiscoveryAdapter not set ");
     }
-    switch (type) {
-      case ESPDiscoveryProtocol.local: {
-        this.params = {
-          serviceType: ServiceType.ESP_LOCAL_CTRL_TCP,
-          domain: ESPDiscoveryProtocol.local,
-        };
-      }
-    }
+    this.params = discoveryConfig || {
+      serviceType: ServiceType.ESP_LOCAL_CTRL_TCP,
+      domain: ESPDiscoveryProtocol.local,
+    };
   }
 
   /**

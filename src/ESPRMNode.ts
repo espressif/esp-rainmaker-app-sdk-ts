@@ -6,8 +6,12 @@
 
 import { ESPRMConnectivityStatus } from "./ESPRMConnectivityStatus";
 import { ESPRMNodeConfig } from "./ESPRMNodeConfig";
-import { ESPRMNodeInterface } from "./types/node";
-import { ESPTransportConfig, ESPTransportMode } from "./types/transport";
+import { ESPRMNodeInterface, ESPTransportType } from "./types/node";
+import {
+  ESPTransportConfig,
+  ESPTransportInterface,
+  ESPTransportMode,
+} from "./types/transport";
 
 /**
  * Represents a user node in the system, managing its configuration and connectivity status.
@@ -39,12 +43,50 @@ export class ESPRMNode implements ESPRMNodeInterface {
   role?: string;
 
   /** Transport order associated with the node.*/
-  transportOrder: ESPTransportMode[] | [];
+  transportOrder: (ESPTransportMode | string)[] = [];
 
   /** Available Transports with the node.*/
-  availableTransports:
-    | Partial<Record<ESPTransportMode, ESPTransportConfig>>
-    | {};
+  availableTransports: Record<ESPTransportMode | string, ESPTransportConfig> =
+    {};
+
+  /**
+   * Custom transport managers associated with the node.
+   *
+   * Custom transport managers allow you to implement your own communication protocols
+   * (e.g., Bluetooth, WebSocket, custom protocols) alongside the built-in `local` and `cloud` transports.
+   * Each custom transport must implement the `ESPTransportInterface` and receives a reference to the
+   * node instance, providing full flexibility to access node metadata, configuration, devices, and
+   * connectivity status.
+   *
+   * The SDK uses transports in the priority order specified in `transportOrder`:
+   * 1. If a transport mode exists in `customTransportManagers`, it uses the custom transport
+   * 2. If not, it falls back to the built-in transport (local/cloud)
+   * 3. If the transport fails, it moves to the next transport in the order
+   * 4. If all transports fail, an error is thrown
+   *
+   * @example
+   * ```typescript
+   * const myCustomTransport = new MyCustomTransport();
+   * const node = new ESPRMNode({
+   *   id: "my-node-id",
+   *   transportOrder: ["bluetooth", "local", "cloud"],
+   *   availableTransports: {
+   *     bluetooth: { type: "bluetooth", metadata: {} },
+   *     local: { type: "local", metadata: { baseUrl: "http://192.168.1.100" } },
+   *     cloud: { type: "cloud", metadata: {} }
+   *   },
+   *   customTransportManagers: {
+   *     bluetooth: myCustomTransport
+   *   }
+   * });
+   * ```
+   *
+   * Common use cases include:
+   * - Bluetooth Transport: Direct device communication via Bluetooth
+   * - WebSocket Transport: Real-time bidirectional communication
+   * - Custom Protocol: Implement proprietary protocols
+   */
+  customTransportManagers?: Record<ESPTransportType, ESPTransportInterface>;
 
   /**
    * Creates an instance of `ESPRMNode`.
@@ -66,5 +108,6 @@ export class ESPRMNode implements ESPRMNodeInterface {
     this.metadata = data.metadata;
     this.transportOrder = data.transportOrder;
     this.availableTransports = data.availableTransports;
+    this.customTransportManagers = data.customTransportManagers;
   }
 }
