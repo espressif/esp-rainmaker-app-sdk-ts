@@ -51,6 +51,6 @@ ESPRMDeviceParam.prototype.setValue = async function (
   };
 
   return (delegatedTransportHandler<ESPAPIResponse>).call(node, (manager) =>
-    manager.setParam(payload)
+    manager.setParam(payload, node)
   );
 };

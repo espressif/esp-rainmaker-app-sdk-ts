@@ -6,6 +6,7 @@
 
 import { ESPAPIResponse } from "../../types/output";
 import { ESPTransportInterface } from "../../types/transport";
+import { ESPRMNode } from "../../ESPRMNode";
 import { APIEndpoints, HTTPMethods } from "../../utils/constants";
 import { ESPRMAPIManager } from "../ESPRMAPIManager";
 
@@ -17,9 +18,13 @@ class ESPCloudTransport implements ESPTransportInterface {
    * Sets a parameter on the node by sending a payload to the cloud service.
    *
    * @param payload - A record containing the parameter data to set on the node.
+   * @param nodeRef - Optional reference to the ESPRMNode instance (not used in cloud transport).
    * @returns A promise that resolves to the response of the set operation.
    */
-  async setParam(payload: Record<string, any>): Promise<ESPAPIResponse> {
+  async setParam(
+    payload: Record<string, any>,
+    _nodeRef?: ESPRMNode
+  ): Promise<ESPAPIResponse> {
     const requestConfig = {
       url: APIEndpoints.USER_NODE_PARAM,
       method: HTTPMethods.PUT,
@@ -34,9 +39,13 @@ class ESPCloudTransport implements ESPTransportInterface {
    * Retrieves parameters from the node by requesting data from the cloud service.
    *
    * @param payload - A record containing necessary data (e.g., `nodeId`) to retrieve the node parameters.
+   * @param nodeRef - Optional reference to the ESPRMNode instance (not used in cloud transport).
    * @returns A promise that resolves to a record of the node parameters.
    */
-  async getParams(payload: Record<string, any>): Promise<Record<string, any>> {
+  async getParams(
+    payload: Record<string, any>,
+    _nodeRef?: ESPRMNode
+  ): Promise<Record<string, any>> {
     const requestParams = {
       node_id: payload.node_id,
     };
