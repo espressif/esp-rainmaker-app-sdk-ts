@@ -18,6 +18,7 @@ import {
   APIEndpoints,
   HTTPMethods,
   APIResponseFields,
+  SubscriptionChannelIds,
 } from "./utils/constants";
 import { ESPConfigError } from "./utils/error/Error";
 import { ESPProvisionAdapterInterface } from "./types/provision";
@@ -30,6 +31,8 @@ import {
   ESPAppUtilityAdapterInterface,
 } from "./types/adapter";
 import { ESPRMStorageAdapterInterface } from "./types/storage";
+import { ESPSubscriptionManager } from "./services/ESPSubscriptionManager";
+import { NotificationSubscriptionChannel } from "./services/ESPSubscriptionChannels/NotificationSubscriptionChannel";
 
 /**
  * Base class for configuring and managing the ESP Rainmaker SDK.
@@ -88,6 +91,13 @@ export class ESPRMBase {
   ];
 
   /**
+   * Subscription manager for handling parameter updates from multiple sources.
+   * Manages subscription channels and coordinates node update subscriptions.
+   */
+  static subscriptionManager: ESPSubscriptionManager =
+    new ESPSubscriptionManager();
+
+  /**
    * Configures the ESPRMBase instance with the specified configuration.
    * Validates the configuration and initializes necessary services.
    *
@@ -128,6 +138,19 @@ export class ESPRMBase {
     };
     ESPRMAPIManager.initialize(apiManagerConfig);
     ESPRMStorage.initialize(ESPRMBase.ESPStorageAdapter);
+
+    if (config.notificationAdapter) {
+      ESPRMBase.subscriptionManager
+        .registerChannel(new NotificationSubscriptionChannel())
+        .then(() => {
+          ESPRMBase.subscriptionManager.setGlobalChannelOrder([
+            SubscriptionChannelIds.NOTIFICATION,
+          ]);
+        })
+        .catch((error) => {
+          console.error("Failed to register notification channel:", error);
+        });
+    }
   }
 
   /**
@@ -219,6 +242,8 @@ export class ESPRMBase {
 
   /**
    * Sets the notification adapter for the SDK.
+   * If the subscription manager is already initialized, this will also register
+   * the notification channel automatically.
    *
    * @param adapter - The notification adapter implementing ESPNotificationAdapterInterface.
    */
@@ -226,6 +251,30 @@ export class ESPRMBase {
     adapter: ESPNotificationAdapterInterface
   ): void {
     ESPRMBase.ESPNotificationAdapter = adapter;
+
+    const isChannelRegistered = ESPRMBase.subscriptionManager
+      .getRegisteredChannels()
+      .includes(SubscriptionChannelIds.NOTIFICATION);
+
+    if (!isChannelRegistered) {
+      ESPRMBase.subscriptionManager
+        .registerChannel(new NotificationSubscriptionChannel())
+        .then(() => {
+          const currentOrder =
+            ESPRMBase.subscriptionManager.getGlobalChannelOrder();
+          if (currentOrder.length === 0) {
+            ESPRMBase.subscriptionManager.setGlobalChannelOrder([
+              SubscriptionChannelIds.NOTIFICATION,
+            ]);
+          }
+        })
+        .catch((error) => {
+          console.error(
+            "Failed to register notification channel in setNotificationAdapter:",
+            error
+          );
+        });
+    }
   }
 
   /**

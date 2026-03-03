@@ -4,10 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ESPRMBase } from "../../ESPRMBase";
 import { ESPRMUser } from "../../ESPRMUser";
 import { isValidEnumValue } from "../../services/ESPRMHelpers/IsValidEnumValue";
-import { transformNotificationData } from "../../services/ESPRMHelpers/TransformNotificationData";
 import { ESPDiscoveryManager } from "../../services/ESPTransport/ESPDiscovery/ESPDiscoveryManager";
 import { DiscoveryParamsInterface } from "../../types";
 import { ESPRMEventType } from "../../types/subscription";
@@ -110,13 +108,6 @@ ESPRMUser.prototype.subscribe = function (
     this.trigger(event, info);
   };
 
-  const notificationCallback = (info: Record<string, any>) => {
-    const notificationData = transformNotificationData(info);
-    if (notificationData) {
-      this.trigger(event, notificationData);
-    }
-  };
-
   if (event === ESPRMEventType.localDiscovery) {
     /**
      * Start the local discovery process using the default local discovery config.
@@ -125,9 +116,8 @@ ESPRMUser.prototype.subscribe = function (
     localDiscoveryManager.startDiscovery(discoveryCallback);
   }
   if (event === ESPRMEventType.nodeUpdates) {
-    ESPRMBase.ESPNotificationAdapter.addNotificationListener(
-      notificationCallback
-    );
+    // NOTE: Application must manually call ESPRMBase.subscriptionManager.subscribeToAllNodes()
+    // after initialization to set up subscriptions.
   }
   /**
    * If the event is a string other than ESPRMEventType enum value,

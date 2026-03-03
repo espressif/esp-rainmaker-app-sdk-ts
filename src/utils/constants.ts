@@ -654,6 +654,16 @@ const APIRequestFields = {
   URL_ENCODED_CONTENT_TYPE: "application/x-www-form-urlencoded",
 } as const;
 
+/**
+ * Subscription channel IDs.
+ * Base SDK defines NOTIFICATION channel.
+ * Other SDKs (Matter, BLE, etc.) can add their channel IDs here.
+ */
+const SubscriptionChannelIds = {
+  /** Notification subscription channel ID (Base SDK). */
+  NOTIFICATION: "notification",
+} as const;
+
 export {
   HTTPMethods,
   APIEndpoints,
@@ -687,6 +697,7 @@ export {
   AssumeRoleConstants,
   APIResponseFields,
   APIRequestFields,
+  SubscriptionChannelIds,
   // Claiming related exports
   RMakerCapabilities,
   ClaimCapabilities,

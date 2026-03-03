@@ -12,6 +12,7 @@ import {
   ESPTransportInterface,
   ESPTransportMode,
 } from "./types/transport";
+import { ESPNodeSubscriptionConfig } from "./types/subscription";
 
 /**
  * Represents a user node in the system, managing its configuration and connectivity status.
@@ -89,6 +90,23 @@ export class ESPRMNode implements ESPRMNodeInterface {
   customTransportManagers?: Record<ESPTransportType, ESPTransportInterface>;
 
   /**
+   * Subscription configuration for this node.
+   * Allows customization of subscription channel priority order.
+   *
+   * If not set, the node will use the global channel order from ESPSubscriptionManager.
+   * Setting this allows per-node optimization of subscription channels.
+   *
+   * @example
+   * ```typescript
+   * // Set custom channel order for this node
+   * node.subscriptionConfig = {
+   *   channelOrder: ["notification"]
+   * };
+   * ```
+   */
+  subscriptionConfig?: ESPNodeSubscriptionConfig;
+
+  /**
    * Creates an instance of `ESPRMNode`.
    *
    * @param data - An object containing the node details.
@@ -109,5 +127,6 @@ export class ESPRMNode implements ESPRMNodeInterface {
     this.transportOrder = data.transportOrder;
     this.availableTransports = data.availableTransports;
     this.customTransportManagers = data.customTransportManagers;
+    this.subscriptionConfig = data.subscriptionConfig;
   }
 }
