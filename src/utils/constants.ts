@@ -307,13 +307,27 @@ const Endpoint = {
   CLOUD_USER_ASSOCIATION: "cloud_user_assoc",
   /** The endpoint for RainMaker claiming. */
   RM_CLAIM: "rmaker_claim",
+  /** The endpoint for challenge-response and get-node-id protocol with the device. */
+  CHALLENGE_RESPONSE: "ch_resp",
 } as const;
 
 /**
- * An object containing device capability constants for RainMaker.
- *
- * @enum {string}
+ * User-facing error messages for challenge-response device response validation.
  */
+const ChallengeResponseValidationErrors = {
+  /** Error message indicating the device returned an unsuccessful status. */
+  DEVICE_UNSUCCESSFUL_STATUS: "Device returned unsuccessful status",
+  /** Error message indicating the challenge response payload is missing. */
+  MISSING_CHALLENGE_RESPONSE_PAYLOAD: "Missing challenge response payload",
+  /** Error message indicating the response payload is invalid. */
+  INVALID_RESPONSE_PAYLOAD:
+    "Invalid response payload: missing payload or nodeId",
+  /** Error message when device response parsing fails. */
+  FAILED_TO_PARSE_DEVICE_RESPONSE: "Failed to parse device response",
+  /** Error message when challenge response format is invalid (e.g. signedChallenge not hex). */
+  INVALID_CHALLENGE_RESPONSE_FORMAT: "Invalid challenge response format",
+} as const;
+
 const RMakerCapabilities = {
   /** Capability indicating device supports assisted claiming. */
   CLAIM: "claim",
@@ -323,6 +337,8 @@ const RMakerCapabilities = {
   WIFI_PROV: "wifi_prov",
   /** Capability indicating device does not require Proof of Possession. */
   NO_POP: "no_pop",
+  /** Capability indicating device supports challenge-response flow. */
+  CHALLENGE_RESPONSE: "ch_resp",
 } as const;
 
 /**
@@ -370,6 +386,18 @@ const ProvErrorCodes = {
   /** Error code indicating the user node mapping cloud timeout. */
   FAILED_USER_NODE_MAPPING_CLOUD_TIMEOUT:
     "FAILED_USER_NODE_MAPPING_CLOUD_TIMEOUT",
+  /** Error code indicating the provision type is invalid. */
+  INVALID_PROVISION_TYPE: "INVALID_PROVISION_TYPE",
+  /** Error code indicating the mapping response is invalid. */
+  INVALID_MAPPING_RESPONSE: "INVALID_MAPPING_RESPONSE",
+  /** Error code indicating the challenge response format is invalid. */
+  INVALID_CHALLENGE_RESPONSE_FORMAT: "INVALID_CHALLENGE_RESPONSE_FORMAT",
+  /** Error code indicating the verify node mapping failed. */
+  VERIFY_NODE_MAPPING_FAILED: "VERIFY_NODE_MAPPING_FAILED",
+  /** Error code indicating the set network credentials failed. */
+  SET_NETWORK_CREDENTIALS_FAILED: "SET_NETWORK_CREDENTIALS_FAILED",
+  /** Error code indicating the challenge response is not supported. */
+  CHALLENGE_RESPONSE_NOT_SUPPORTED: "CHALLENGE_RESPONSE_NOT_SUPPORTED",
 } as const;
 
 /**
@@ -500,7 +528,19 @@ const ESPServiceParamType = {
 } as const;
 
 /**
+ * Provision type for device provisioning flow.
+ * chal_resp = challenge-response flow (initiate → send challenge → verify → set credentials)
+ */
+const ProvisionType = {
+  /** MQTT flow: cloud_user_assoc, then adapter provision, then node mapping poll. */
+  MQTT: "mqtt",
+  /** Challenge-response flow (default): initiate, send challenge to device, verify, set network credentials. */
+  CHAL_RESP: "chal_resp",
+} as const;
+
+/**
  * An object containing ESP provisioning progress messages.
+ * Challenge-response messages align with esp-rmng-app-sdk-ts for app UI compatibility.
  */
 const ESPProvProgressMessages = {
   /** Message indicating the start of user device association. */
@@ -527,6 +567,14 @@ const ESPProvProgressMessages = {
   SETTING_NODE_TIMEZONE: "Setting node timezone",
   /** Message indicating the successful node timeZone setup. */
   NODE_TIMEZONE_SETUP_SUCCEED: "Node timezone setup succeed",
+  /** Message indicating initiating node association on server (challenge-response). */
+  INITIATING_NODE_ASSOCIATION: "Initiating node association...",
+  /** Message indicating sending challenge to device (challenge-response). */
+  SENDING_CHALLENGE_TO_DEVICE: "Sending challenge to device...",
+  /** Message indicating verifying node association on server (challenge-response). */
+  VERIFYING_NODE_ASSOCIATION: "Verifying node association...",
+  /** Message indicating setting network credentials (challenge-response). */
+  SETTING_NETWORK_CREDENTIALS: "Setting network credentials...",
 } as const;
 
 /** Represents the labels for the custom errors. */
@@ -675,6 +723,7 @@ export {
   APIOperations,
   TokenErrorCodes,
   Endpoint,
+  ProvisionType,
   ProvErrorCodes,
   AppPermissionErrorCodes,
   ServiceType,
@@ -700,6 +749,7 @@ export {
   SubscriptionChannelIds,
   // Claiming related exports
   RMakerCapabilities,
+  ChallengeResponseValidationErrors,
   ClaimCapabilities,
   ClaimNodePolicies,
   DEFAULT_CLAIM_BASE_URL,

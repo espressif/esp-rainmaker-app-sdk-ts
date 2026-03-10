@@ -12,8 +12,12 @@ import {
 import {
   StatusMessage,
   ESPProvProgressMessages,
+  ProvisionType,
+  ProvErrorCodes,
 } from "../../src/utils/constants";
+import { ESPProvError } from "../../src/utils/error/Error";
 import { NodeMappingHelper } from "../../src/services/ESPRMHelpers/NodeMappingHelper";
+import { ChallengeResponseHelper } from "../../src/services/ESPRMHelpers/ChallengeResponseHelper";
 import { NodeTimeZoneSetupService } from "../../src/services/ESPRMHelpers/NodeTimeZoneSetupService";
 import { ESPRMUser } from "../../src/ESPRMUser";
 import {
@@ -26,7 +30,21 @@ import {
   resetMockProgressCallback,
   MOCK_GROUP_ID,
   MOCK_API_ERROR,
+  MOCK_DEVICE_VERSION_INFO,
 } from "../helpers/provision";
+import {
+  MOCK_CHAL_RESP_INITIATE_RESPONSE,
+  MOCK_CHAL_RESP_DEVICE_RESPONSE,
+  MOCK_CHAL_RESP_SENDDATA_RESPONSE,
+  MOCK_CHAL_RESP_VERIFY_SUCCESS,
+  chalRespProvisionSuccessTest,
+  chalRespProvisionSuccessWithGroupIdTest,
+  chalRespProvisionInvalidMappingResponseTest,
+  chalRespProvisionInvalidChallengeResponseTest,
+  chalRespProvisionVerifyFailureTest,
+  chalRespProvisionSetCredentialsFailureTest,
+  CHAL_RESP_SUCCESS_PROGRESS_MESSAGES,
+} from "../helpers/provision/chalRespProvision";
 
 // Mock dependencies
 jest.mock("../../src/services/ESPRMHelpers/NodeMappingHelper");
@@ -144,7 +162,13 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
     test("should provision device successfully with full flow", async () => {
       const device = createMockESPDevice();
 
-      await device.provision(MOCK_SSID, MOCK_PASSPHRASE, mockProgressCallback);
+      await device.provision(
+        MOCK_SSID,
+        MOCK_PASSPHRASE,
+        mockProgressCallback,
+        undefined,
+        ProvisionType.MQTT
+      );
 
       // Wait for the interval to execute (it runs every 5000ms, so wait a bit longer)
       await new Promise((resolve) => setTimeout(resolve, 6000));
@@ -170,7 +194,13 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
     test("should handle timezone setup successfully", async () => {
       const device = createMockESPDevice();
 
-      await device.provision(MOCK_SSID, MOCK_PASSPHRASE, mockProgressCallback);
+      await device.provision(
+        MOCK_SSID,
+        MOCK_PASSPHRASE,
+        mockProgressCallback,
+        undefined,
+        ProvisionType.MQTT
+      );
 
       // Wait for the interval to execute
       await new Promise((resolve) => setTimeout(resolve, 6000));
@@ -183,7 +213,13 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
     test("should include nodeId data in progress callback when decoding node ID", async () => {
       const device = createMockESPDevice();
 
-      await device.provision(MOCK_SSID, MOCK_PASSPHRASE, mockProgressCallback);
+      await device.provision(
+        MOCK_SSID,
+        MOCK_PASSPHRASE,
+        mockProgressCallback,
+        undefined,
+        ProvisionType.MQTT
+      );
 
       // Wait for the interval to execute
       await new Promise((resolve) => setTimeout(resolve, 6000));
@@ -214,7 +250,8 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         MOCK_SSID,
         MOCK_PASSPHRASE,
         mockProgressCallback,
-        MOCK_GROUP_ID
+        MOCK_GROUP_ID,
+        ProvisionType.MQTT
       );
 
       // Wait for the interval to execute
@@ -238,7 +275,8 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         MOCK_SSID,
         MOCK_PASSPHRASE,
         mockProgressCallback,
-        ""
+        "",
+        ProvisionType.MQTT
       );
 
       // Wait for the interval to execute
@@ -273,7 +311,9 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         await device.provision(
           MOCK_SSID,
           MOCK_PASSPHRASE,
-          mockProgressCallback
+          mockProgressCallback,
+          undefined,
+          ProvisionType.MQTT
         );
         fail("Expected provision to throw an error");
       } catch (error) {
@@ -290,11 +330,33 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         await device.provision(
           MOCK_SSID,
           MOCK_PASSPHRASE,
-          mockProgressCallback
+          mockProgressCallback,
+          undefined,
+          ProvisionType.MQTT
         );
         fail("Expected provision to throw an error for missing ID token");
       } catch (error) {
         expect(error).toBeDefined();
+      }
+    });
+
+    test("should throw error for invalid provisionType", async () => {
+      const device = createMockESPDevice();
+
+      try {
+        await device.provision(
+          MOCK_SSID,
+          MOCK_PASSPHRASE,
+          mockProgressCallback,
+          undefined,
+          "invalid_type"
+        );
+        fail("Expected provision to throw an error for invalid provisionType");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ESPProvError);
+        expect((error as ESPProvError).code).toBe(
+          ProvErrorCodes.INVALID_PROVISION_TYPE
+        );
       }
     });
 
@@ -315,7 +377,9 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         await device.provision(
           MOCK_SSID,
           MOCK_PASSPHRASE,
-          mockProgressCallback
+          mockProgressCallback,
+          undefined,
+          ProvisionType.MQTT
         );
         fail("Expected provision to throw a node mapping error");
       } catch (error) {
@@ -341,7 +405,9 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         await device.provision(
           MOCK_SSID,
           MOCK_PASSPHRASE,
-          mockProgressCallback
+          mockProgressCallback,
+          undefined,
+          ProvisionType.MQTT
         );
         fail("Expected provision to throw a node mapping error");
       } catch (error) {
@@ -362,7 +428,9 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
         await device.provision(
           MOCK_SSID,
           MOCK_PASSPHRASE,
-          mockProgressCallback
+          mockProgressCallback,
+          undefined,
+          ProvisionType.MQTT
         );
         fail("Expected provision to throw an error for sendData failure");
       } catch (error) {
@@ -385,7 +453,8 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
           MOCK_SSID,
           MOCK_PASSPHRASE,
           mockProgressCallback,
-          MOCK_GROUP_ID
+          MOCK_GROUP_ID,
+          ProvisionType.MQTT
         );
         fail("Expected provision to throw a node mapping error with groupId");
       } catch (error) {
@@ -413,7 +482,13 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
     test("should handle empty SSID", async () => {
       const device = createMockESPDevice();
 
-      await device.provision("", MOCK_PASSPHRASE, mockProgressCallback);
+      await device.provision(
+        "",
+        MOCK_PASSPHRASE,
+        mockProgressCallback,
+        undefined,
+        ProvisionType.MQTT
+      );
 
       // Wait for the interval to execute
       await new Promise((resolve) => setTimeout(resolve, 6000));
@@ -428,7 +503,13 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
     test("should handle empty passphrase", async () => {
       const device = createMockESPDevice();
 
-      await device.provision(MOCK_SSID, "", mockProgressCallback);
+      await device.provision(
+        MOCK_SSID,
+        "",
+        mockProgressCallback,
+        undefined,
+        ProvisionType.MQTT
+      );
 
       // Wait for the interval to execute
       await new Promise((resolve) => setTimeout(resolve, 6000));
@@ -445,12 +526,279 @@ describe("[Unit Test]: ESPDevice - provision()", () => {
 
       const device = createMockESPDevice();
 
-      await device.provision(MOCK_SSID, MOCK_PASSPHRASE, mockProgressCallback);
+      await device.provision(
+        MOCK_SSID,
+        MOCK_PASSPHRASE,
+        mockProgressCallback,
+        undefined,
+        ProvisionType.MQTT
+      );
 
       // Wait for the interval to execute
       await new Promise((resolve) => setTimeout(resolve, 6000));
 
       expect(mockProvisionAdapter.provision).toHaveBeenCalled();
     }, 15000);
+  });
+
+  describe("ProvisionType.CHAL_RESP", () => {
+    let createChallengeRequestSpy: jest.SpyInstance;
+    let parseAndValidateDeviceResponseSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      // runChallengeResponseProvisionFlow checks ch_resp in version info before mapping
+      mockProvisionAdapter.getDeviceVersionInfo.mockResolvedValue(
+        MOCK_DEVICE_VERSION_INFO
+      );
+
+      createChallengeRequestSpy = jest.spyOn(
+        ChallengeResponseHelper,
+        "createChallengeRequest"
+      );
+      parseAndValidateDeviceResponseSpy = jest.spyOn(
+        ChallengeResponseHelper,
+        "parseAndValidateDeviceResponse"
+      );
+    });
+
+    afterEach(() => {
+      createChallengeRequestSpy?.mockRestore();
+      parseAndValidateDeviceResponseSpy?.mockRestore();
+    });
+
+    describe("Success Cases", () => {
+      beforeEach(() => {
+        mockNodeMappingHelper.initiateUserNodeMapping.mockResolvedValue(
+          MOCK_CHAL_RESP_INITIATE_RESPONSE
+        );
+        mockNodeMappingHelper.verifyUserNodeMapping.mockResolvedValue(
+          MOCK_CHAL_RESP_VERIFY_SUCCESS
+        );
+        mockProvisionAdapter.sendData.mockResolvedValue(
+          MOCK_CHAL_RESP_SENDDATA_RESPONSE
+        );
+        mockProvisionAdapter.provision.mockResolvedValue(
+          ESPProvisionStatus.success
+        );
+        createChallengeRequestSpy.mockReturnValue(new Uint8Array([1, 2, 3]));
+        parseAndValidateDeviceResponseSpy.mockReturnValue(
+          MOCK_CHAL_RESP_DEVICE_RESPONSE
+        );
+      });
+
+      test("should provision device successfully with CHAL_RESP full flow", async () => {
+        const device = createMockESPDevice();
+
+        await chalRespProvisionSuccessTest(device);
+
+        expect(
+          mockNodeMappingHelper.initiateUserNodeMapping
+        ).toHaveBeenCalledWith({});
+        expect(mockProvisionAdapter.sendData).toHaveBeenCalled();
+        expect(
+          mockNodeMappingHelper.verifyUserNodeMapping
+        ).toHaveBeenCalledWith(
+          expect.objectContaining({
+            request_id: MOCK_CHAL_RESP_INITIATE_RESPONSE.request_id,
+            node_id: MOCK_NODE_ID,
+          })
+        );
+        expect(mockProvisionAdapter.provision).toHaveBeenCalledWith(
+          "test-device",
+          MOCK_SSID,
+          MOCK_PASSPHRASE
+        );
+        CHAL_RESP_SUCCESS_PROGRESS_MESSAGES.forEach((msg) => {
+          const calls = mockProgressCallback.mock.calls.map(
+            (c) => c[0].description
+          );
+          expect(calls).toContain(msg);
+        });
+      });
+
+      test("should provision device successfully with CHAL_RESP and groupId", async () => {
+        const device = createMockESPDevice();
+
+        await chalRespProvisionSuccessWithGroupIdTest(device);
+
+        expect(
+          mockNodeMappingHelper.initiateUserNodeMapping
+        ).toHaveBeenCalledWith({ group_id: MOCK_GROUP_ID });
+        expect(
+          mockNodeMappingHelper.verifyUserNodeMapping
+        ).toHaveBeenCalledWith(
+          expect.objectContaining({
+            request_id: MOCK_CHAL_RESP_INITIATE_RESPONSE.request_id,
+            node_id: MOCK_NODE_ID,
+            group_id: MOCK_GROUP_ID,
+          })
+        );
+        expect(mockProvisionAdapter.provision).toHaveBeenCalledWith(
+          "test-device",
+          MOCK_SSID,
+          MOCK_PASSPHRASE
+        );
+      });
+
+      test("should include nodeId in final progress callback for CHAL_RESP", async () => {
+        const device = createMockESPDevice();
+
+        await device.provision(
+          MOCK_SSID,
+          MOCK_PASSPHRASE,
+          mockProgressCallback,
+          undefined
+        );
+
+        const lastCall =
+          mockProgressCallback.mock.calls[
+            mockProgressCallback.mock.calls.length - 1
+          ][0];
+        expect(lastCall.status).toBe(ESPProvResponseStatus.succeed);
+        expect(lastCall.data).toEqual({ nodeId: MOCK_NODE_ID });
+        expect(lastCall.description).toBe(MOCK_NODE_ID);
+      });
+    });
+
+    describe("Error Cases", () => {
+      test("should throw INVALID_MAPPING_RESPONSE when initiateUserNodeMapping returns no challenge/requestId", async () => {
+        mockNodeMappingHelper.initiateUserNodeMapping.mockResolvedValue({});
+
+        const device = createMockESPDevice();
+
+        await chalRespProvisionInvalidMappingResponseTest(device);
+      });
+
+      test("should throw INVALID_MAPPING_RESPONSE when initiateUserNodeMapping returns null challenge", async () => {
+        mockNodeMappingHelper.initiateUserNodeMapping.mockResolvedValue({
+          request_id: "req-1",
+          challenge: null,
+        });
+
+        const device = createMockESPDevice();
+
+        try {
+          await device.provision(
+            MOCK_SSID,
+            MOCK_PASSPHRASE,
+            mockProgressCallback,
+            undefined
+          );
+          fail("Expected INVALID_MAPPING_RESPONSE");
+        } catch (error) {
+          expect(error).toBeInstanceOf(ESPProvError);
+          expect((error as ESPProvError).code).toBe(
+            ProvErrorCodes.INVALID_MAPPING_RESPONSE
+          );
+        }
+      });
+
+      test("should throw INVALID_CHALLENGE_RESPONSE_FORMAT when parseAndValidateDeviceResponse returns invalid format", async () => {
+        mockNodeMappingHelper.initiateUserNodeMapping.mockResolvedValue(
+          MOCK_CHAL_RESP_INITIATE_RESPONSE
+        );
+        mockProvisionAdapter.sendData.mockResolvedValue(
+          MOCK_CHAL_RESP_SENDDATA_RESPONSE
+        );
+        parseAndValidateDeviceResponseSpy.mockReturnValue({
+          success: false,
+          error: "Invalid challenge response format",
+        });
+
+        const device = createMockESPDevice();
+
+        await chalRespProvisionInvalidChallengeResponseTest(device);
+      });
+
+      test("should throw VERIFY_NODE_MAPPING_FAILED when verifyUserNodeMapping returns non-success", async () => {
+        mockNodeMappingHelper.initiateUserNodeMapping.mockResolvedValue(
+          MOCK_CHAL_RESP_INITIATE_RESPONSE
+        );
+        mockProvisionAdapter.sendData.mockResolvedValue(
+          MOCK_CHAL_RESP_SENDDATA_RESPONSE
+        );
+        createChallengeRequestSpy.mockReturnValue(new Uint8Array([1, 2, 3]));
+        parseAndValidateDeviceResponseSpy.mockReturnValue(
+          MOCK_CHAL_RESP_DEVICE_RESPONSE
+        );
+        mockNodeMappingHelper.verifyUserNodeMapping.mockResolvedValue({
+          status: "failure",
+          description: "Verification failed",
+        });
+
+        const device = createMockESPDevice();
+
+        await chalRespProvisionVerifyFailureTest(device);
+      });
+
+      test("should throw SET_NETWORK_CREDENTIALS_FAILED when adapter.provision fails", async () => {
+        mockNodeMappingHelper.initiateUserNodeMapping.mockResolvedValue(
+          MOCK_CHAL_RESP_INITIATE_RESPONSE
+        );
+        mockProvisionAdapter.sendData.mockResolvedValue(
+          MOCK_CHAL_RESP_SENDDATA_RESPONSE
+        );
+        mockNodeMappingHelper.verifyUserNodeMapping.mockResolvedValue({
+          ...MOCK_CHAL_RESP_VERIFY_SUCCESS,
+        });
+        mockProvisionAdapter.provision.mockResolvedValue(
+          ESPProvisionStatus.failure
+        );
+        createChallengeRequestSpy.mockReturnValue(new Uint8Array([1, 2, 3]));
+        parseAndValidateDeviceResponseSpy.mockReturnValue(
+          MOCK_CHAL_RESP_DEVICE_RESPONSE
+        );
+
+        const device = createMockESPDevice();
+
+        await chalRespProvisionSetCredentialsFailureTest(device);
+      });
+
+      test("should throw when sendData fails in CHAL_RESP flow", async () => {
+        mockNodeMappingHelper.initiateUserNodeMapping.mockResolvedValue(
+          MOCK_CHAL_RESP_INITIATE_RESPONSE
+        );
+        mockProvisionAdapter.sendData.mockRejectedValue(
+          new Error("Send data failed")
+        );
+        createChallengeRequestSpy.mockReturnValue(new Uint8Array([1, 2, 3]));
+
+        const device = createMockESPDevice();
+
+        try {
+          await device.provision(
+            MOCK_SSID,
+            MOCK_PASSPHRASE,
+            mockProgressCallback,
+            undefined
+          );
+          fail("Expected sendData error to propagate");
+        } catch (error) {
+          expect(error).toBeDefined();
+          expect((error as Error).message).toBe("Send data failed");
+        }
+      });
+
+      test("should throw when initiateUserNodeMapping rejects in CHAL_RESP flow", async () => {
+        mockNodeMappingHelper.initiateUserNodeMapping.mockRejectedValue(
+          new Error("API error")
+        );
+
+        const device = createMockESPDevice();
+
+        try {
+          await device.provision(
+            MOCK_SSID,
+            MOCK_PASSPHRASE,
+            mockProgressCallback,
+            undefined
+          );
+          fail("Expected initiateUserNodeMapping error to propagate");
+        } catch (error) {
+          expect(error).toBeDefined();
+          expect((error as Error).message).toBe("API error");
+        }
+      });
+    });
   });
 });

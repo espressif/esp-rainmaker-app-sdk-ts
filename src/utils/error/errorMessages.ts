@@ -270,6 +270,22 @@ const provErrorMessages = {
   /** Error message indicating that the user device mapping cloud operation timed out. */
   FAILED_USER_NODE_MAPPING_CLOUD_TIMEOUT:
     "ESPProvError: Timed out user device mapping on cloud",
+  /** Error message indicating that the provision type is not supported. */
+  INVALID_PROVISION_TYPE: "ESPProvError: Provisioning type is not supported.",
+  /** Error message indicating that the mapping response is invalid. */
+  INVALID_MAPPING_RESPONSE:
+    "ESPProvError: Invalid mapping response from server.",
+  /** Error message indicating that the challenge response format is invalid. */
+  INVALID_CHALLENGE_RESPONSE_FORMAT:
+    "ESPProvError: Invalid challenge response format from device.",
+  /** Error message indicating that verify node mapping failed. */
+  VERIFY_NODE_MAPPING_FAILED: "ESPProvError: Verify node mapping failed.",
+  /** Error message indicating that set network credentials failed. */
+  SET_NETWORK_CREDENTIALS_FAILED:
+    "ESPProvError: Failed to set network credentials on device.",
+  /** Error message indicating that the challenge response is not supported. */
+  CHALLENGE_RESPONSE_NOT_SUPPORTED:
+    "ESPProvError: Device does not support challenge response capability.",
 };
 
 const appPermissionErrorMessages = {

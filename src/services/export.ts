@@ -14,3 +14,9 @@ export * from "../services/ESPTransport";
 // Re-export classes related to subscription management.
 export { ESPSubscriptionManager } from "../services/ESPSubscriptionManager";
 export * from "../services/ESPSubscriptionChannels";
+
+// Re-export challenge-response helper for provisioning flow and capability check
+export {
+  ChallengeResponseHelper,
+  type DeviceChallengeResponse,
+} from "./ESPRMHelpers/ChallengeResponseHelper";
