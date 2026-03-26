@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v2.3.0]
+
+### Added
+
+- **Challenge-Response Provisioning (Default)**:
+
+  - Introduced a more secure challenge-response–based provisioning flow, now set as the default method for device onboarding.
+  - Added support to override the default provisioning method by specifying a provisioning type.
+
+### Fixed
+
+- **Duplicate Notification Channel Registration**:
+
+  - Resolved an issue where notification channels could be registered multiple times by ensuring channels are registered only once.
+
 ## [v2.2.2]
 
 ### Added
