@@ -9,7 +9,7 @@ import {
   ESPProvResponse,
   ESPProvResponseStatus,
 } from "../../../src/types/provision";
-import { ProvErrorCodes } from "../../../src/utils/constants";
+import { ProvErrorCodes, ProvisionType } from "../../../src/utils/constants";
 import { ESPProvError } from "../../../src/utils/error/Error";
 import {
   MOCK_SSID,
@@ -23,7 +23,13 @@ import {
  * @param device - The ESPDevice instance
  */
 export async function provisionDeviceSuccessTest(device: ESPDevice) {
-  await device.provision(MOCK_SSID, MOCK_PASSPHRASE, mockProgressCallback);
+  await device.provision(
+    MOCK_SSID,
+    MOCK_PASSPHRASE,
+    mockProgressCallback,
+    undefined,
+    ProvisionType.MQTT
+  );
 
   // Verify that progress callbacks were called
   expect(mockProgressCallback).toHaveBeenCalled();
@@ -42,7 +48,13 @@ export async function provisionDeviceSuccessTest(device: ESPDevice) {
  */
 export async function provisionDeviceMissingSSIDTest(device: ESPDevice) {
   try {
-    await device.provision("", MOCK_PASSPHRASE, mockProgressCallback);
+    await device.provision(
+      "",
+      MOCK_PASSPHRASE,
+      mockProgressCallback,
+      undefined,
+      ProvisionType.MQTT
+    );
     fail("Expected provision to throw an error for missing SSID");
   } catch (error) {
     expect(error).toBeDefined();
@@ -55,7 +67,13 @@ export async function provisionDeviceMissingSSIDTest(device: ESPDevice) {
  */
 export async function provisionDeviceMissingPassphraseTest(device: ESPDevice) {
   try {
-    await device.provision(MOCK_SSID, "", mockProgressCallback);
+    await device.provision(
+      MOCK_SSID,
+      "",
+      mockProgressCallback,
+      undefined,
+      ProvisionType.MQTT
+    );
     fail("Expected provision to throw an error for missing passphrase");
   } catch (error) {
     expect(error).toBeDefined();
@@ -68,7 +86,13 @@ export async function provisionDeviceMissingPassphraseTest(device: ESPDevice) {
  */
 export async function provisionDeviceNetworkTimeoutTest(device: ESPDevice) {
   try {
-    await device.provision(MOCK_SSID, MOCK_PASSPHRASE, mockProgressCallback);
+    await device.provision(
+      MOCK_SSID,
+      MOCK_PASSPHRASE,
+      mockProgressCallback,
+      undefined,
+      ProvisionType.MQTT
+    );
     fail("Expected provision to throw a timeout error");
   } catch (error) {
     expect(error).toBeInstanceOf(ESPProvError);
@@ -84,7 +108,13 @@ export async function provisionDeviceNetworkTimeoutTest(device: ESPDevice) {
  */
 export async function provisionDeviceNodeMappingFailureTest(device: ESPDevice) {
   try {
-    await device.provision(MOCK_SSID, MOCK_PASSPHRASE, mockProgressCallback);
+    await device.provision(
+      MOCK_SSID,
+      MOCK_PASSPHRASE,
+      mockProgressCallback,
+      undefined,
+      ProvisionType.MQTT
+    );
     fail("Expected provision to throw a node mapping error");
   } catch (error) {
     expect(error).toBeInstanceOf(ESPProvError);
@@ -103,6 +133,12 @@ export async function provisionDeviceWithProgressTest(
   device: ESPDevice,
   expectedProgressCalls: ESPProvResponse[]
 ) {
-  await device.provision(MOCK_SSID, MOCK_PASSPHRASE, mockProgressCallback);
+  await device.provision(
+    MOCK_SSID,
+    MOCK_PASSPHRASE,
+    mockProgressCallback,
+    undefined,
+    ProvisionType.MQTT
+  );
   verifyProvisionProgressCalls(expectedProgressCalls);
 }
