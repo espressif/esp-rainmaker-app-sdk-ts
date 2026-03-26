@@ -25,10 +25,12 @@ import {
   base64ToUint8Array,
   uint8ArrayToBase64,
 } from "./services/ESPRMHelpers/TransformEncoding";
+import { ChallengeResponseHelper } from "./services/ESPRMHelpers/ChallengeResponseHelper";
 import { generateUUIDv4 } from "./services/ESPRMHelpers/GenerateUUID";
 import {
   Endpoint,
   ProvErrorCodes,
+  ProvisionType,
   ESPProvProgressMessages,
   StorageKeys,
   StatusMessage,
@@ -125,7 +127,7 @@ class ESPDevice {
     claimCapability?: ClaimCapabilities
   ): Promise<void> {
     // Default callback if none provided
-    const progressCallback: ESPClaimProgressCallback = onProgress || (() => { });
+    const progressCallback: ESPClaimProgressCallback = onProgress || (() => {});
 
     let isClaimingAborted = false;
 
@@ -360,14 +362,43 @@ class ESPDevice {
    * @param passphrase - The passphrase of the Wi-Fi network.
    * @param onProgress - A callback function to report progress.
    * @param groupId (optional) - The unique identifier of the group to which the node should be added.
+   * @param provisionType (optional) - Provision flow type: ProvisionType.CHAL_RESP (default) or ProvisionType.MQTT.
    */
   async provision(
     ssid: string,
     passphrase: string,
     onProgress: (message: ESPProvResponse) => void,
+    groupId?: string,
+    provisionType: string = ProvisionType.CHAL_RESP
+  ): Promise<void> {
+    if (
+      provisionType !== ProvisionType.CHAL_RESP &&
+      provisionType !== ProvisionType.MQTT
+    ) {
+      throw new ESPProvError(ProvErrorCodes.INVALID_PROVISION_TYPE);
+    }
+    if (provisionType === ProvisionType.CHAL_RESP) {
+      await this.runChallengeResponseProvisionFlow(
+        ssid,
+        passphrase,
+        onProgress,
+        groupId
+      );
+      return;
+    }
+    await this.runMQTTProvisionFlow(ssid, passphrase, onProgress, groupId);
+  }
+
+  /**
+   * Runs the MQTT provisioning flow.
+   * Flow: cloud_user_assoc → adapter provision → node mapping poll → timezone setup.
+   */
+  private async runMQTTProvisionFlow(
+    ssid: string,
+    passphrase: string,
+    onProgress: (message: ESPProvResponse) => void,
     groupId?: string
   ): Promise<void> {
-    // Start user device association
     try {
       const secretKey = generateUUIDv4();
       onProgress({
@@ -549,6 +580,164 @@ class ESPDevice {
       }
     } catch (error) {
       throw error;
+    }
+  }
+
+  /**
+   * Runs the challenge-response provisioning flow.
+   * Orchestrates: Initiate Mapping → Challenge Relay → Verification → WiFi provisioning.
+   */
+  private async runChallengeResponseProvisionFlow(
+    ssid: string,
+    passphrase: string,
+    onProgress: (message: ESPProvResponse) => void,
+    groupId?: string
+  ): Promise<void> {
+    const versionInfo = await this.getDeviceVersionInfo();
+    if (
+      !ChallengeResponseHelper.checkChallengeResponseCapability(versionInfo)
+    ) {
+      throw new ESPProvError(ProvErrorCodes.CHALLENGE_RESPONSE_NOT_SUPPORTED);
+    }
+
+    const { challenge, requestId } = await this.initiateMappingAndGetChallenge(
+      onProgress,
+      groupId
+    );
+
+    const { nodeId, signedChallenge } =
+      await this.relayChallengeAndReceiveResponse(challenge, onProgress);
+
+    await this.verifyChallengeResponseWithCloud(
+      requestId,
+      nodeId,
+      signedChallenge,
+      groupId,
+      onProgress
+    );
+
+    await this.provisionNetworkCredentials(ssid, passphrase, onProgress);
+
+    onProgress({
+      status: ESPProvResponseStatus.succeed,
+      description: nodeId ?? ESPProvProgressMessages.DEVICE_PROVISIONED,
+      data: nodeId ? { nodeId } : undefined,
+    });
+  }
+
+  /**
+   * Workflow step 1–2: Initiate mapping with RainMaker cloud and obtain challenge.
+   * Client initiates over secure session; cloud returns Request ID and cryptographic challenge.
+   */
+  private async initiateMappingAndGetChallenge(
+    onProgress: (message: ESPProvResponse) => void,
+    groupId?: string
+  ): Promise<{ challenge: string; requestId: string }> {
+    onProgress({
+      status: ESPProvResponseStatus.onProgress,
+      description: ESPProvProgressMessages.INITIATING_NODE_ASSOCIATION,
+    });
+
+    const mappingResponse = await this.initiateUserNodeMapping(
+      groupId ? { group_id: groupId } : {}
+    );
+    const challenge = mappingResponse?.challenge;
+    const requestId = mappingResponse?.request_id;
+
+    if (!challenge || !requestId) {
+      throw new ESPProvError(ProvErrorCodes.INVALID_MAPPING_RESPONSE);
+    }
+
+    return { challenge, requestId };
+  }
+
+  /**
+   * Workflow step 3–4: Send challenge to node via BLE and receive signed response.
+   * Client relays challenge to node; node returns challenge-response and Node ID.
+   */
+  private async relayChallengeAndReceiveResponse(
+    challenge: string,
+    onProgress: (message: ESPProvResponse) => void
+  ): Promise<{ nodeId: string; signedChallenge: string }> {
+    onProgress({
+      status: ESPProvResponseStatus.onProgress,
+      description: ESPProvProgressMessages.SENDING_CHALLENGE_TO_DEVICE,
+    });
+
+    const challengePayload =
+      ChallengeResponseHelper.createChallengeRequest(challenge);
+    const base64Payload = uint8ArrayToBase64(challengePayload);
+    const responseStr = await this.sendData(
+      Endpoint.CHALLENGE_RESPONSE,
+      base64Payload
+    );
+
+    const responseBytes = base64ToUint8Array(responseStr);
+    const deviceResponse =
+      ChallengeResponseHelper.parseAndValidateDeviceResponse(responseBytes);
+
+    if (!deviceResponse.success) {
+      throw new ESPProvError(ProvErrorCodes.INVALID_CHALLENGE_RESPONSE_FORMAT);
+    }
+
+    const { nodeId, signedChallenge } = deviceResponse;
+    return { nodeId: nodeId!, signedChallenge: signedChallenge! };
+  }
+
+  /**
+   * Workflow step 5–6: Forward Node ID and challenge-response to cloud for verification.
+   * Cloud verifies and returns mapping status (Success/Fail).
+   */
+  private async verifyChallengeResponseWithCloud(
+    requestId: string,
+    nodeId: string,
+    signedChallenge: string,
+    groupId: string | undefined,
+    onProgress: (message: ESPProvResponse) => void
+  ): Promise<void> {
+    onProgress({
+      status: ESPProvResponseStatus.onProgress,
+      description: ESPProvProgressMessages.VERIFYING_NODE_ASSOCIATION,
+    });
+
+    const verifyBody: Record<string, any> = {
+      request_id: requestId,
+      challenge_response: signedChallenge,
+      node_id: nodeId,
+    };
+    if (groupId) {
+      verifyBody.group_id = groupId;
+    }
+    const verificationResponse = await this.verifyUserNodeMapping(verifyBody);
+
+    if (
+      !verificationResponse ||
+      verificationResponse.status !== StatusMessage.SUCCESS
+    ) {
+      throw new ESPProvError(ProvErrorCodes.VERIFY_NODE_MAPPING_FAILED);
+    }
+  }
+
+  /**
+   * Sets network credentials on the device via the provision adapter (WiFi provisioning).
+   */
+  private async provisionNetworkCredentials(
+    ssid: string,
+    passphrase: string,
+    onProgress: (message: ESPProvResponse) => void
+  ): Promise<void> {
+    onProgress({
+      status: ESPProvResponseStatus.onProgress,
+      description: ESPProvProgressMessages.SETTING_NETWORK_CREDENTIALS,
+    });
+
+    const provStatus = await this.ESPProvisionAdapter.provision(
+      this.name,
+      ssid,
+      passphrase
+    );
+    if (provStatus !== ESPProvisionStatus.success) {
+      throw new ESPProvError(ProvErrorCodes.SET_NETWORK_CREDENTIALS_FAILED);
     }
   }
 

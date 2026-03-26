@@ -17,3 +17,4 @@ export * from "./setNetworkCredentials";
 export * from "./utils";
 export * from "./getDeviceVersionInfo";
 export * from "./userDeviceOperations";
+export * from "./chalRespProvision";
