@@ -32,7 +32,7 @@ import {
 } from "./types/adapter";
 import { ESPRMStorageAdapterInterface } from "./types/storage";
 import { ESPSubscriptionManager } from "./services/ESPSubscriptionManager";
-import { NotificationSubscriptionChannel } from "./services/ESPSubscriptionChannels/NotificationSubscriptionChannel";
+import { registerNotificationChannelIfNeeded } from "./services/ESPRMHelpers/ChannelRegistration";
 
 /**
  * Base class for configuring and managing the ESP Rainmaker SDK.
@@ -140,8 +140,7 @@ export class ESPRMBase {
     ESPRMStorage.initialize(ESPRMBase.ESPStorageAdapter);
 
     if (config.notificationAdapter) {
-      ESPRMBase.subscriptionManager
-        .registerChannel(new NotificationSubscriptionChannel())
+      registerNotificationChannelIfNeeded(ESPRMBase.subscriptionManager)
         .then(() => {
           ESPRMBase.subscriptionManager.setGlobalChannelOrder([
             SubscriptionChannelIds.NOTIFICATION,
@@ -251,30 +250,19 @@ export class ESPRMBase {
     adapter: ESPNotificationAdapterInterface
   ): void {
     ESPRMBase.ESPNotificationAdapter = adapter;
-
-    const isChannelRegistered = ESPRMBase.subscriptionManager
-      .getRegisteredChannels()
-      .includes(SubscriptionChannelIds.NOTIFICATION);
-
-    if (!isChannelRegistered) {
-      ESPRMBase.subscriptionManager
-        .registerChannel(new NotificationSubscriptionChannel())
-        .then(() => {
-          const currentOrder =
-            ESPRMBase.subscriptionManager.getGlobalChannelOrder();
-          if (currentOrder.length === 0) {
-            ESPRMBase.subscriptionManager.setGlobalChannelOrder([
-              SubscriptionChannelIds.NOTIFICATION,
-            ]);
-          }
-        })
-        .catch((error) => {
-          console.error(
-            "Failed to register notification channel in setNotificationAdapter:",
-            error
-          );
-        });
-    }
+    registerNotificationChannelIfNeeded(ESPRMBase.subscriptionManager)
+      .then(() => {
+        const currentOrder =
+          ESPRMBase.subscriptionManager.getGlobalChannelOrder();
+        if (currentOrder.length === 0) {
+          ESPRMBase.subscriptionManager.setGlobalChannelOrder([
+            SubscriptionChannelIds.NOTIFICATION,
+          ]);
+        }
+      })
+      .catch((error) => {
+        throw error;
+      });
   }
 
   /**
