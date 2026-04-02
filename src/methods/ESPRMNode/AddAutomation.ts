@@ -19,6 +19,7 @@ import {
   APICallValidationErrorCodes,
 } from "../../utils/constants";
 import { ESPAPICallValidationError } from "../../utils/error/Error";
+import { automationActionToPayload } from "../../utils/automation";
 
 /**
  * Augments the ESPRMNode class with the `addAutomation` method.
@@ -107,14 +108,9 @@ function constructAutomationRequestPayload(
       check: event.check,
     })),
     event_operator: automationDetails.eventOperator,
-    actions: automationDetails.actions.map((action) => ({
-      node_id: action.nodeId,
-      params: {
-        [action.deviceName]: {
-          [action.param]: action.value,
-        },
-      },
-    })),
+    actions: automationDetails.actions.map((action) =>
+      automationActionToPayload(action)
+    ),
     retrigger: automationDetails.retrigger,
     ...(automationDetails.metadata && { metadata: automationDetails.metadata }),
   };

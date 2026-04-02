@@ -19,6 +19,7 @@ import {
 import { APIEndpoints, HTTPMethods } from "../../utils/constants";
 import { ESPAutomation } from "../../ESPAutomation";
 import { isNonEmptyString } from "../../utils/validator/validators";
+import { automationActionToPayload } from "../../utils/automation";
 
 /**
  * Augments the ESPRMUser class with the `addWeatherBasedAutomation` method.
@@ -125,14 +126,9 @@ function constructWeatherAutomationRequestPayload(
       }
     }),
     event_operator: automationDetails.eventOperator,
-    actions: automationDetails.actions.map((action) => ({
-      node_id: action.nodeId,
-      params: {
-        [action.deviceName]: {
-          [action.param]: action.value,
-        },
-      },
-    })),
+    actions: automationDetails.actions.map((action) =>
+      automationActionToPayload(action)
+    ),
     retrigger: automationDetails.retrigger,
   };
 }
