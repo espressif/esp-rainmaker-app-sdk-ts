@@ -86,13 +86,21 @@ interface ESPWeatherEvent {
 }
 
 /**
- * Interface representing an automation action
+ * Interface representing an automation action: target node and per-device parameter maps
+ * @example
+ * {
+ *   nodeId: "123",
+ *   deviceParams: {
+ *     "Light": {
+ *       "Power": true,
+ *       "Brightness": 50,
+ *     },
+ *   },
+ * }
  */
 interface ESPAutomationAction {
   nodeId: string;
-  deviceName: string;
-  param: string;
-  value: any;
+  deviceParams: Record<string, Record<string, any>>;
 }
 
 /**
