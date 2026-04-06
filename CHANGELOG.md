@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v3.0.0]
+
+### Fixed
+
+- **Automation Action Interface:**
+
+  - Updated to support multiple device parameters in a single payload, improving backend API call efficiency.
+
 ## [v2.3.0]
 
 ### Added
