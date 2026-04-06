@@ -79,20 +79,10 @@ export function transformAutomationsResponse(
   });
 
   // Transform actions array
-  const transformedActions = actions.map((action: any) => {
-    // Extract device name and params from the nested structure
-    const deviceName = Object.keys(action.params || {})[0];
-    const deviceParams = action.params[deviceName] || {};
-    const param = Object.keys(deviceParams)[0];
-    const value = deviceParams[param];
-
-    return {
-      nodeId: action.node_id,
-      deviceName: deviceName || "",
-      param: param || "",
-      value,
-    };
-  });
+  const transformedActions = actions.map((action: any) => ({
+    nodeId: action.node_id,
+    deviceParams: action.params || {},
+  }));
 
   // Create the base automation interface
   const transformedAutomationResponse: ESPAutomationInterface = {

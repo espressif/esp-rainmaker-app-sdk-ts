@@ -17,6 +17,7 @@ import {
   ESPDaylightEvent,
 } from "../../types/automation";
 import { ESPAutomationEventType } from "../../types/automation";
+import { automationActionToPayload } from "../../utils/automation";
 
 /**
  * Augments the ESPAutomation class with the `update` method.
@@ -147,14 +148,9 @@ ESPAutomation.prototype.update = async function (
 
   // Transform actions
   if (automationDetails.actions) {
-    requestPayload.actions = automationDetails.actions.map((action) => ({
-      node_id: action.nodeId,
-      params: {
-        [action.deviceName]: {
-          [action.param]: action.value,
-        },
-      },
-    }));
+    requestPayload.actions = automationDetails.actions.map((action) =>
+      automationActionToPayload(action)
+    );
   }
 
   const requestConfig = {

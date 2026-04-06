@@ -54,9 +54,11 @@ export const MOCK_AUTOMATION_EVENT: ESPAutomationEvent = {
 
 export const MOCK_AUTOMATION_ACTION: ESPAutomationAction = {
   nodeId: MOCK_NODE_ID,
-  deviceName: "Light",
-  param: "Power",
-  value: true,
+  deviceParams: {
+    Light: {
+      Power: true,
+    },
+  },
 };
 
 export const MOCK_AUTOMATION_DETAILS: ESPAutomationDetails = {
