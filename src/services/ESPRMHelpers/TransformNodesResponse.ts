@@ -27,40 +27,29 @@ import { copyAdditionalFields } from "./CopyAdditionalFields";
  * @returns An array of transformed node information.
  */
 let _nodeData: Record<string, any> | undefined = undefined;
-let dynamicDeviceNameKey: string | undefined = undefined;
+
+type NodeTransformError = {
+  nodeId?: string;
+  index: number;
+  reason: string;
+};
+
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
+};
 
 const transformNodesResponse = (
   data: Record<string, any>,
   withNodeDetails: boolean | undefined
 ): ESPRMNodeInterface[] => {
-  let transformedNodeResponse: ESPRMNodeInterface[];
+  const transformedNodes: ESPRMNodeInterface[] = [];
+  const nodeTransformErrors: NodeTransformError[] = [];
 
-  if (withNodeDetails) {
-    transformedNodeResponse = data.node_details?.map(
-      (node: Record<string, any>): ESPRMNodeInterface => {
-        _nodeData = node;
-        return {
-          id: node.node_id,
-          type: node.node_type,
-          isPrimaryUser: node.primary,
-          connectivityStatus: transformNodeConnectivityStatus(node.status),
-          nodeConfig: transformNodeConfig(node.config),
-          metadata: node.metadata,
-          tags: node.tags,
-          transportOrder: ESPRMBase.transportOrder,
-          availableTransports: node.status.connectivity.connected
-            ? {
-                [ESPTransportMode.cloud]: {
-                  type: ESPTransportMode.cloud,
-                  metadata: {},
-                },
-              }
-            : {},
-        };
-      }
-    );
-  } else {
-    transformedNodeResponse = data.nodes?.map(
+  if (!withNodeDetails) {
+    return (data.nodes ?? []).map(
       (nodeId: string): ESPRMNodeInterface => ({
         id: nodeId,
         transportOrder: ESPRMBase.transportOrder,
@@ -68,15 +57,62 @@ const transformNodesResponse = (
       })
     );
   }
-  _nodeData = undefined;
-  dynamicDeviceNameKey = undefined;
-  return transformedNodeResponse ?? [];
+
+  const nodeDetailsList = data.node_details ?? [];
+
+  for (const [nodeIndex, nodeDetails] of nodeDetailsList.entries()) {
+    try {
+      if (!nodeDetails?.config) {
+        nodeTransformErrors.push({
+          nodeId: nodeDetails?.node_id,
+          index: nodeIndex,
+          reason: "Skipping node because config is missing",
+        });
+        continue;
+      }
+
+      _nodeData = nodeDetails;
+
+      transformedNodes.push({
+        id: nodeDetails.node_id,
+        type: nodeDetails.node_type,
+        isPrimaryUser: nodeDetails.primary,
+        connectivityStatus: transformNodeConnectivityStatus(nodeDetails.status),
+        nodeConfig: transformNodeConfig(nodeDetails.config),
+        metadata: nodeDetails.metadata,
+        tags: nodeDetails.tags,
+        transportOrder: ESPRMBase.transportOrder,
+        availableTransports: nodeDetails?.status?.connectivity?.connected
+          ? {
+              [ESPTransportMode.cloud]: {
+                type: ESPTransportMode.cloud,
+                metadata: {},
+              },
+            }
+          : {},
+      });
+    } catch (error) {
+      nodeTransformErrors.push({
+        nodeId: nodeDetails?.node_id,
+        index: nodeIndex,
+        reason: getErrorMessage(error),
+      });
+    } finally {
+      _nodeData = undefined;
+    }
+  }
+
+  if (nodeTransformErrors.length > 0) {
+    console.warn("Node transform partial failures", nodeTransformErrors);
+  }
+
+  return transformedNodes;
 };
 
 const transformNodeConnectivityStatus = (
   connectivityStatusData: Record<string, any> | undefined
 ): ESPRMConnectivityStatusInterface | undefined => {
-  if (!connectivityStatusData) {
+  if (!connectivityStatusData?.connectivity) {
     return undefined;
   }
 
@@ -116,12 +152,23 @@ const transformNodeAttributes = (
 };
 
 const transformNodeDevices = (
-  nodeDevicesData: Record<string, any>[]
+  nodeDevicesData: Record<string, any>[] | undefined
 ): ESPRMDeviceInterface[] => {
+  if (!nodeDevicesData || nodeDevicesData.length === 0) {
+    return [];
+  }
+
   return nodeDevicesData.map((nodeDeviceData) => {
+    const deviceName = nodeDeviceData.name;
+    const displayNameKey = nodeDeviceData.params?.find(
+      (deviceParamData: Record<string, any>) =>
+        deviceParamData.type === "esp.param.name"
+    )?.name;
+    const displayName =
+      displayNameKey && _nodeData?.params?.[deviceName]?.[displayNameKey];
     const transformedParams = transformNodeDeviceParams(
       nodeDeviceData.params,
-      nodeDeviceData.name
+      deviceName
     );
 
     // Find the primary parameter from the transformed params
@@ -133,15 +180,12 @@ const transformNodeDevices = (
     }
 
     return {
-      name: nodeDeviceData.name,
+      name: deviceName,
       type: nodeDeviceData.type,
       attributes: transformNodeAttributes(nodeDeviceData.attributes),
       params: transformedParams,
       primaryParam: primaryParam,
-      displayName:
-        _nodeData && dynamicDeviceNameKey
-          ? _nodeData.params[nodeDeviceData.name][dynamicDeviceNameKey]
-          : nodeDeviceData.name,
+      displayName: displayName ?? deviceName,
     };
   });
 };
@@ -173,51 +217,68 @@ const transformNodeInfo = (
 };
 
 const transformNodeDeviceParams = (
-  deviceParamsData: Record<string, any>[],
+  deviceParamsData: Record<string, any>[] | undefined,
   deviceName: string
 ): ESPRMDeviceParamInterface[] | undefined => {
   if (!deviceParamsData || deviceParamsData.length === 0) {
     return undefined;
   }
 
-  return deviceParamsData.map((deviceParamData) => {
-    if (deviceParamData.type === "esp.param.name") {
-      dynamicDeviceNameKey = deviceParamData.name;
-    }
-
-    return {
-      deviceName,
-      name: deviceParamData.name,
-      value:
-        _nodeData?.params?.[deviceName]?.[deviceParamData.name] ?? undefined,
-      type: deviceParamData.type,
-      dataType: deviceParamData.data_type,
-      uiType: deviceParamData.ui_type,
-      properties: deviceParamData.properties,
-      bounds: deviceParamData.bounds,
-      validStrings: deviceParamData.valid_strs,
-    };
-  });
+  try {
+    return deviceParamsData.map((deviceParamData) => {
+      return {
+        deviceName,
+        name: deviceParamData.name,
+        value:
+          _nodeData?.params?.[deviceName]?.[deviceParamData.name] ?? undefined,
+        type: deviceParamData.type,
+        dataType: deviceParamData.data_type,
+        uiType: deviceParamData.ui_type,
+        properties: deviceParamData.properties,
+        bounds: deviceParamData.bounds,
+        validStrings: deviceParamData.valid_strs,
+      };
+    });
+  } catch (error) {
+    throw new Error(
+      `Failed to transform device params for device "${deviceName}" (paramsCount=${deviceParamsData.length}, hasNodeDataParams=${Boolean(
+        _nodeData?.params
+      )}): ${getErrorMessage(error)}`
+    );
+  }
 };
 
 const transformNodeServiceParams = (
-  serviceParamsData: Record<string, any>[],
+  serviceParamsData: Record<string, any>[] | undefined,
   name: string
 ): ESPRMServiceParamInterface[] => {
-  return serviceParamsData.map((serviceParamData) => ({
-    serviceName: name,
-    name: serviceParamData.name,
-    value: _nodeData?.params[name][serviceParamData.name] ?? undefined,
-    type: serviceParamData.type,
-    dataType: serviceParamData.data_type,
-    properties: serviceParamData.properties,
-    bounds: serviceParamData.bounds,
-    validStrings: serviceParamData.valid_strs,
-  }));
+  if (!serviceParamsData || serviceParamsData.length === 0) {
+    return [];
+  }
+
+  try {
+    return serviceParamsData.map((serviceParamData) => ({
+      serviceName: name,
+      name: serviceParamData.name,
+      value:
+        _nodeData?.params?.[name]?.[serviceParamData.name] ?? undefined,
+      type: serviceParamData.type,
+      dataType: serviceParamData.data_type,
+      properties: serviceParamData.properties,
+      bounds: serviceParamData.bounds,
+      validStrings: serviceParamData.valid_strs,
+    }));
+  } catch (error) {
+    throw new Error(
+      `Failed to transform service params for service "${name}" (paramsCount=${serviceParamsData.length}, hasNodeDataParams=${Boolean(
+        _nodeData?.params
+      )}): ${getErrorMessage(error)}`
+    );
+  }
 };
 
 const transformNodeServices = (
-  nodeServicesData: Record<string, any>[]
+  nodeServicesData: Record<string, any>[] | undefined
 ): ESPRMServiceInterface[] | undefined => {
   if (!nodeServicesData || nodeServicesData.length === 0) {
     return undefined;
