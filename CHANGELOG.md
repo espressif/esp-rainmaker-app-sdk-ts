@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v3.0.1]
+
+### Fixed
+
+- **Node Parsing:**
+  - Isolated per-node transform failures so a single malformed node no longer drops the entire `getUserNodes` response.
+  - Added guards for missing `config`, `status.connectivity`, `devices`, `services`, and `params` fields on partial cloud payloads.
+  - Nodes missing `config` are now skipped and reported via `console.warn` instead of throwing.
+
 ## [v3.0.0]
 
 ### Fixed
