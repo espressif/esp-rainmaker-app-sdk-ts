@@ -20,3 +20,6 @@ export {
   ChallengeResponseHelper,
   type DeviceChallengeResponse,
 } from "./ESPRMHelpers/ChallengeResponseHelper";
+
+// Re-export helpers
+export * from "./ESPRMHelpers";
