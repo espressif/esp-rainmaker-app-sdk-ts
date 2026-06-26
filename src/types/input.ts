@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { ESPCmdRespRequestStatus } from "./ESPModules";
 import { ESPLocalControlAdapterInterface } from "../services/ESPTransport/ESPLocalControlAdapterInterface";
 import { ESPLocalDiscoveryAdapterInterface } from "../services/ESPTransport/ESPLocalDiscoveryAdapterInterface";
 import {
@@ -430,6 +431,70 @@ interface AssumeRoleRequest {
   groupIds?: string[];
   nodeIds?: string[];
 }
+/**
+ * Request payload for adding a command-response request.
+ *
+ * @remarks
+ * - `nodeIds` accepts 1–25 unique node ids.
+ * - `cmdId` must match a command ID registered on the firmware via
+ *   `esp_rmaker_cmd_register()`. Sending an unregistered ID causes the device
+ *   to return `ESP_RMAKER_CMD_STATUS_NOT_FOUND` (status 4). Valid range: 0–65535.
+ * - `data` may be a string or a JSON object.
+ * - `timeoutSeconds` may be omitted (backend default 30), set to -1 for no
+ *   expiry until the node reports success/failure, or 1–2592000 otherwise.
+ * - `isBase64: true` marks `data` as base64-encoded binary content.
+ * - `override: true` replaces any pending request of the same cmdId for a node.
+ */
+interface ESPCmdRespSendRequest {
+  nodeIds: string[];
+  cmdId: number;
+  data: Record<string, unknown> | string;
+  timeoutSeconds?: number;
+  isBase64?: boolean;
+  override?: boolean;
+}
+
+/**
+ * Request payload for sending a command-response request from a node instance.
+ * `nodeIds` defaults to the target node's id.
+ */
+type ESPCmdRespNodeSendRequest = Omit<ESPCmdRespSendRequest, "nodeIds">;
+
+/**
+ * Request parameters for cancelling command-response requests.
+ *
+ * At least one of `requestId` or `nodeId` must be provided.
+ * - If `requestId` is provided alone: cancels that specific request across all nodes.
+ * - If `nodeId` is provided alone: cancels all pending commands for that node.
+ * - If `nodeId` and `cmdId` are provided: cancels pending commands for that node with the specific cmd ID.
+ */
+interface ESPCmdRespCancelRequest {
+  requestId?: string;
+  nodeId?: string;
+  cmdId?: number;
+}
+
+/**
+ * Filter and pagination options for fetching command-response requests.
+ *
+ * @remarks
+ * At least one of `requestId`, `nodeId`, or `status` is required by the API.
+ * - `startTime` and `endTime` must be provided together (epoch seconds).
+ * - `cmdId` and `status` are only valid together with `nodeId`, except `status`
+ *   may be used alone to list all matching requests for the current user.
+ * - `descOrder` controls sort direction (backend default is `true`).
+ * - `resultCount` maps to `num_records` (backend default is 10).
+ */
+interface ESPCmdRespListParams {
+  requestId?: string;
+  nodeId?: string;
+  status?: ESPCmdRespRequestStatus;
+  startTime?: number;
+  endTime?: number;
+  cmdId?: number;
+  descOrder?: boolean;
+  resultCount?: number;
+}
 
 export {
   ESPRMBaseConfig,
@@ -441,6 +506,10 @@ export {
   SetNewPasswordRequest,
   UserTokensData,
   LoginWithOauthCodeOptions,
+  ESPCmdRespNodeSendRequest,
+  ESPCmdRespSendRequest,
+  ESPCmdRespCancelRequest,
+  ESPCmdRespListParams,
   ChangePasswordRequest,
   LogoutRequest,
   GetUserInfoRequest,

@@ -229,6 +229,27 @@ const apiCallValidationErrorMessages = {
   /** Error message indicating that node_ids is required for videostream role. */
   MISSING_ASSUME_ROLE_NODE_IDS_FOR_VIDEOSTREAM:
     "ESPAPICallValidationError: node_ids is required when user_role is 'videostream'.",
+  /** Error message indicating an invalid command ID. */
+  INVALID_COMMAND_ID:
+    "ESPAPICallValidationError: Command ID is required and must be an integer between 0 and 65535.",
+  /** Error message indicating invalid command timeout. */
+  INVALID_COMMAND_TIMEOUT:
+    "ESPAPICallValidationError: Timeout must be -1 or an integer between 1 and 2592000 seconds.",
+  /** Error message indicating invalid node_ids count for send command. */
+  INVALID_COMMAND_NODE_IDS:
+    "ESPAPICallValidationError: Between 1 and 25 unique node IDs are required.",
+  /** Error message indicating duplicate node_ids in send command request. */
+  DUPLICATE_COMMAND_NODE_IDS:
+    "ESPAPICallValidationError: node_ids must be a unique list.",
+  /** Error message indicating command data exceeds maximum size. */
+  COMMAND_DATA_TOO_LARGE:
+    "ESPAPICallValidationError: Command data must not exceed 65536 characters.",
+  /** Error message when neither requestId nor nodeId is provided for cancel. */
+  CANCEL_MISSING_REQUIRED_PARAM:
+    "ESPAPICallValidationError: At least one of requestId or nodeId must be provided to cancel a command-response request.",
+  /** Error message when cmdId is provided without nodeId for cancel. */
+  CANCEL_CMD_ID_REQUIRES_NODE_ID:
+    "ESPAPICallValidationError: cmdId can only be used together with nodeId.",
 };
 
 /**
