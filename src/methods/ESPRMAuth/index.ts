@@ -12,5 +12,6 @@ import "./LoginWithOTP";
 import "./RequestLoginOTP";
 import "./SetNewPassword";
 import "./SendSignUpCode";
+import "./LoginWithOauthCode";
 import "./LoginWithOauth";
 import "./GetLoggedInUser";

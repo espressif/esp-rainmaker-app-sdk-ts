@@ -252,6 +252,8 @@ const APICallValidationErrorCodes = {
   MISSING_REDIRECT_URL: "MISSING_REDIRECT_URL",
   /** Error code indicating the client ID is missing. */
   MISSING_CLIENT_ID: "MISSING_CLIENT_ID",
+  /** Error code indicating the oauth code is missing. */
+  MISSING_OAUTH_CODE: "MISSING_OAUTH_CODE",
   /** Error code indicating invalid parameter value. */
   INVALID_PARAMETER_VALUE: "INVALID_PARAMETER_VALUE",
   /** Error code indicating the custom parameter name is missing. */
@@ -692,6 +694,8 @@ const APIRequestFields = {
   RESPONSE_TYPE_KEY: "response_type",
   /** Value for the response type. */
   OAUTH_CODE_RESPONSE_TYPE: "code",
+  /** Key for the OAuth authorization code. */
+  OAUTH_CODE_KEY: "code",
   /** Key for the grant type. */
   GRANT_TYPE_KEY: "grant_type",
   /** Value for the grant type. */
@@ -700,6 +704,10 @@ const APIRequestFields = {
   CONTENT_TYPE_KEY: "content-type",
   /** Value for the content type. */
   URL_ENCODED_CONTENT_TYPE: "application/x-www-form-urlencoded",
+  /** Key for the WeChat token-only exchange flag. */
+  WECHAT_TOKEN_ONLY_KEY: "wechat_token_only",
+  /** Value enabling the WeChat token-only exchange. */
+  WECHAT_TOKEN_ONLY_VALUE: "true",
 } as const;
 
 /**

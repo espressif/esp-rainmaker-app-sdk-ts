@@ -88,6 +88,25 @@ interface UserTokensData {
 }
 
 /**
+ * Options for exchanging an OAuth authorization code for tokens via
+ * `ESPRMAuth.loginWithOauthCode`.
+ */
+interface LoginWithOauthCodeOptions {
+  /**
+   * When `true`, adds the `wechat_token_only=true` flag to the token request.
+   * Required by the WeChat (CN region) token-only exchange.
+   */
+  wechatTokenOnly?: boolean;
+  /**
+   * Identity provider name sent as `identity_provider` with the token request,
+   * telling the token endpoint which IdP issued the code. Defaults to
+   * `ESPIdProvider.WECHAT` when `wechatTokenOnly` is `true`; otherwise omitted
+   * unless provided.
+   */
+  identityProvider?: ESPIdProvider | string;
+}
+
+/**
  * Request payload for changing a user's password.
  */
 interface ChangePasswordRequest {
@@ -379,6 +398,9 @@ enum ESPIdProvider {
   GITHUB = "GitHub",
   GOOGLE = "Google",
   SIGN_IN_WITH_APPLE = "SignInWithApple",
+  /** WeChat (CN region). The code is acquired natively and exchanged via
+   * `loginWithOauthCode`; this provider has no browser authorize flow. */
+  WECHAT = "WECHATNOVA",
 }
 
 /**
@@ -418,6 +440,7 @@ export {
   LoginWithOTPRequest,
   SetNewPasswordRequest,
   UserTokensData,
+  LoginWithOauthCodeOptions,
   ChangePasswordRequest,
   LogoutRequest,
   GetUserInfoRequest,
