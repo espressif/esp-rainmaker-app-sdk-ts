@@ -84,28 +84,28 @@ To build and install the package locally for development and testing:
 
    If you don’t have `nvm`, please install Node.js v20.17.0 or a higher version manually.
 
-4. Install the required dependencies using Yarn:
+4. Install the required dependencies using npm:
 
    ```bash
-   yarn install
+   npm install
    ```
 
 5. Build the package:
 
    ```bash
-   yarn run build
+   npm run build
    ```
 
 6. Create a tarball for testing locally:
 
    ```bash
-   yarn pack
+   npm pack
    ```
 
 7. Add the tarball to your project:
 
    ```bash
-   yarn add <PATH_TO_PACK_TARBALL_FILE>
+   npm install <PATH_TO_PACK_TARBALL_FILE>
    ```
 
 After installation, you can import and configure the SDK in your project as shown in the usage examples below.
