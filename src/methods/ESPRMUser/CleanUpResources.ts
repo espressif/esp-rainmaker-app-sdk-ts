@@ -41,4 +41,5 @@ ESPRMUser.prototype.cleanUpResources = async function (): Promise<void> {
   }
   ESPRMStorage.removeItem(StorageKeys.USER_DEVICETOKEN_MAP);
   ESPRMUser.clearAllTokens();
+  this.removeAllCallbacks();
 };
