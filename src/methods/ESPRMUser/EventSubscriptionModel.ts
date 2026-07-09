@@ -57,8 +57,8 @@ declare module "../../ESPRMUser" {
 }
 
 /**
- * Subscribes a callback or multiple callbacks to an event. If the event is of type `Local`,
- * discovery will be initiated with the callback triggered for discovered results.
+ * Subscribes a callback or multiple callbacks to an event on the global event bus.
+ * If the event is of type `Local`, discovery will be initiated with the callback triggered for discovered results.
  *
  * @param event - The event to subscribe to, represented by {@link ESPRMEventType} or string.
  * @param callback - The callback function or an array of callback functions to execute when the event is triggered.
@@ -70,14 +70,14 @@ ESPRMUser.prototype.subscribe = function (
   callback: Function | Function[],
   discoveryConfig?: DiscoveryParamsInterface
 ): void {
-  if (!this.eventCallbacks[event]) {
-    this.eventCallbacks[event] = [];
+  if (!ESPRMUser.eventCallbacks[event]) {
+    ESPRMUser.eventCallbacks[event] = [];
   }
 
   if (Array.isArray(callback)) {
-    this.eventCallbacks[event].push(...callback);
+    ESPRMUser.eventCallbacks[event].push(...callback);
   } else {
-    this.eventCallbacks[event].push(callback);
+    ESPRMUser.eventCallbacks[event].push(callback);
   }
 
   /**
@@ -146,14 +146,14 @@ ESPRMUser.prototype.unsubscribe = function (
   event: ESPRMEventType | string,
   callback: Function
 ): void {
-  if (!this.eventCallbacks[event]) return;
-  this.eventCallbacks[event] = this.eventCallbacks[event].filter(
+  if (!ESPRMUser.eventCallbacks[event]) return;
+  ESPRMUser.eventCallbacks[event] = ESPRMUser.eventCallbacks[event].filter(
     (cb) => cb !== callback
   );
 };
 
 /**
- * Triggers an event, executing all associated callbacks with the provided argument.
+ * Triggers an event on the global event bus, executing all associated callbacks with the provided argument.
  *
  * @param event - The event to trigger, represented by {@link ESPRMEventType} or string.
  * @param arg - The argument to pass to the callback functions.
@@ -162,7 +162,7 @@ ESPRMUser.prototype.trigger = function (
   event: ESPRMEventType | string,
   arg: any
 ): void {
-  this.eventCallbacks[event]?.forEach((cb) => cb(arg));
+  ESPRMUser.eventCallbacks[event]?.forEach((cb) => cb(arg));
 };
 
 /**
@@ -174,12 +174,12 @@ ESPRMUser.prototype.removeAllCallbacks = function (
   event?: ESPRMEventType | string
 ): void {
   if (event) {
-    if (!this.eventCallbacks[event]) return;
-    delete this.eventCallbacks[event];
+    if (!ESPRMUser.eventCallbacks[event]) return;
+    delete ESPRMUser.eventCallbacks[event];
     return;
   }
-  for (const event in this.eventCallbacks) {
+  for (const event in ESPRMUser.eventCallbacks) {
     const eventKey = event as ESPRMEventType | string;
-    delete this.eventCallbacks[eventKey];
+    delete ESPRMUser.eventCallbacks[eventKey];
   }
 };
