@@ -27,6 +27,7 @@ import { ESPRMNode } from "../../../src/ESPRMNode";
 import { ESPRMUser } from "../../../src/ESPRMUser";
 import { ESPAPIResponse, Keys, StatusMessage } from "../../../src";
 import { configureAuthInstance } from "../../utils/configureAuthInstance";
+import { MOCK_USER_TOKENS } from "../provision/utils";
 
 export const MOCK_NODE_ID = "test-node-id";
 
@@ -355,13 +356,13 @@ export const MOCK_AUTOMATION_RESPONSE = {
  * @returns Test setup object containing instances needed for tests
  */
 export async function setupAutomationTestEnvironment() {
-  const authInstance = configureAuthInstance();
-  const userInstance = await authInstance.login(
-    process.env.USERNAME!,
-    process.env.PASSWORD!
-  );
-
-  return userInstance;
+  // Configure the SDK (sets up the in-memory storage adapter) without performing
+  // a real network login, then construct the user directly from mock tokens.
+  // The previous real login made these unit tests flaky
+  // (a slow/throttled login could exceed the 5s beforeAll timeout under CI
+  // parallelism). This keeps them deterministic and offline.
+  configureAuthInstance();
+  return new ESPRMUser(MOCK_USER_TOKENS);
 }
 /**
  * Cleans up the test environment
