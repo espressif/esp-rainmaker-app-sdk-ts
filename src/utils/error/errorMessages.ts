@@ -250,6 +250,21 @@ const apiCallValidationErrorMessages = {
   /** Error message when cmdId is provided without nodeId for cancel. */
   CANCEL_CMD_ID_REQUIRES_NODE_ID:
     "ESPAPICallValidationError: cmdId can only be used together with nodeId.",
+    /** Error message indicating the file name is missing. */
+  MISSING_FILE_NAME:
+    "ESPAPICallValidationError: fileName is required for file upload.",
+  /** Error message indicating the file name length is invalid. */
+  INVALID_FILE_NAME:
+    "ESPAPICallValidationError: fileName must be between 1 and 100 characters.",
+  /** Error message indicating the entity type is missing. */
+  MISSING_FILE_ENTITY_TYPE:
+    "ESPAPICallValidationError: entityType is required for file upload.",
+  /** Error message indicating the entity id is missing for ota_image uploads. */
+  MISSING_FILE_ENTITY_ID:
+    "ESPAPICallValidationError: entityId is required when entityType is ota_image.",
+  /** Error message indicating the file content exceeds the maximum size. */
+  FILE_TOO_LARGE:
+    "ESPAPICallValidationError: File content must not exceed 10 MB.",
 };
 
 /**
@@ -343,6 +358,24 @@ const claimErrorMessages = {
     "ESPClaimError: Failed to send certificate to device.",
 };
 
+/**
+ * Contains error messages related to file operations.
+ *
+ * These messages are used for file-not-found, file-upload, and file-download
+ * failures. The message prefix matches the error label used to distinguish
+ * the case.
+ */
+const fileErrorMessages = {
+  /** Error message indicating that the requested file was not found. */
+  FILE_NOT_FOUND: "ESPFileNotFoundError: File not found.",
+  /** Error message indicating that no download URL is available. */
+  NO_DOWNLOAD_URL: "ESPFileDownloadError: No download URL available.",
+  /** Error message indicating that the S3 upload request failed. */
+  S3_UPLOAD_FAILED: "ESPFileUploadError: S3 upload failed.",
+  /** Error message indicating that the S3 download request failed. */
+  S3_DOWNLOAD_FAILED: "ESPFileDownloadError: S3 download failed.",
+};
+
 const defaultErrorMessages = {
   /** Error message indicating that an unknown error occurred. */
   UNKNOWN_ERROR: "An unknown error occurred.",
@@ -363,5 +396,6 @@ export {
   provErrorMessages,
   appPermissionErrorMessages,
   claimErrorMessages,
+  fileErrorMessages,
   defaultErrorMessages,
 };

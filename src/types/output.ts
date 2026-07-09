@@ -10,6 +10,7 @@ import { ESPGroupSharingRequest } from "../ESPGroupSharingRequest";
 import { ESPNodeSharingRequest } from "../ESPNodeSharingRequest";
 import { ESPRMGroup } from "../ESPRMGroup";
 import { ESPRMNode } from "../ESPRMNode";
+import { ESPFile } from "../ESPFile";
 
 /**
  * Represents a response from the API, which can be either a success or failure.
@@ -47,7 +48,7 @@ interface RequestLoginOTPResponse extends ESPAPIResponse {
 /**
  * Represents the response from a login attempt with OTP.
  */
-interface LoginWithOTPResponse extends LoginWithPasswordResponse {}
+interface LoginWithOTPResponse extends LoginWithPasswordResponse { }
 
 /**
  * Represents detailed user information.
@@ -83,7 +84,7 @@ interface ESPRMUserInfo {
  * Represents the response for extending a session, excluding the refresh token.
  */
 interface ExtendSessionResponse
-  extends Omit<LoginWithPasswordResponse, "refreshtoken"> {}
+  extends Omit<LoginWithPasswordResponse, "refreshtoken"> { }
 
 /**
  * Represents the response from logging in with an OAuth code.
@@ -105,7 +106,7 @@ interface CreateGroupAPIResponse {
 /**
  * Represents the backend response for new sub-group creation.
  */
-interface CreateSubGroupAPIResponse extends CreateGroupAPIResponse {}
+interface CreateSubGroupAPIResponse extends CreateGroupAPIResponse { }
 
 /**
  * Represents the backend response for user groups.
@@ -298,6 +299,55 @@ interface ESPCmdRespListAPIResponse {
 }
 
 /**
+ * Represents the backend response for GET /user/file/upload_request.
+ */
+interface ESPFileUploadRequestAPIResponse {
+  file_id: string;
+  /** Presigned S3 PUT URL returned by the live API. */
+  upload_url?: string;
+  /** Legacy/alternate presigned upload URL field. */
+  file_url?: string;
+  status: string;
+}
+
+/**
+ * Represents the backend response for POST /user/file/upload_confirm.
+ */
+interface ESPFileConfirmAPIResponse {
+  file_id: string;
+  file_url?: string;
+  status: string;
+}
+
+/**
+ * Represents one file record returned by GET /user/file.
+ */
+interface ESPFileAPIRecord {
+  user_id?: string;
+  user_name?: string;
+  file_id: string;
+  description?: string;
+  metadata?: Record<string, unknown> | string;
+  file_name?: string;
+  entity_id?: string;
+  entity_type?: string;
+  file_type?: string;
+  timestamp?: string;
+  s3_key?: string;
+  file_url?: string;
+  file_md5?: string;
+  public?: boolean;
+}
+
+/**
+ * Represents the backend response for GET /user/file.
+ */
+interface ESPFileListAPIResponse {
+  file_details?: ESPFileAPIRecord[];
+  next_id?: string;
+}
+
+/**
  * Raw backend response for DELETE `/user/nodes/cmd` (snake_case).
  */
 interface ESPCmdRespCancelAPIResponse {
@@ -320,6 +370,14 @@ interface ESPCmdRespPaginatedResult {
   requests: ESPCmdRespRequestInterface[];
   hasNext: boolean;
   fetchNext?: () => Promise<ESPCmdRespPaginatedResult>;
+}
+/**
+ * Represents the processed paginated response for uploaded files.
+ */
+interface ESPFilePaginatedResult {
+  files: ESPFile[];
+  hasNext: boolean;
+  fetchNext?: () => Promise<ESPFilePaginatedResult>;
 }
 
 export {
@@ -356,4 +414,9 @@ export {
   ESPCmdRespCancelAPIResponse,
   ESPCmdRespCancelResponse,
   ESPCmdRespPaginatedResult,
+  ESPFileUploadRequestAPIResponse,
+  ESPFileConfirmAPIResponse,
+  ESPFileAPIRecord,
+  ESPFileListAPIResponse,
+  ESPFilePaginatedResult,
 };

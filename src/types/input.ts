@@ -496,6 +496,106 @@ interface ESPCmdRespListParams {
   resultCount?: number;
 }
 
+/**
+ * Internal params for GET /user/file/upload_request query.
+ */
+interface ESPFileUploadRequestParams {
+  fileName: string;
+  entityType: string;
+  entityId?: string;
+  md5Checksum?: string;
+}
+
+/**
+ * Params for POST /user/file/upload_confirm.
+ */
+interface ESPFileConfirmParams {
+  description?: string;
+  metadata?: Record<string, unknown>;
+  fileType?: string;
+  public?: boolean;
+}
+
+/**
+ * Merged params for file upload flows.
+ */
+interface ESPFileUploadParams
+  extends ESPFileUploadRequestParams,
+    ESPFileConfirmParams {}
+
+/**
+ * Filter and pagination options for GET /user/file (list mode).
+ */
+interface ESPFileListParams {
+  fileName?: string;
+  entityType?: string;
+  entityId?: string;
+  fileType?: string;
+  userName?: string;
+  resultCount?: number;
+  startId?: string;
+}
+
+/**
+ * Optional params for GET /user/file when fetching a single file by id.
+ */
+interface ESPFileGetByIdParams {
+  userName?: string;
+}
+
+/**
+ * Internal fetch params for GET /user/file.
+ */
+interface ESPFileFetchParams extends ESPFileListParams {
+  fileId?: string;
+}
+
+/**
+ * Params for PUT /user/file.
+ */
+interface ESPFileUpdateParams {
+  public?: boolean;
+}
+
+/**
+ * Upload progress status phases.
+ */
+enum ESPFileUploadProgressStatus {
+  creatingRequest = "creating_request",
+  uploading = "uploading",
+  confirming = "confirming",
+}
+
+/**
+ * Upload progress payload delivered to optional callbacks.
+ */
+interface ESPFileUploadProgress {
+  status: ESPFileUploadProgressStatus;
+  message: string;
+}
+
+type ESPFileUploadProgressCallback = (
+  progress: ESPFileUploadProgress
+) => void;
+
+type ESPFileDownloadFormat = "arrayBuffer" | "uint8Array" | "blob";
+
+type ESPFileDownloadResult = ArrayBuffer | Uint8Array | Blob;
+
+/**
+ * Options for downloading file bytes from a presigned URL.
+ */
+interface ESPFileDownloadOptions {
+  signal?: AbortSignal;
+  refreshIfNeeded?: boolean;
+  format?: ESPFileDownloadFormat;
+}
+
+/**
+ * Params for {@link ESPRMUser.downloadFile}.
+ */
+type ESPFileDownloadParams = ESPFileGetByIdParams & ESPFileDownloadOptions;
+
 export {
   ESPRMBaseConfig,
   ESPRMAPIManagerConfig,
@@ -546,4 +646,18 @@ export {
   ESPIdProvider,
   ESPUserRole,
   AssumeRoleRequest,
+  ESPFileUploadRequestParams,
+  ESPFileConfirmParams,
+  ESPFileUploadParams,
+  ESPFileListParams,
+  ESPFileGetByIdParams,
+  ESPFileFetchParams,
+  ESPFileUpdateParams,
+  ESPFileUploadProgressStatus,
+  ESPFileUploadProgress,
+  ESPFileUploadProgressCallback,
+  ESPFileDownloadFormat,
+  ESPFileDownloadResult,
+  ESPFileDownloadOptions,
+  ESPFileDownloadParams,
 };
