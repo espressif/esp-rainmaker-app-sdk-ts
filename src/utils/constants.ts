@@ -48,6 +48,8 @@ const APIEndpoints = {
   USER_NODE: "user/nodes",
   /** The endpoint for user nodes params. */
   USER_NODE_PARAM: "user/nodes/params",
+  /** The endpoint for the node command-response framework (create/get command requests). */
+  USER_NODE_CMD: "user/nodes/cmd",
   /** The endpoint for user node status. */
   USER_NODE_STATUS: "user/nodes/status",
   /** The endpoint for user node config. */
@@ -271,6 +273,20 @@ const APICallValidationErrorCodes = {
   /** Error code indicating that node_ids is required for videostream role. */
   MISSING_ASSUME_ROLE_NODE_IDS_FOR_VIDEOSTREAM:
     "MISSING_ASSUME_ROLE_NODE_IDS_FOR_VIDEOSTREAM",
+  /** Error code indicating invalid command ID (must be 0–65535). */
+  INVALID_COMMAND_ID: "INVALID_COMMAND_ID",
+  /** Error code indicating invalid command timeout (-1 or 1–2592000). */
+  INVALID_COMMAND_TIMEOUT: "INVALID_COMMAND_TIMEOUT",
+  /** Error code indicating invalid node_ids count for send command (1–25). */
+  INVALID_COMMAND_NODE_IDS: "INVALID_COMMAND_NODE_IDS",
+  /** Error code indicating duplicate node_ids in send command request. */
+  DUPLICATE_COMMAND_NODE_IDS: "DUPLICATE_COMMAND_NODE_IDS",
+  /** Error code indicating command data exceeds 64KB. */
+  COMMAND_DATA_TOO_LARGE: "COMMAND_DATA_TOO_LARGE",
+  /** Error code when neither requestId nor nodeId is provided for cancel. */
+  CANCEL_MISSING_REQUIRED_PARAM: "CANCEL_MISSING_REQUIRED_PARAM",
+  /** Error code when cmdId is provided without nodeId for cancel. */
+  CANCEL_CMD_ID_REQUIRES_NODE_ID: "CANCEL_CMD_ID_REQUIRES_NODE_ID",
 } as const;
 
 /**
@@ -673,6 +689,22 @@ const AssumeRoleConstants = {
 } as const;
 
 /**
+ * An object containing command-response framework limits.
+ */
+const CommandResponseConstants = {
+  /** Maximum command id (0–65535 inclusive). */
+  MAX_CMD_ID: 65535,
+  /** Maximum command data length in characters (64KB). */
+  MAX_DATA_LENGTH: 65536,
+  /** Minimum timeout in seconds (excluding `-1` for no timeout). */
+  MIN_TIMEOUT_SECONDS: 1,
+  /** Maximum timeout in seconds (30 days). */
+  MAX_TIMEOUT_SECONDS: 2592000,
+  /** Maximum number of node ids per send-command request. */
+  MAX_NODE_IDS: 25,
+} as const;
+
+/**
  * An object containing field names used in API responses.
  */
 const APIResponseFields = {
@@ -752,6 +784,7 @@ export {
   Locale,
   TSDataConstants,
   AssumeRoleConstants,
+  CommandResponseConstants,
   APIResponseFields,
   APIRequestFields,
   SubscriptionChannelIds,

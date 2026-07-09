@@ -24,6 +24,7 @@ import { ESPRMService } from "../ESPRMService";
 import { ESPRMServiceParam } from "../ESPRMServiceParam";
 import { ESPRMUser } from "../ESPRMUser";
 import { ESPAutomation } from "../ESPAutomation";
+import { ESPCmdRespRequest } from "../ESPCmdRespRequest";
 import "../methods/export";
 
 export {
@@ -46,4 +47,5 @@ export {
   ESPRMServiceParam,
   ESPRMUser,
   ESPAutomation,
+  ESPCmdRespRequest,
 };

@@ -113,6 +113,11 @@
       "import": "./dist/esm/ESPAutomation.js",
       "require": "./dist/cjs/ESPAutomation.cjs",
       "types": "./dist/types/ESPAutomation.d.ts"
+    },
+    "./ESPCmdRespRequest": {
+      "import": "./dist/esm/ESPCmdRespRequest.js",
+      "require": "./dist/cjs/ESPCmdRespRequest.cjs",
+      "types": "./dist/types/ESPCmdRespRequest.d.ts"
     }
   },
   "repository": {

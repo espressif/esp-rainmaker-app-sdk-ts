@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { ESPCmdRespDataError, ESPCmdRespDeviceStatus, ESPCmdRespRequestInterface, ESPCmdRespRequestStatus } from "./ESPModules";
+
 import { ESPGroupSharingRequest } from "../ESPGroupSharingRequest";
 import { ESPNodeSharingRequest } from "../ESPNodeSharingRequest";
 import { ESPRMGroup } from "../ESPRMGroup";
@@ -202,6 +204,124 @@ interface ESPGroupSharingResponse {
   fetchNext?: () => Promise<ESPGroupSharingResponse>;
 }
 
+/**
+ * Raw per-node error detail in a 207 command-response reply (snake_case).
+ */
+interface ESPCmdRespSendAPINodeResponseRaw {
+  status: string;
+  error_code?: string;
+  description?: string;
+}
+
+/**
+ * Represents the per-node error detail in a 207 command-response reply.
+ */
+interface ESPCmdRespSendAPINodeResponse {
+  status: string;
+  errorCode?: string;
+  description?: string;
+}
+
+/**
+ * Raw node-group entry in a 207 command-response reply (snake_case).
+ */
+interface ESPCmdRespSendAPIResponseEntryRaw {
+  node_ids: string[];
+  response: ESPCmdRespSendAPINodeResponseRaw;
+}
+
+/**
+ * Represents one node-group entry in a 207 command-response reply.
+ */
+interface ESPCmdRespSendAPIResponseEntry {
+  nodeIds: string[];
+  response: ESPCmdRespSendAPINodeResponse;
+}
+
+/**
+ * Raw backend response for POST `/user/nodes/cmd` (snake_case).
+ */
+interface ESPCmdRespSendAPIRawResponse {
+  request_id: string;
+  status?: string;
+  responses?: ESPCmdRespSendAPIResponseEntryRaw[];
+}
+
+/**
+ * Represents the response for adding a command-response request.
+ * 200 OK: contains `status`. 207 Multi-Status: contains `responses`.
+ */
+interface ESPCmdRespSendAPIResponse {
+  requestId: string;
+  status?: string;
+  responses?: ESPCmdRespSendAPIResponseEntry[];
+}
+
+/**
+ * Represents one command-response request record returned by the backend.
+ */
+interface ESPCmdRespRequestAPIRecord {
+  request_id: string;
+  status: ESPCmdRespRequestStatus;
+  node_id: string;
+  device_status: ESPCmdRespDeviceStatus;
+  status_description: string;
+  request_data: Record<string, unknown> | string;
+  request_timestamp: number;
+  response_timestamp: number;
+  expiration_timestamp: number;
+  cmd: number;
+  response_data?: Record<string, unknown> | string | null;
+  /**
+   * Present only when the stored request payload could not be deserialized.
+   * When set, `request_data` should be treated as absent or null.
+   * The overall response is still HTTP 200 — other items in `requests` are unaffected.
+   */
+  request_data_error?: ESPCmdRespDataError;
+  /**
+   * Present only when the stored response payload could not be deserialized.
+   * When set, `response_data` should be treated as absent or null.
+   * The overall response is still HTTP 200 — other items in `requests` are unaffected.
+   */
+  response_data_error?: ESPCmdRespDataError;
+  is_base64?: boolean;
+  user_name?: string;
+  indefinite_timeout?: boolean;
+}
+
+/**
+ * Represents the backend response for fetching command-response requests.
+ */
+interface ESPCmdRespListAPIResponse {
+  requests: ESPCmdRespRequestAPIRecord[];
+  next_id?: string;
+}
+
+/**
+ * Raw backend response for DELETE `/user/nodes/cmd` (snake_case).
+ */
+interface ESPCmdRespCancelAPIResponse {
+  status: string;
+  total_cancelled: string;
+}
+
+/**
+ * Represents the processed response for cancelling command-response requests.
+ */
+interface ESPCmdRespCancelResponse {
+  status: string;
+  totalCancelled: string;
+}
+
+/**
+ * Represents the processed paginated response for command-response requests.
+ */
+interface ESPCmdRespPaginatedResult {
+  requests: ESPCmdRespRequestInterface[];
+  hasNext: boolean;
+  fetchNext?: () => Promise<ESPCmdRespPaginatedResult>;
+}
+
 export {
   ESPAPIResponse,
   ESPAPIError,
@@ -225,4 +345,15 @@ export {
   ESPGroupSharingResponse,
   GetGroupSharingRequestsAPIResponse,
   AssumeRoleResponse,
+  ESPCmdRespSendAPINodeResponse,
+  ESPCmdRespSendAPINodeResponseRaw,
+  ESPCmdRespSendAPIResponseEntry,
+  ESPCmdRespSendAPIResponseEntryRaw,
+  ESPCmdRespSendAPIRawResponse,
+  ESPCmdRespSendAPIResponse,
+  ESPCmdRespRequestAPIRecord,
+  ESPCmdRespListAPIResponse,
+  ESPCmdRespCancelAPIResponse,
+  ESPCmdRespCancelResponse,
+  ESPCmdRespPaginatedResult,
 };
