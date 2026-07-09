@@ -202,6 +202,9 @@ const apiCallValidationErrorMessages = {
   /** Error message indicating that the client ID is missing. */
   MISSING_CLIENT_ID:
     "ESPAPICallValidationError: Client ID is required. Please provide a valid client ID.",
+  /** Error message indicating that the oauth code is missing. */
+  MISSING_OAUTH_CODE:
+    "ESPAPICallValidationError: OAuth code is required. Please provide a valid OAuth authorization code.",
   /** Error message indicating that the parameter value is invalid. */
   INVALID_PARAMETER_VALUE:
     "ESPAPICallValidationError: Invalid parameter value. Please refer to the validStrings property of the parameter to get the valid string values.",
