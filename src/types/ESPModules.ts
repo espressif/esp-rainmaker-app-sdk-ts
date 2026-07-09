@@ -116,6 +116,60 @@ interface ESPCmdRespPaginatedResultInterface {
   fetchNext?: () => Promise<ESPCmdRespPaginatedResultInterface>;
 }
 
+/**
+ * Confirm metadata stored on an upload request until upload completes.
+ */
+interface ESPFileConfirmParamsInterface {
+  description?: string;
+  metadata?: Record<string, unknown>;
+  fileType?: string;
+  public?: boolean;
+}
+
+/**
+ * Represents a transient file upload request in the SDK.
+ */
+interface ESPFileUploadRequestInterface {
+  fileId: string;
+  uploadUrl: string;
+  fileName: string;
+  entityType: string;
+  entityId?: string;
+  md5Checksum?: string;
+  confirmParams: ESPFileConfirmParamsInterface;
+}
+
+/**
+ * Represents an uploaded file in the SDK.
+ */
+interface ESPFileInterface {
+  fileId: string;
+  fileName?: string;
+  description?: string;
+  metadata?: Record<string, unknown> | string;
+  entityType?: string;
+  entityId?: string;
+  fileType?: string;
+  timestamp?: string;
+  s3Key?: string;
+  /** Hex MD5 checksum of the file content. */
+  fileMd5?: string;
+  userId?: string;
+  userName?: string;
+  downloadUrl?: string;
+  public?: boolean;
+}
+
+/**
+ * Paginated list of uploaded files.
+ */
+interface ESPFilePaginatedResultInterface {
+  files: ESPFileInterface[];
+  hasNext: boolean;
+  fetchNext?: () => Promise<ESPFilePaginatedResultInterface>;
+}
+
+
 export {
   ESPNodeSharingRequestInterface,
   ESPGroupSharingRequestInterface,
@@ -126,4 +180,8 @@ export {
   ESPCmdRespRequestStatus,
   ESPCmdRespRequestInterface,
   ESPCmdRespPaginatedResultInterface,
+  ESPFileConfirmParamsInterface,
+  ESPFileUploadRequestInterface,
+  ESPFileInterface,
+  ESPFilePaginatedResultInterface,
 };

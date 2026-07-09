@@ -12,3 +12,4 @@ export { ESPTokenError } from "./ESPTokenError";
 export { ESPProvError } from "./ESPProvError";
 export { ESPClaimError } from "./ESPClaimError";
 export { ESPAppPermissionError } from "./ESPAppPermissionError";
+export { ESPFileError } from "./ESPFileError";

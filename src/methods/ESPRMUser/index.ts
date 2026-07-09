@@ -59,3 +59,8 @@ import "./CancelCmdRespRequest";
 import "./GetAutomationDetail";
 import "./SearchESPBLEDevices";
 import "./AssumeRole";
+import "./CreateFileUploadRequest";
+import "./UploadFile";
+import "./GetFiles";
+import "./GetFileById";
+import "./DownloadFile";
