@@ -1,6 +1,6 @@
 {
   "name": "@espressif/rainmaker-base-sdk",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Espressif's Rainmaker Base SDK enables seamless integration of applications with the ESP Rainmaker ecosystem.",
   "license": "Apache-2.0",
   "author": "Espressif Systems (Shanghai) CO LTD",
@@ -113,6 +113,21 @@
       "import": "./dist/esm/ESPAutomation.js",
       "require": "./dist/cjs/ESPAutomation.cjs",
       "types": "./dist/types/ESPAutomation.d.ts"
+    },
+    "./ESPCmdRespRequest": {
+      "import": "./dist/esm/ESPCmdRespRequest.js",
+      "require": "./dist/cjs/ESPCmdRespRequest.cjs",
+      "types": "./dist/types/ESPCmdRespRequest.d.ts"
+    },
+    "./ESPFile": {
+      "import": "./dist/esm/ESPFile.js",
+      "require": "./dist/cjs/ESPFile.cjs",
+      "types": "./dist/types/ESPFile.d.ts"
+    },
+    "./ESPFileUploadRequest": {
+      "import": "./dist/esm/ESPFileUploadRequest.js",
+      "require": "./dist/cjs/ESPFileUploadRequest.cjs",
+      "types": "./dist/types/ESPFileUploadRequest.d.ts"
     }
   },
   "repository": {
@@ -129,6 +144,7 @@
   "scripts": {
     "build": "rm -rf ./dist && rollup -c ./rollup.config.mjs && npm run genExports",
     "test": "jest --config ./jest.config.js",
+    "test:integration": "jest --config ./jest.config.js --testPathPattern=integration --runInBand",
     "format": "prettier --write .",
     "genDocs": "rm -rf ./docs && typedoc",
     "genExports": "node ./generate-exports.js"

@@ -27,7 +27,7 @@ import { decodeToken } from "./services/ESPRMHelpers/DecodeToken";
  * - **Group Management**: Create, retrieve, share, and transfer groups, as well as manage group sharing requests.
  * - **Node Management**: Fetch user nodes, get node details, manage node mappings, and handle node sharing requests.
  * - **Notification Management**: Create platform endpoints for push notifications and manage endpoints.
- * - **Event Handling**: Subscribe to and manage user-specific events.
+ * - **Event Handling**: Subscribe to and manage global events shared across all ESPRMUser instances.
  *
  * By utilizing the `ESPRMUser` class, developers can seamlessly manage user sessions, interact with
  * backend APIs, and handle complex user-related workflows.
@@ -39,9 +39,9 @@ export class ESPRMUser {
   static userId: string;
 
   /**
-   * Event callbacks for user-specific events.
+   * Global event callbacks shared across all ESPRMUser instances.
    */
-  eventCallbacks: EventCallbacks = {};
+  static eventCallbacks: EventCallbacks = {};
 
   /**
    * Initializes the ESPRMUser instance and stores tokens in local storage.

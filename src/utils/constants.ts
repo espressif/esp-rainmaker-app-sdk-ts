@@ -48,6 +48,8 @@ const APIEndpoints = {
   USER_NODE: "user/nodes",
   /** The endpoint for user nodes params. */
   USER_NODE_PARAM: "user/nodes/params",
+  /** The endpoint for the node command-response framework (create/get command requests). */
+  USER_NODE_CMD: "user/nodes/cmd",
   /** The endpoint for user node status. */
   USER_NODE_STATUS: "user/nodes/status",
   /** The endpoint for user node config. */
@@ -75,6 +77,12 @@ const APIEndpoints = {
   USER_NODE_TS_DATA: "user/nodes/tsdata",
   /** The endpoint for user node automation. */
   USER_NODE_AUTOMATION: "user/node_automation",
+  /** The endpoint for user file operations. */
+  USER_FILE: "user/file",
+  /** The endpoint for user file upload request. */
+  USER_FILE_UPLOAD_REQUEST: "user/file/upload_request",
+  /** The endpoint for user file upload confirm. */
+  USER_FILE_UPLOAD_CONFIRM: "user/file/upload_confirm",
   /** The endpoint for user node mapping initiation. */
   USER_NODE_MAPPING_INITIATE: "user/nodes/mapping/initiate",
   /** The endpoint for user node mapping verification. */
@@ -252,6 +260,8 @@ const APICallValidationErrorCodes = {
   MISSING_REDIRECT_URL: "MISSING_REDIRECT_URL",
   /** Error code indicating the client ID is missing. */
   MISSING_CLIENT_ID: "MISSING_CLIENT_ID",
+  /** Error code indicating the oauth code is missing. */
+  MISSING_OAUTH_CODE: "MISSING_OAUTH_CODE",
   /** Error code indicating invalid parameter value. */
   INVALID_PARAMETER_VALUE: "INVALID_PARAMETER_VALUE",
   /** Error code indicating the custom parameter name is missing. */
@@ -269,6 +279,30 @@ const APICallValidationErrorCodes = {
   /** Error code indicating that node_ids is required for videostream role. */
   MISSING_ASSUME_ROLE_NODE_IDS_FOR_VIDEOSTREAM:
     "MISSING_ASSUME_ROLE_NODE_IDS_FOR_VIDEOSTREAM",
+  /** Error code indicating invalid command ID (must be 0–65535). */
+  INVALID_COMMAND_ID: "INVALID_COMMAND_ID",
+  /** Error code indicating invalid command timeout (-1 or 1–2592000). */
+  INVALID_COMMAND_TIMEOUT: "INVALID_COMMAND_TIMEOUT",
+  /** Error code indicating invalid node_ids count for send command (1–25). */
+  INVALID_COMMAND_NODE_IDS: "INVALID_COMMAND_NODE_IDS",
+  /** Error code indicating duplicate node_ids in send command request. */
+  DUPLICATE_COMMAND_NODE_IDS: "DUPLICATE_COMMAND_NODE_IDS",
+  /** Error code indicating command data exceeds 64KB. */
+  COMMAND_DATA_TOO_LARGE: "COMMAND_DATA_TOO_LARGE",
+  /** Error code when neither requestId nor nodeId is provided for cancel. */
+  CANCEL_MISSING_REQUIRED_PARAM: "CANCEL_MISSING_REQUIRED_PARAM",
+  /** Error code when cmdId is provided without nodeId for cancel. */
+  CANCEL_CMD_ID_REQUIRES_NODE_ID: "CANCEL_CMD_ID_REQUIRES_NODE_ID",
+  /** Error code indicating the file name is missing. */
+  MISSING_FILE_NAME: "MISSING_FILE_NAME",
+  /** Error code indicating the file name length is invalid. */
+  INVALID_FILE_NAME: "INVALID_FILE_NAME",
+  /** Error code indicating the entity type is missing. */
+  MISSING_FILE_ENTITY_TYPE: "MISSING_FILE_ENTITY_TYPE",
+  /** Error code indicating the entity id is missing for ota_image uploads. */
+  MISSING_FILE_ENTITY_ID: "MISSING_FILE_ENTITY_ID",
+  /** Error code indicating the file content exceeds the maximum size. */
+  FILE_TOO_LARGE: "FILE_TOO_LARGE",
 } as const;
 
 /**
@@ -416,6 +450,22 @@ const ClaimErrorCodes = {
   CSR_RETRIEVAL_FAILED: "CSR_RETRIEVAL_FAILED",
   /** Error code indicating certificate send failed. */
   CERTIFICATE_SEND_FAILED: "CERTIFICATE_SEND_FAILED",
+} as const;
+
+/**
+ * An object containing error codes related to file operations.
+ *
+ * @enum {string}
+ */
+const FileErrorCodes = {
+  /** Error code indicating that the requested file was not found. */
+  FILE_NOT_FOUND: "FILE_NOT_FOUND",
+  /** Error code indicating that no download URL is available. */
+  NO_DOWNLOAD_URL: "NO_DOWNLOAD_URL",
+  /** Error code indicating that the S3 upload request failed. */
+  S3_UPLOAD_FAILED: "S3_UPLOAD_FAILED",
+  /** Error code indicating that the S3 download request failed. */
+  S3_DOWNLOAD_FAILED: "S3_DOWNLOAD_FAILED",
 } as const;
 
 /**
@@ -587,6 +637,9 @@ const ErrorLabels = {
   ESPStorageAdapterError: "ESPStorageAdapterError",
   ESPValidationError: "ESPValidationError",
   ESPAppPermissionError: "ESPAppPermissionError",
+  ESPFileNotFoundError: "ESPFileNotFoundError",
+  ESPFileUploadError: "ESPFileUploadError",
+  ESPFileDownloadError: "ESPFileDownloadError",
 } as const;
 
 /** Represents the HTTP status codes */
@@ -671,6 +724,46 @@ const AssumeRoleConstants = {
 } as const;
 
 /**
+ * An object containing command-response framework limits.
+ */
+const CommandResponseConstants = {
+  /** Maximum command id (0–65535 inclusive). */
+  MAX_CMD_ID: 65535,
+  /** Maximum command data length in characters (64KB). */
+  MAX_DATA_LENGTH: 65536,
+  /** Minimum timeout in seconds (excluding `-1` for no timeout). */
+  MIN_TIMEOUT_SECONDS: 1,
+  /** Maximum timeout in seconds (30 days). */
+  MAX_TIMEOUT_SECONDS: 2592000,
+  /** Maximum number of node ids per send-command request. */
+  MAX_NODE_IDS: 25,
+} as const;
+
+/**
+ * An object containing user file upload limits.
+ */
+const FileConstants = {
+  /** Maximum file name length in characters. */
+  MAX_FILE_NAME_LENGTH: 100,
+  /** Maximum file size in bytes (10 MB). */
+  MAX_FILE_SIZE_BYTES: 10 * 1024 * 1024,
+  /** Entity type requiring entity id on upload request. */
+  OTA_IMAGE_ENTITY_TYPE: "ota_image",
+} as const;
+
+/**
+ * An object containing file upload progress messages.
+ */
+const ESPFileUploadProgressMessages = {
+  /** Message indicating the upload request is being created. */
+  CREATING_REQUEST: "Creating upload request",
+  /** Message indicating bytes are being uploaded to S3. */
+  UPLOADING: "Uploading to S3",
+  /** Message indicating the upload is being confirmed. */
+  CONFIRMING: "Confirming upload",
+} as const;
+
+/**
  * An object containing field names used in API responses.
  */
 const APIResponseFields = {
@@ -692,6 +785,8 @@ const APIRequestFields = {
   RESPONSE_TYPE_KEY: "response_type",
   /** Value for the response type. */
   OAUTH_CODE_RESPONSE_TYPE: "code",
+  /** Key for the OAuth authorization code. */
+  OAUTH_CODE_KEY: "code",
   /** Key for the grant type. */
   GRANT_TYPE_KEY: "grant_type",
   /** Value for the grant type. */
@@ -700,6 +795,10 @@ const APIRequestFields = {
   CONTENT_TYPE_KEY: "content-type",
   /** Value for the content type. */
   URL_ENCODED_CONTENT_TYPE: "application/x-www-form-urlencoded",
+  /** Key for the WeChat token-only exchange flag. */
+  WECHAT_TOKEN_ONLY_KEY: "wechat_token_only",
+  /** Value enabling the WeChat token-only exchange. */
+  WECHAT_TOKEN_ONLY_VALUE: "true",
 } as const;
 
 /**
@@ -726,6 +825,7 @@ export {
   ProvisionType,
   ProvErrorCodes,
   AppPermissionErrorCodes,
+  FileErrorCodes,
   ServiceType,
   ProtocolType,
   StatusMessage,
@@ -744,8 +844,11 @@ export {
   Locale,
   TSDataConstants,
   AssumeRoleConstants,
+  CommandResponseConstants,
   APIResponseFields,
   APIRequestFields,
+  FileConstants,
+  ESPFileUploadProgressMessages,
   SubscriptionChannelIds,
   // Claiming related exports
   RMakerCapabilities,

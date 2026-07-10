@@ -111,7 +111,13 @@ export class ESPRMAPIManager {
     };
 
     if (requestConfig.data) {
-      fetchOptions.body = JSON.stringify(requestConfig.data);
+      // Callers that need a specific wire format (e.g. the OAuth token exchange
+      // sends an x-www-form-urlencoded string) pre-encode `data` and pass it as
+      // a string, which is transmitted verbatim; objects default to JSON.
+      fetchOptions.body =
+        typeof requestConfig.data === "string"
+          ? requestConfig.data
+          : JSON.stringify(requestConfig.data);
     }
 
     const response = await fetch(requestUrl, fetchOptions);

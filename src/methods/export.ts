@@ -14,3 +14,4 @@ import "./ESPRMGroup";
 import "./ESPRMNode";
 import "./ESPRMUser";
 import "./ESPAutomation";
+import "./ESPCmdRespRequest";
