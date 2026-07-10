@@ -142,12 +142,13 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rm -rf ./dist && rollup -c ./rollup.config.mjs && npm run genExports",
+    "build": "rm -rf ./dist && rollup -c ./rollup.config.mjs && npm run build:types && npm run genExports",
     "test": "jest --config ./jest.config.js",
     "test:integration": "jest --config ./jest.config.js --testPathPattern=integration --runInBand",
     "format": "prettier --write .",
     "genDocs": "rm -rf ./docs && typedoc",
-    "genExports": "node ./generate-exports.js"
+    "genExports": "node ./generate-exports.js",
+    "build:types": "rm -rf ./dist/types && tsc -p tsconfig.types.json"
   },
   "files": [
     "dist/*"
@@ -169,6 +170,7 @@
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^12.3.0",
     "@types/google-protobuf": "^3.15.12",
     "@types/jest": "^29.5.12",
     "dotenv": "^16.4.7",
@@ -176,8 +178,8 @@
     "jest-junit": "^16.0.0",
     "prettier": "^3.3.3",
     "rollup": "^4.21.0",
-    "rollup-plugin-typescript2": "^0.36.0",
     "ts-jest": "^29.2.4",
+    "tslib": "^2.8.1",
     "typedoc": "^0.27.6",
     "typescript": "^5.7.3"
   },

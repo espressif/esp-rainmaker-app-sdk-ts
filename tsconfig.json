@@ -2,17 +2,19 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
-    "declaration": true,
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "bundler",
+    // Skip type-checking of dependency .d.ts files; avoids lib version-skew
+    // errors (e.g. DOM vs @types/node TextDecoder) without affecting source checks.
+    "skipLibCheck": true,
     "noEmit": false, // Rollup handles transpilation, so set to false
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "rootDir": "src",
-    "declarationDir": "dist/types"
+    "rootDir": "src"
+    // Declaration emit lives in tsconfig.types.json (dist/types)
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
