@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v3.2.0]
+
+### Added
+
+- **User Files Management**
+  - Added support for uploading and downloading user files using presigned URLs.
+  - Introduced APIs to list, update, and delete user files.
+  - Added support for configuring file visibility as public or private.
+
+- **Command Response APIs**
+  - Added APIs to create, fetch, list, and cancel command response requests.
+  - Exposed command response APIs on both `ESPRMUser` and `ESPRMNode`.
+  - Added request status polling and cancellation support on command response request objects.
+
+- **OAuth Code Token Exchange**
+  - Added `ESPRMAuth.loginWithOauthCode(code, options?)` for exchanging a pre-obtained OAuth authorization code for user tokens.
+  - Added support for the `wechatTokenOnly` option for WeChat-specific token exchange flows.
+
+### Changed
+
+- **OAuth Login**
+  - Refactored `loginWithOauth` to internally reuse `loginWithOauthCode` while preserving its existing API and behavior.
+
+- **User Event Callbacks**
+  - Converted `ESPRMUser` event callbacks to static callbacks for consistent event handling across user instances.
+
 ## [v3.1.0]
 
 ### Added

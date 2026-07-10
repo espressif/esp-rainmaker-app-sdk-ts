@@ -5,4 +5,5 @@
  */
 
 export * from "./assumeRole";
+export * from "./fileUtils";
 export * from "./utils";
