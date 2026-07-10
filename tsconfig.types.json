@@ -1,0 +1,13 @@
+{
+  // Emits only type declarations to dist/types. Rollup handles JS transpilation
+  // (see rollup.config.mjs); this keeps declaration output in a single sibling
+  // directory that generate-exports.js consumes.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "dist/types"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]
+}
