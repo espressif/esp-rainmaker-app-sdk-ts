@@ -124,6 +124,8 @@ const ConfigErrorCodes = {
   INVALID_CONFIG_OBJECT: "INVALID_CONFIG_OBJECT",
   /** Error code indicating the base URL is invalid. */
   INVALID_BASE_URL: "INVALID_BASE_URL",
+  /** Error code indicating the claim base URL is invalid. */
+  INVALID_CLAIM_BASE_URL: "INVALID_CLAIM_BASE_URL",
   /** Error code indicating the auth URL is invalid. */
   INVALID_AUTH_URL: "INVALID_AUTH_URL",
   /** Error code indicating a redirect URL is required when auth URL is provided. */
@@ -394,11 +396,6 @@ const ClaimNodePolicies = {
 } as const;
 
 /**
- * The default claiming base URL.
- */
-const DEFAULT_CLAIM_BASE_URL = "https://esp-claiming.rainmaker.espressif.com";
-
-/**
  * An object containing error codes related to provisioning issues.
  *
  * @enum {string}
@@ -440,6 +437,8 @@ const ProvErrorCodes = {
  * @enum {string}
  */
 const ClaimErrorCodes = {
+  /** Error code indicating the claim URL is not configured. */
+  CLAIM_URL_NOT_CONFIGURED: "CLAIM_URL_NOT_CONFIGURED",
   /** Error code indicating claiming start failed. */
   CLAIM_START_FAILED: "CLAIM_START_FAILED",
   /** Error code indicating claiming was aborted. */
@@ -855,7 +854,6 @@ export {
   ChallengeResponseValidationErrors,
   ClaimCapabilities,
   ClaimNodePolicies,
-  DEFAULT_CLAIM_BASE_URL,
   ClaimErrorCodes,
   ClaimProgressMessages,
 };

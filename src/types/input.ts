@@ -22,6 +22,7 @@ import { ESPRMEventType } from "./subscription";
  */
 interface ESPRMBaseConfig {
   baseUrl: string;
+  claimUrl?: string;
   authUrl?: string;
   redirectUrl?: string;
   clientId?: string;
