@@ -25,6 +25,7 @@ export class ConfigValidator {
   static validateConfig(config: ESPRMBaseConfig): void {
     ConfigValidator.validateConfigObject(config);
     ConfigValidator.validateBaseUrl(config.baseUrl);
+    ConfigValidator.validateclaimUrl(config.claimUrl);
     ConfigValidator.validateAuthUrl(config.authUrl);
     ConfigValidator.validateRedirectUrl(config.redirectUrl, config.authUrl);
     ConfigValidator.validateClientId(config.clientId, config.authUrl);
@@ -51,6 +52,21 @@ export class ConfigValidator {
   private static validateBaseUrl(baseUrl: string): void {
     if (!isNonEmptyString(baseUrl) || !isValidUrl(baseUrl)) {
       throw new ESPConfigError(ConfigErrorCodes.INVALID_BASE_URL);
+    }
+  }
+
+  /**
+   * Validates the claim base URL of the configuration.
+   *
+   * @param claimUrl - The claim base URL to validate. Optional.
+   * @throws {ESPConfigError} If the claim base URL is invalid or empty.
+   */
+  private static validateclaimUrl(claimUrl?: string): void {
+    if (
+      claimUrl !== undefined &&
+      (!isNonEmptyString(claimUrl) || !isValidUrl(claimUrl))
+    ) {
+      throw new ESPConfigError(ConfigErrorCodes.INVALID_CLAIM_BASE_URL);
     }
   }
 
