@@ -19,6 +19,9 @@ const configErrorMessages = {
   /** Error message indicating that the base URL is invalid or empty. */
   INVALID_BASE_URL:
     "Configuration Error: BaseUrl must be a non-empty valid URL string.",
+  /** Error message indicating that the claim base URL is invalid or empty. */
+  INVALID_CLAIM_BASE_URL:
+    "Configuration Error: claimUrl must be a non-empty valid URL string if provided.",
   /** Error message indicating that the auth URL is invalid or empty. */
   INVALID_AUTH_URL:
     "Configuration Error: AuthUrl must be a non-empty valid URL string if provided.",
@@ -343,6 +346,9 @@ const appPermissionErrorMessages = {
  * device claiming process.
  */
 const claimErrorMessages = {
+  /** Error message indicating that the claim URL is not configured. */
+  CLAIM_URL_NOT_CONFIGURED:
+    "ESPClaimError: Claim URL is not configured. Please provide claimUrl in ESPRMBase.configure() to use claiming.",
   /** Error message indicating that claiming start failed. */
   CLAIM_START_FAILED:
     "ESPClaimError: Failed to start the claiming process. Please check device connection and try again.",

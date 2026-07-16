@@ -15,6 +15,19 @@ export const MOCK_BASE_CONFIG: ESPRMBaseConfig = {
 };
 
 /**
+ * Mock claim base URL for testing
+ */
+export const MOCK_CLAIM_URL = "https://test.claiming.api.com";
+
+/**
+ * Mock base configuration with claim base URL for testing
+ */
+export const MOCK_BASE_CONFIG_WITH_CLAIM_URL: ESPRMBaseConfig = {
+  ...MOCK_BASE_CONFIG,
+  claimUrl: MOCK_CLAIM_URL,
+};
+
+/**
  * Mock MQTT hosts for testing
  */
 export const MOCK_MQTT_HOSTS = {

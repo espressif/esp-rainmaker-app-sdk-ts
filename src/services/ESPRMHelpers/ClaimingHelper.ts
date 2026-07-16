@@ -7,13 +7,13 @@
 import { ESPRMAPIManager } from "../ESPRMAPIManager";
 import {
   HTTPMethods,
-  DEFAULT_CLAIM_BASE_URL,
   ClaimErrorCodes,
   APIEndpoints,
   ClaimCapabilities,
   ClaimNodePolicies,
 } from "../../utils/constants";
 import { ESPClaimError } from "../../utils/error/ESPClaimError";
+import { ESPRMBase } from "../../ESPRMBase";
 
 /**
  * Interface for claiming initiate request body
@@ -34,12 +34,16 @@ export interface ClaimVerifyRequest {
  */
 export class ClaimingHelper {
   /**
-   * Gets the claiming base URL.
-   * Uses the default claiming URL for ESP RainMaker.
+   * Gets the claiming base URL from the ESPRMBase configuration.
    * @returns The claiming base URL
+   * @throws {ESPClaimError} If claimUrl is not configured.
    */
-  private static getClaimBaseUrl(): string {
-    return DEFAULT_CLAIM_BASE_URL;
+  private static getclaimUrl(): string {
+    const claimUrl = ESPRMBase.getConfig().claimUrl;
+    if (!claimUrl) {
+      throw new ESPClaimError(ClaimErrorCodes.CLAIM_URL_NOT_CONFIGURED);
+    }
+    return claimUrl;
   }
 
   /**
@@ -53,7 +57,7 @@ export class ClaimingHelper {
     deviceInfo: ClaimInitiateRequest
   ): Promise<string> {
     try {
-      const baseUrl = this.getClaimBaseUrl();
+      const baseUrl = this.getclaimUrl();
       const response = await ESPRMAPIManager.authorizeRequest({
         method: HTTPMethods.POST,
         baseURL: baseUrl,
@@ -84,7 +88,7 @@ export class ClaimingHelper {
    */
   static async verifyClaim(csrData: ClaimVerifyRequest, claimCapability?: ClaimCapabilities): Promise<string> {
     try {
-      const baseUrl = this.getClaimBaseUrl();
+      const baseUrl = this.getclaimUrl();
 
       // If camera_claim capability is specified, add node_policies for video streaming
       const requestData = { ...csrData };
