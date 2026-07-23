@@ -29,4 +29,5 @@ import "./AddAutomation";
 import "./GetAutomations";
 import "./GetCustomParamTSData";
 import "./GetCustomParamSimpleTSData";
+import "./GetCustomParamSimpleTSDataAggregates";
 import "./SubscriptionConfig";

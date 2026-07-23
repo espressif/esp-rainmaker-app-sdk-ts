@@ -14,10 +14,19 @@ import {
   ESPWeekStart,
   ESPCustomParamSimpleTSDataRequest,
   ESPCustomParamTSDataRequest,
+  ESPSimpleTSAggregatesRequest,
+  ESPCustomParamSimpleTSAggregatesRequest,
+  ESPSimpleTSAggregateWindow,
 } from "../../types/tsData";
 import {
   TSCompatibleParamTypes,
+  SimpleTSCompatibleParamTypes,
+  SimpleTSAggregatableParamTypes,
+  TSLimitedDataTypeCompatibleAggregates,
+  TSLimitedAggregateParamTypes,
   TSDifferentialCompatibleParamTypes,
+  SimpleTSAggregatesDatePattern,
+  SimpleTSAggregatesHourSuffixPattern,
   Locale,
   TSDataConstants,
 } from "../../utils/constants";
@@ -88,11 +97,23 @@ const validateDifferential = (
   }
 };
 
-const validateAggregation = (request: ESPTSDataRequest): void => {
+const validateAggregation = (
+  request: ESPTSDataRequest,
+  dataType: string
+): void => {
   if (request.aggregate) {
     if (!isValidEnumValue(request.aggregate, ESPAggregationMethod)) {
       throw new ESPAPICallValidationError(
         APICallValidationErrorCodes.INVALID_TS_AGGREGATION
+      );
+    }
+
+    if (
+      TSLimitedAggregateParamTypes.includes(dataType) &&
+      !TSLimitedDataTypeCompatibleAggregates.includes(request.aggregate)
+    ) {
+      throw new ESPAPICallValidationError(
+        APICallValidationErrorCodes.INVALID_TS_AGGREGATION_FOR_DATA_TYPE
       );
     }
 
@@ -102,6 +123,16 @@ const validateAggregation = (request: ESPTSDataRequest): void => {
     ) {
       throw new ESPAPICallValidationError(
         APICallValidationErrorCodes.MISSING_TS_AGGREGATION_INTERVAL
+      );
+    }
+
+    if (
+      request.aggregate === ESPAggregationMethod.Latest &&
+      (request.aggregationInterval === ESPAggregationInterval.Month ||
+        request.aggregationInterval === ESPAggregationInterval.Year)
+    ) {
+      throw new ESPAPICallValidationError(
+        APICallValidationErrorCodes.INVALID_TS_LATEST_AGGREGATION_INTERVAL
       );
     }
   }
@@ -165,9 +196,9 @@ export const validateSimpleTSDataRequest = (
   }
 
   // Validate data type
-  if (!TSCompatibleParamTypes.includes(dataType)) {
+  if (!SimpleTSCompatibleParamTypes.includes(dataType)) {
     throw new ESPAPICallValidationError(
-      APICallValidationErrorCodes.INVALID_TS_DATA_TYPE
+      APICallValidationErrorCodes.INVALID_SIMPLE_TS_DATA_TYPE
     );
   }
 
@@ -230,6 +261,106 @@ export const validateTSDataRequest = (
 
   validateResultCount(request.resultCount);
   validateDifferential(request, dataType);
-  validateAggregation(request);
+  validateAggregation(request, dataType);
   validateTimezone(request.timezone);
+};
+
+const validateAggregatesDate = (
+  date: string,
+  window?: ESPSimpleTSAggregateWindow
+): void => {
+  if (!SimpleTSAggregatesDatePattern.test(date)) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.INVALID_SIMPLE_TS_AGG_DATE
+    );
+  }
+
+  // Hour granularity (YYYY-MM-DDTHH) is only allowed for the hourly window
+  if (
+    SimpleTSAggregatesHourSuffixPattern.test(date) &&
+    window !== ESPSimpleTSAggregateWindow.Hourly
+  ) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.INVALID_SIMPLE_TS_AGG_DATE
+    );
+  }
+};
+
+export const validateSimpleTSAggregatesRequest = (
+  request:
+    ESPSimpleTSAggregatesRequest | ESPCustomParamSimpleTSAggregatesRequest,
+  dataType: string,
+  supportsSimpleTS: boolean,
+  isCustomParamRequest: boolean = false
+): void => {
+  // Check if parameter supports simple_ts
+  if (!supportsSimpleTS) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.INVALID_SIMPLE_TS_PARAMETER
+    );
+  }
+
+  // Validate custom parameter request
+  if (isCustomParamRequest) {
+    validateCustomParamRequest(
+      request as ESPCustomParamSimpleTSAggregatesRequest
+    );
+  }
+
+  // Aggregates are only supported for aggregatable data types
+  if (!SimpleTSAggregatableParamTypes.includes(dataType)) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.INVALID_SIMPLE_TS_AGG_DATA_TYPE
+    );
+  }
+
+  // Validate aggregation window
+  if (
+    request.window &&
+    !isValidEnumValue(request.window, ESPSimpleTSAggregateWindow)
+  ) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.INVALID_SIMPLE_TS_AGG_WINDOW
+    );
+  }
+
+  const hasRange =
+    request.startDate !== undefined || request.endDate !== undefined;
+
+  if (hasRange) {
+    // Range query: both bounds required, mutually exclusive with date
+    if (!request.startDate || !request.endDate || request.date) {
+      throw new ESPAPICallValidationError(
+        APICallValidationErrorCodes.INVALID_SIMPLE_TS_AGG_DATE_RANGE
+      );
+    }
+
+    // Range query requires an aggregation window
+    if (!request.window) {
+      throw new ESPAPICallValidationError(
+        APICallValidationErrorCodes.MISSING_SIMPLE_TS_AGG_WINDOW
+      );
+    }
+
+    validateAggregatesDate(request.startDate, request.window);
+    validateAggregatesDate(request.endDate, request.window);
+
+    if (request.startDate > request.endDate) {
+      throw new ESPAPICallValidationError(
+        APICallValidationErrorCodes.INVALID_SIMPLE_TS_AGG_DATE_RANGE
+      );
+    }
+  } else if (request.date) {
+    validateAggregatesDate(request.date, request.window);
+  }
+
+  if (
+    request.resultCount !== undefined &&
+    (request.resultCount < TSDataConstants.MIN_RESULT_COUNT ||
+      request.resultCount > TSDataConstants.MAX_AGGREGATES_RESULT_COUNT)
+  ) {
+    throw new ESPAPICallValidationError(
+      APICallValidationErrorCodes.INVALID_SIMPLE_TS_AGG_RESULT_COUNT
+    );
+  }
 };
