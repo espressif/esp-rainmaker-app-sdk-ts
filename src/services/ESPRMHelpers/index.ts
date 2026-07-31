@@ -13,6 +13,7 @@ export * from "./DecodeToken";
 export * from "./ESPCmdRespHelpers";
 export * from "./DelegatedTransportHandler";
 export * from "./FetchAutomations";
+export * from "./FetchSimpleTSAggregates";
 export * from "./FetchTSData";
 export * from "./GenerateUUID";
 export * from "./GetCurrentTimestamp";
