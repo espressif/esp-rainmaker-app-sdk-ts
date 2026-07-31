@@ -48,7 +48,7 @@ ESPRMNode.prototype.getCustomParamSimpleTSData = async function (
     paramName: request.paramName,
     endpoint: APIEndpoints.USER_NODE_SIMPLE_TS_DATA,
     requestParams: {
-      data_type: request.dataType,
+      type: request.dataType,
       start_time: request.startTime,
       end_time: request.endTime,
       ...(request.resultCount && { num_records: request.resultCount }),

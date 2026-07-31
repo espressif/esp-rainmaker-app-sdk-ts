@@ -5,6 +5,8 @@
  */
 
 export * from "./device-param/getSimpleTSData";
+export * from "./device-param/getSimpleTSDataAggregates";
 export * from "./device-param/getTSData";
 export * from "./node/getCustomParamSimpleTSData";
+export * from "./node/getCustomParamSimpleTSDataAggregates";
 export * from "./node/getCustomParamTSData";

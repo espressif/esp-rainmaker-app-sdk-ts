@@ -56,7 +56,7 @@ ESPRMDeviceParam.prototype.getSimpleTSData = async function (
     paramName: APISupportedParamName,
     endpoint: APIEndpoints.USER_NODE_SIMPLE_TS_DATA,
     requestParams: {
-      data_type: this.dataType,
+      type: this.dataType,
       start_time: request.startTime,
       end_time: request.endTime,
       ...(request.resultCount && { num_records: request.resultCount }),

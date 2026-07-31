@@ -83,6 +83,42 @@ export const TS_MOCK_RESPONSES = {
   },
 
   /**
+   * Mock simple time series aggregates response
+   */
+  GET_SIMPLE_TS_DATA_AGGREGATES_SUCCESS: {
+    ts_data: [
+      {
+        node_id: "node_id",
+        aggregates: [
+          {
+            date: "2026-07-20",
+            window_type: "daily",
+            count: 10,
+            sum: 120.5,
+            min: 2.1,
+            max: 35.7,
+            average: 12.05,
+            first_value: 2.1,
+            last_value: 35.7,
+            window_start: 1752969600,
+            window_end: 1753055999,
+            cumulative: false,
+            status: "completed",
+            tz: "Asia/Kolkata",
+          },
+        ],
+        query_info: {
+          parameter: "temperature-float",
+          window_type: "daily",
+          start_date: "2026-07-20",
+          end_date: "2026-07-21",
+        },
+        next_id: "daily#2026-07-21",
+      },
+    ],
+  },
+
+  /**
    * Mock simple time series data response
    */
   GET_SIMPLE_TS_DATA_SUCCESS: {

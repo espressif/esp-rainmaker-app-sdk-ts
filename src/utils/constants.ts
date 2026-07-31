@@ -234,6 +234,25 @@ const APICallValidationErrorCodes = {
   INVALID_TS_TIMEZONE: "INVALID_TS_TIMEZONE",
   /** Error code indicating missing aggregation interval in time series request when aggregate is provided. */
   MISSING_TS_AGGREGATION_INTERVAL: "MISSING_TS_AGGREGATION_INTERVAL",
+  /** Error code indicating the aggregation method is not supported for the parameter's data type. */
+  INVALID_TS_AGGREGATION_FOR_DATA_TYPE: "INVALID_TS_AGGREGATION_FOR_DATA_TYPE",
+  /** Error code indicating the latest aggregation method is not supported for the given aggregation interval. */
+  INVALID_TS_LATEST_AGGREGATION_INTERVAL:
+    "INVALID_TS_LATEST_AGGREGATION_INTERVAL",
+  /** Error code indicating invalid data type for simple time series data. */
+  INVALID_SIMPLE_TS_DATA_TYPE: "INVALID_SIMPLE_TS_DATA_TYPE",
+  /** Error code indicating the data type does not support simple time series aggregates. */
+  INVALID_SIMPLE_TS_AGG_DATA_TYPE: "INVALID_SIMPLE_TS_AGG_DATA_TYPE",
+  /** Error code indicating invalid aggregation window in simple time series aggregates request. */
+  INVALID_SIMPLE_TS_AGG_WINDOW: "INVALID_SIMPLE_TS_AGG_WINDOW",
+  /** Error code indicating missing aggregation window in simple time series aggregates range request. */
+  MISSING_SIMPLE_TS_AGG_WINDOW: "MISSING_SIMPLE_TS_AGG_WINDOW",
+  /** Error code indicating invalid date in simple time series aggregates request. */
+  INVALID_SIMPLE_TS_AGG_DATE: "INVALID_SIMPLE_TS_AGG_DATE",
+  /** Error code indicating invalid date range in simple time series aggregates request. */
+  INVALID_SIMPLE_TS_AGG_DATE_RANGE: "INVALID_SIMPLE_TS_AGG_DATE_RANGE",
+  /** Error code indicating invalid result count in simple time series aggregates request. */
+  INVALID_SIMPLE_TS_AGG_RESULT_COUNT: "INVALID_SIMPLE_TS_AGG_RESULT_COUNT",
   /** Error code indicating the automation name is missing. */
   MISSING_AUTOMATION_NAME: "MISSING_AUTOMATION_NAME",
   /** Error code indicating the automation events are missing. */
@@ -678,6 +697,33 @@ const Keys = {
 const TSCompatibleParamTypes = ["float", "int", "bool", "string"];
 
 /**
+ * An array containing the types of parameters that are compatible with simple time series data.
+ */
+const SimpleTSCompatibleParamTypes = [
+  "float",
+  "int",
+  "bool",
+  "string",
+  "object",
+  "array",
+];
+
+/**
+ * An array containing the types of parameters that support simple time series aggregates.
+ */
+const SimpleTSAggregatableParamTypes = ["float", "int"];
+
+/**
+ * An array containing the aggregation methods supported for bool and string data types.
+ */
+const TSLimitedDataTypeCompatibleAggregates = ["raw", "latest", "count"];
+
+/**
+ * An array containing the types of parameters that only support a limited set of aggregation methods.
+ */
+const TSLimitedAggregateParamTypes = ["bool", "string"];
+
+/**
  * An array containing the types of parameters that support differential calculations.
  */
 const TSDifferentialCompatibleParamTypes = ["float", "int"];
@@ -710,7 +756,22 @@ const TSDataConstants = {
   MAX_RESULT_COUNT: 200,
   /** Minimum number of intervals that can be requested */
   MIN_INTERVALS: 1,
+  /** Maximum number of records that can be requested in an aggregates range query */
+  MAX_AGGREGATES_RESULT_COUNT: 100,
+  /** Query type value for simple time series aggregates requests */
+  AGGREGATES_QUERY_TYPE: "aggregates",
 } as const;
+
+/**
+ * Regular expression for validating simple time series aggregates date values.
+ * Accepts `YYYY-MM-DD` with an optional `THH` hour suffix.
+ */
+const SimpleTSAggregatesDatePattern = /^\d{4}-\d{2}-\d{2}(T([01]\d|2[0-3]))?$/;
+
+/**
+ * Regular expression detecting the hour suffix (`THH`) in an aggregates date value.
+ */
+const SimpleTSAggregatesHourSuffixPattern = /T([01]\d|2[0-3])$/;
 
 /**
  * An object containing assume role related constants.
@@ -838,7 +899,13 @@ export {
   ValidationPatterns,
   Keys,
   TSCompatibleParamTypes,
+  SimpleTSCompatibleParamTypes,
+  SimpleTSAggregatableParamTypes,
+  TSLimitedDataTypeCompatibleAggregates,
+  TSLimitedAggregateParamTypes,
   TSDifferentialCompatibleParamTypes,
+  SimpleTSAggregatesDatePattern,
+  SimpleTSAggregatesHourSuffixPattern,
   ParamProperties,
   Locale,
   TSDataConstants,

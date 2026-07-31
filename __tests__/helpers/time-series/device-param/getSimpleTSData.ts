@@ -161,7 +161,7 @@ export const invalidDataTypeSimpleTSDataTest = async (
     await deviceParam.getSimpleTSData(request);
   } catch (error) {
     expect((error as ESPAPICallValidationError).message).toBe(
-      apiCallValidationErrorMessages.INVALID_TS_DATA_TYPE
+      apiCallValidationErrorMessages.INVALID_SIMPLE_TS_DATA_TYPE
     );
   }
 
