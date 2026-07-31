@@ -8,4 +8,5 @@
 import "./SetValue";
 import "./GetRawTSData";
 import "./GetSimpleTSData";
+import "./GetSimpleTSDataAggregates";
 import "./GetTSData";

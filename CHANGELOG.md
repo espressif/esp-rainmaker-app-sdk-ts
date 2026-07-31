@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [v3.3.0]
+
+### Added
+
+- **Simple Time Series Aggregates**
+  - Added APIs to retrieve aggregated time series data for device and custom parameters.
+  - Added hourly, daily, weekly, and monthly aggregation windows with live, single-date, and date-range query modes.
+  - Added support for cumulative parameter aggregates.
+
+### Changed
+
+- **Simple Time Series APIs**
+  - Widened supported parameter data types to include `object` and `array`.
+
+- **Time Series Aggregation Validation**
+  - Restricted `bool` and `string` parameters to `raw`, `latest`, and `count` aggregation methods.
+  - Rejected the `latest` aggregation when combined with `month` or `year` intervals.
+
+### Fixed
+
+- **Simple Time Series APIs**
+  - Corrected the parameter data type field in simple time series requests so they match the backend contract.
+
 ## [v3.2.1]
 
 ### Added

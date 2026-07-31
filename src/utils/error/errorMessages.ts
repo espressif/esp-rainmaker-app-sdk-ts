@@ -165,6 +165,33 @@ const apiCallValidationErrorMessages = {
   /** Error message for missing aggregation interval in time series request when aggregate is provided. */
   MISSING_TS_AGGREGATION_INTERVAL:
     "ESPAPICallValidationError: Aggregation interval is required when aggregate is provided",
+  /** Error message for aggregation method not supported for the parameter's data type. */
+  INVALID_TS_AGGREGATION_FOR_DATA_TYPE:
+    "ESPAPICallValidationError: Only raw, latest and count aggregation methods are supported for bool and string data types",
+  /** Error message for latest aggregation method not supported for the given aggregation interval. */
+  INVALID_TS_LATEST_AGGREGATION_INTERVAL:
+    "ESPAPICallValidationError: The latest aggregation method is not supported with month or year aggregation intervals",
+  /** Error message for invalid data type for simple time series data. */
+  INVALID_SIMPLE_TS_DATA_TYPE:
+    "ESPAPICallValidationError: Invalid data type. Must be one of: float, int, bool, string, object, array.",
+  /** Error message for data type not supporting simple time series aggregates. */
+  INVALID_SIMPLE_TS_AGG_DATA_TYPE:
+    "ESPAPICallValidationError: Aggregates are only supported for float and int data types",
+  /** Error message for invalid aggregation window in simple time series aggregates request. */
+  INVALID_SIMPLE_TS_AGG_WINDOW:
+    "ESPAPICallValidationError: Invalid aggregation window. Must be one of: hourly, daily, weekly, monthly",
+  /** Error message for missing aggregation window in simple time series aggregates range request. */
+  MISSING_SIMPLE_TS_AGG_WINDOW:
+    "ESPAPICallValidationError: window is required when startDate and endDate are provided",
+  /** Error message for invalid date in simple time series aggregates request. */
+  INVALID_SIMPLE_TS_AGG_DATE:
+    "ESPAPICallValidationError: Invalid date. Must be in YYYY-MM-DD format; the YYYY-MM-DDTHH format is only allowed for the hourly window",
+  /** Error message for invalid date range in simple time series aggregates request. */
+  INVALID_SIMPLE_TS_AGG_DATE_RANGE:
+    "ESPAPICallValidationError: Invalid date range. Provide either date, or both startDate and endDate with startDate not after endDate",
+  /** Error message for invalid result count in simple time series aggregates request. */
+  INVALID_SIMPLE_TS_AGG_RESULT_COUNT:
+    "ESPAPICallValidationError: resultCount cannot be greater than 100 for aggregates range queries",
   /** Error message indicating that the automation name is missing. */
   MISSING_AUTOMATION_NAME:
     "ESPAPICallValidationError: Automation name is required.",
@@ -253,7 +280,7 @@ const apiCallValidationErrorMessages = {
   /** Error message when cmdId is provided without nodeId for cancel. */
   CANCEL_CMD_ID_REQUIRES_NODE_ID:
     "ESPAPICallValidationError: cmdId can only be used together with nodeId.",
-    /** Error message indicating the file name is missing. */
+  /** Error message indicating the file name is missing. */
   MISSING_FILE_NAME:
     "ESPAPICallValidationError: fileName is required for file upload.",
   /** Error message indicating the file name length is invalid. */
